@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            
+            <div class="card shadow-lg border-0 p-5">
+                <div class="mb-4">
+                    <i class="fas fa-envelope-open-text text-success display-1"></i>
+                </div>
+                
+                <h1 class="fw-bold mb-4" style="color: var(--ahsap-koyu); font-family: 'Playfair Display', serif;">
+                    Desteğiniz İçin Minnettarız
+                </h1>
+                
+                <div class="text-start px-md-5" style="font-size: 1.1rem; line-height: 1.8;">
+                    <p>Sayın Okurumuz,</p>
+                    <p>Artvizyon Haber'e ve Artvin'in bağımsız sesine verdiğiniz destek bizim için çok kıymetli.</p>
+                    <p>
+                        <i class="fas fa-check text-success me-2"></i> <strong>Teşekkür Maili:</strong> E-posta adresinize Sami Özçelik imzalı özel bir teşekkür mektubu gönderilmiştir.
+                    </p>
+                    <p>
+                        <i class="fas fa-tree text-success me-2"></i> <strong>Fidan Bağışı:</strong> Eğer "Sponsor" paketini seçtiyseniz, TEMA Vakfı'na adınıza yapılacak fidan bağışının sertifikası, 3 iş günü içinde yine mail adresinize iletilecektir.
+                    </p>
+                    <p class="mt-4">
+                        Sizlerin desteğiyle, Artvin'in sesini daha gür duyurmaya devam edeceğiz.
+                    </p>
+                </div>
+
+                <div class="mt-5">
+                    <a href="{% url 'anasayfa' %}" class="btn btn-outline-dark px-4">Anasayfaya Dön</a>
+                </div>
+                
+                <div class="mt-4 text-muted small">
+                    <img src="/media/imza.png" alt="İmza" style="height: 40px; opacity: 0.6;"> <br>
+                    Sami Özçelik
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

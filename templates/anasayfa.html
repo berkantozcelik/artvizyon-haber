@@ -1,0 +1,279 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    {% if haftanin_fotosu and not secilen_kategori and not haberler.has_previous %}
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-8 text-center">
+            <div class="position-relative d-inline-block p-2" 
+                 style="border: 8px solid #D4AF37; box-shadow: 0 10px 25px rgba(0,0,0,0.3); background-color: #fff;">
+                <div class="position-absolute top-0 start-50 translate-middle badge bg-dark text-uppercase px-3 py-2 shadow-sm" 
+                     style="letter-spacing: 2px; border: 1px solid #D4AF37;">
+                    Haftanın Fotoğrafı
+                </div>
+                <img src="{{ haftanin_fotosu.resim.url }}" class="img-fluid" alt="{{ haftanin_fotosu.baslik }}" 
+                     style="max-height: 500px; display: block;">
+                <div class="mt-3 pt-2 border-top border-secondary border-opacity-25">
+                    <h4 class="mb-0" style="font-family: 'Playfair Display', serif; color: #3E2723;">
+                        "{{ haftanin_fotosu.baslik }}"
+                    </h4>
+                    <p class="text-muted small fst-italic mt-1 mb-0">
+                        by {{ haftanin_fotosu.fotografci }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if mansetler and not secilen_kategori and not haberler.has_previous %}
+    <div class="row justify-content-center mb-5">
+
+        <div class="col-lg-2 d-none d-lg-flex justify-content-end">
+            <div class="sticky-top" style="top: 20px; z-index: 1;">
+                <div style="width: 160px; height: 500px; background-color: #f8f9fa; border: 1px dashed #ced4da; display: flex; align-items: center; justify-content: center; text-align: center;">
+                    <div>
+                        <span class="d-block text-muted small mb-1">REKLAM</span>
+                        <h6 class="text-secondary">160x500</h6>
+                        <small class="text-primary"><a href="{% url 'iletisim' %}">Reklam Ver</a></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-8">
+            <div id="mansetSlider" class="carousel slide shadow" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    {% for haber in mansetler %}
+                    <button type="button" data-bs-target="#mansetSlider" data-bs-slide-to="{{ forloop.counter0 }}" 
+                        class="{% if forloop.first %}active{% endif %}" aria-current="true"></button>
+                    {% endfor %}
+                </div>
+                <div class="carousel-inner">
+                    {% for haber in mansetler %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}" data-bs-interval="4000">
+                        {% if haber.resim %}
+                            <img src="{{ haber.resim.url }}" class="d-block w-100" alt="{{ haber.baslik }}" 
+                                 style="height: 500px; object-fit: cover; filter: brightness(0.7);">
+                        {% else %}
+                            <div class="d-block w-100 bg-secondary" style="height: 500px;"></div>
+                        {% endif %}
+                        <div class="carousel-caption d-none d-md-block text-start p-4" 
+                             style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); bottom: 0; left: 0; width: 100%;">
+                            <span class="badge mb-2" style="background-color: var(--artvin-yesil);">{{ haber.kategori.isim }}</span>
+                            <h2 class="fw-bold display-6 font-monospace">
+                                <a href="{% url 'haber_detay' haber.pk %}" class="text-white text-decoration-none">{{ haber.baslik }}</a>
+                            </h2>
+                            <p class="fs-5 d-none d-lg-block">{{ haber.ozet|truncatechars:100 }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#mansetSlider" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="visually-hidden">Önceki</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#mansetSlider" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span><span class="visually-hidden">Sonraki</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="col-lg-2 d-none d-lg-block">
+            <div class="sticky-top" style="top: 20px; z-index: 1;">
+                <div style="width: 160px; height: 500px; background-color: #f8f9fa; border: 1px dashed #ced4da; display: flex; align-items: center; justify-content: center; text-align: center;">
+                    <div>
+                        <span class="d-block text-muted small mb-1">REKLAM</span>
+                        <h6 class="text-secondary">160x500</h6>
+                        <small class="text-primary"><a href="{% url 'iletisim' %}">Reklam Ver</a></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    {% endif %}
+
+    {% if yazarlar and not secilen_kategori and not haberler.has_previous %}
+    <div class="container mb-5 mt-4">
+        
+        <div class="d-flex align-items-center mb-4 pb-2 border-bottom border-secondary">
+            <h4 class="fw-bold m-0" style="color: var(--ahsap-koyu); font-family: 'Playfair Display', serif;">
+                <i class="fas fa-feather-alt me-2"></i>KÖŞE YAZARLARI
+            </h4>
+            <small class="ms-auto text-muted fst-italic">Artvin'in Kalemleri</small>
+        </div>
+        
+        <div class="d-flex overflow-auto py-3 px-2" style="gap: 30px; scrollbar-width: thin; scrollbar-color: var(--ahsap-koyu) #eee;">
+            {% for yazar in yazarlar %}
+                {% if yazar.son_yazisi %}
+                <div class="text-center position-relative" style="min-width: 140px; max-width: 140px; cursor: pointer; transition: transform 0.2s;">
+                    <a href="{% url 'yazi_detay' yazar.son_yazisi.pk %}" class="text-decoration-none yazar-karti">
+                        
+                        <div class="position-relative d-inline-block mb-2">
+                            <img src="{{ yazar.resim.url }}" alt="{{ yazar.ad_soyad }}" 
+                                 class="rounded-circle shadow" 
+                                 style="width: 105px; height: 105px; object-fit: cover; border: 4px solid #fff; outline: 3px solid var(--ahsap-koyu);">
+                        </div>
+                        
+                        <div class="mt-2">
+                            <h6 class="fw-bold text-dark text-uppercase mb-2" style="font-size: 0.85rem; letter-spacing: 0.5px;">
+                                {{ yazar.ad_soyad }}
+                            </h6>
+                            
+                            <div class="bg-light rounded p-2 border border-light shadow-sm position-relative">
+                                <span class="position-absolute top-0 start-50 translate-middle badge bg-danger" style="font-size: 0.6rem;">SON YAZISI</span>
+                                
+                                <p class="mb-0 fw-bold lh-sm mt-1" 
+                                   style="font-family: 'Playfair Display', serif; color: var(--ahsap-koyu); font-size: 0.95rem; text-decoration: underline; text-decoration-color: #D4AF37;">
+                                    "{{ yazar.son_yazisi.baslik|truncatechars:40 }}"
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    
+    <style>
+        .yazar-karti:hover img {
+            transform: scale(1.05);
+            transition: transform 0.3s ease;
+            outline-color: #D4AF37 !important; /* Altın rengi çerçeve */
+        }
+        .yazar-karti:hover p {
+            color: #d63384 !important; /* Başlık rengi değişsin */
+        }
+    </style>
+    {% endif %}
+
+    <div class="row">
+        
+        <div class="col-lg-8">
+            
+            <div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-2 mb-4">
+                {% if secilen_kategori %}
+                    <h3 class="text-dark m-0">{{ secilen_kategori.isim }} Haberleri</h3>
+                    <a href="{% url 'anasayfa' %}" class="btn btn-sm btn-outline-secondary">Tümünü Göster</a>
+                {% else %}
+                    <h3 class="text-dark m-0">Son Gelişmeler</h3>
+                {% endif %}
+            </div>
+
+            <div class="row">
+                {% for haber in haberler %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm haber-kart">
+                        {% if haber.resim %}
+                            <img src="{{ haber.resim.url }}" class="card-img-top haber-resim" alt="{{ haber.baslik }}">
+                        {% else %}
+                            <div class="bg-secondary text-white d-flex align-items-center justify-content-center haber-resim" style="background-color: #5D4037 !important;">
+                                <span class="opacity-50">Resim Yok</span>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <a href="{% url 'kategori_haberleri' haber.kategori.pk %}" class="text-decoration-none" style="position: relative; z-index: 2;">
+                                    <span class="badge" style="background-color: var(--artvin-yesil);">{{ haber.kategori.isim }}</span>
+                                </a>
+                                {% if haber.ilce %}
+                                    <a href="{% url 'ilce_haberleri' haber.ilce.pk %}" class="text-decoration-none" style="position: relative; z-index: 2;">
+                                        <span class="badge bg-secondary">{{ haber.ilce.isim }}</span>
+                                    </a>
+                                {% endif %}
+                            </div>
+
+                            <h5 class="card-title fw-bold mt-1">{{ haber.baslik }}</h5>
+                            <p class="card-text text-secondary small">{{ haber.ozet|truncatechars:80 }}</p>
+                            <a href="{% url 'haber_detay' haber.pk %}" class="btn btn-sm btn-outline-dark stretched-link mt-2">Devamını Oku</a>
+                        </div>
+                        <div class="card-footer bg-white border-0 text-muted small">
+                            📅 {{ haber.yayin_tarihi|date:"d M Y" }}
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center mt-5">
+                    <h4 style="color: var(--ahsap-koyu);">Henüz içerik eklenmedi.</h4>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12 d-flex justify-content-center">
+                    <nav aria-label="Sayfa Gezintisi">
+                        <ul class="pagination">
+                            {% if haberler.has_previous %}
+                            <li class="page-item"><a class="page-link text-dark" href="?page={{ haberler.previous_page_number }}">&laquo; Önceki</a></li>
+                            {% endif %}
+                            <li class="page-item disabled"><span class="page-link text-muted" style="border:none;">Sayfa {{ haberler.number }}</span></li>
+                            {% if haberler.has_next %}
+                            <li class="page-item"><a class="page-link text-dark" href="?page={{ haberler.next_page_number }}">Sonraki &raquo;</a></li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            
+            <div class="card mb-4 border-0 shadow-sm">
+                <div class="card-header text-white fw-bold text-center" style="background-color: var(--artvin-yesil);">
+                    <i class="fas fa-coins me-2"></i> PİYASALAR
+                </div>
+                <div class="card-body p-0">
+                    <iframe src="https://s.tradingview.com/embed-widget/tickers/?locale=tr&colorTheme=light&symbols=FX:USDTRY%2CFX:EURTRY%2CBITSTAMP:BTCUSD%2CIST:XU100" 
+                            width="100%" height="200" frameborder="0" scrolling="no"></iframe>
+                </div>
+            </div>
+
+            <div class="card mb-4 border-0 shadow-sm">
+                <div class="card-header text-white fw-bold text-center" style="background-color: #dc3545;">
+                    <i class="fas fa-prescription-bottle-medical me-2"></i> NÖBETÇİ ECZANELER
+                </div>
+                <div class="card-body p-0 text-center bg-white pt-2">
+                    <div style="margin:auto;text-align:center;width:100%;">
+                        <iframe src="https://www.eczaneler.gen.tr/iframe.php?lokasyon=8" name="Artvin nöbetçi eczaneleri" style="width:100%; height:300px; border:none;" scrolling="auto"></iframe>
+                    </div>
+                    <div class="p-2 border-top">
+                        <a href="https://www.eczaneler.gen.tr/nobetci-artvin" target="_blank" class="btn btn-sm btn-outline-danger w-100">
+                            Tüm Listeyi Gör
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4 text-center">
+                <div style="background-color: #eee; height: 300px; display: flex; align-items: center; justify-content: center; border: 1px dashed #999;">
+                    <div>
+                        <h5 class="text-muted">REKLAM ALANI</h5>
+                        <small>300x300 px</small> <br>
+                        <small class="text-primary"><a href="{% url 'iletisim' %}">Buraya Reklam Verin</a></small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4 border-0 shadow-sm">
+                <div class="card-header text-white fw-bold text-center d-flex justify-content-between align-items-center" 
+                     style="background-color: #0d6efd;">
+                    <span><i class="fas fa-cloud-sun me-2"></i> HAVA DURUMU</span>
+                </div>
+                <div class="card-body p-0 bg-white" style="min-height: 340px;">
+                    <iframe src="https://www.mgm.gov.tr/sunum/tahmin-klasik-5070.aspx?m=ARTVIN&bas=ARTVİN MERKEZ&oa=1&v=1" 
+                        width="100%" height="340" frameborder="0" scrolling="no"></iframe>
+                </div>
+            </div>
+
+            <div class="mb-4 text-center">
+                <div style="background-color: #eee; height: 500px; display: flex; align-items: center; justify-content: center; border: 1px dashed #999;">
+                    <div>
+                        <h5 class="text-muted">REKLAM ALANI</h5>
+                        <small>300x500 px</small> <br>
+                        <small class="text-primary"><a href="{% url 'iletisim' %}">Sami Özçelik ile İletişime Geçin</a></small>
+                    </div>
+                </div>
+            </div>
+
+        </div> </div> {% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold display-5" style="color: var(--ahsap-koyu); font-family: 'Playfair Display', serif;">Foto Galeriler</h2>
+        <p class="text-muted">Artvin'in eşsiz doğasından ve etkinliklerinden kareler.</p>
+    </div>
+
+    <div class="row">
+        {% for galeri in galeriler %}
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm h-100 galeri-kart">
+                <a href="{% url 'galeri_detay' galeri.pk %}" class="text-decoration-none">
+                    <div class="position-relative overflow-hidden">
+                        {% if galeri.kapak_resmi %}
+                            <img src="{{ galeri.kapak_resmi.url }}" class="card-img-top" style="height: 250px; object-fit: cover; transition: transform 0.5s;" alt="{{ galeri.baslik }}">
+                        {% else %}
+                            <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 250px;">Resim Yok</div>
+                        {% endif %}
+                        <div class="position-absolute top-0 end-0 bg-dark text-white px-2 py-1 m-2 rounded opacity-75 small">
+                            <i class="fas fa-images me-1"></i> Albümü Gör
+                        </div>
+                    </div>
+                    <div class="card-body text-center">
+                        <h5 class="card-title fw-bold text-dark mt-2">{{ galeri.baslik }}</h5>
+                        <p class="text-muted small mb-0">{{ galeri.yayin_tarihi|date:"d M Y" }}</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <h4 class="text-muted">Henüz bir galeri eklenmemiş.</h4>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .galeri-kart:hover img {
+        transform: scale(1.05); /* Üzerine gelince resim hafif büyüsün */
+    }
+</style>
+{% endblock %}

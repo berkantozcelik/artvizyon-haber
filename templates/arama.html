@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row mb-4">
+        <div class="col-12 border-bottom border-secondary pb-2">
+            <h3 class="text-dark">
+                {% if query %}
+                    "{{ query }}" için arama sonuçları
+                {% else %}
+                    Arama yapmadınız.
+                {% endif %}
+            </h3>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for haber in sonuclar %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm haber-kart">
+                {% if haber.resim %}
+                    <img src="{{ haber.resim.url }}" class="card-img-top haber-resim" alt="{{ haber.baslik }}">
+                {% else %}
+                    <div class="bg-secondary text-white d-flex align-items-center justify-content-center haber-resim" style="background-color: #5D4037 !important;">
+                        Resim Yok
+                    </div>
+                {% endif %}
+                
+                <div class="card-body">
+                    <span class="badge mb-2" style="background-color: var(--artvin-yesil);">{{ haber.kategori.isim }}</span>
+                    <h5 class="card-title fw-bold mt-1">{{ haber.baslik }}</h5>
+                    <p class="card-text text-secondary small">{{ haber.ozet }}</p>
+                    <a href="{% url 'haber_detay' haber.pk %}" class="btn btn-sm btn-outline-dark stretched-link mt-2">Devamını Oku</a>
+                </div>
+                <div class="card-footer bg-white border-0 text-muted small">
+                    📅 {{ haber.yayin_tarihi|date:"d M Y" }}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+            {% if query %}
+            <div class="col-12 text-center mt-5">
+                <h4 class="text-muted">Maalesef "{{ query }}" ile ilgili bir haber bulunamadı.</h4>
+                <p>Başka bir kelime ile aramayı deneyin.</p>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock %}

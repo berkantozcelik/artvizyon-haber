@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h2 class="fw-bold m-0" style="font-family: 'Playfair Display', serif; color: var(--ahsap-koyu);">{{ galeri.baslik }}</h2>
+        <a href="{% url 'galeri_listesi' %}" class="btn btn-outline-dark btn-sm">
+            <i class="fas fa-arrow-left me-1"></i> Galerilere Dön
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div id="galeriSlider" class="carousel slide shadow-lg mb-5" data-bs-ride="carousel">
+                
+                <div class="carousel-inner bg-dark rounded">
+                    {% for resim in galeri.resimler.all %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <div class="d-flex justify-content-center align-items-center" style="height: 600px; background-color: #000;">
+                            <img src="{{ resim.resim.url }}" class="d-block" style="max-height: 100%; max-width: 100%; object-fit: contain;" alt="{{ galeri.baslik }}">
+                        </div>
+                        {% if resim.alt_yazi %}
+                        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-75 py-2">
+                            <p class="mb-0 fs-5">{{ resim.alt_yazi }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% empty %}
+                    <div class="carousel-item active">
+                        <div class="d-flex justify-content-center align-items-center text-white" style="height: 400px;">
+                            Bu albümde henüz fotoğraf yok.
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <button class="carousel-control-prev" type="button" data-bs-target="#galeriSlider" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#galeriSlider" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                </button>
+
+            </div>
+            
+            <div class="row g-2">
+                {% for resim in galeri.resimler.all %}
+                <div class="col-2">
+                    <button type="button" data-bs-target="#galeriSlider" data-bs-slide-to="{{ forloop.counter0 }}" class="btn p-0 border-0 w-100">
+                        <img src="{{ resim.resim.url }}" class="img-fluid rounded opacity-75 hover-opacity-100" style="height: 60px; width: 100%; object-fit: cover;">
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
