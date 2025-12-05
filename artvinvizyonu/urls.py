@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 # Tüm sayfaları (fonksiyonları) çağırıyoruz
+# Buraya yeni eklediğimiz siir_listesi ve siir_detay fonksiyonlarını da dahil ettim
 from haberler.views import (
     anasayfa, 
     haber_detay, 
@@ -16,13 +17,16 @@ from haberler.views import (
     tesekkur, 
     galeri_listesi, 
     galeri_detay,
-    yazi_detay
+    yazi_detay,
+    siir_listesi,  # <-- Yeni
+    siir_detay     # <-- Yeni
 )
 
 urlpatterns = [
-    # YENİ GİRİŞ ADRESİ: artvizyon-sami
+    # GÜVENLİK ÖNLEMİ: Admin paneli giriş adresi
     path('artvizyon-sami/', admin.site.urls),
     
+    # Anasayfa
     path('', anasayfa, name='anasayfa'),
     
     # Haberler, Kategoriler ve İlçeler
@@ -37,6 +41,10 @@ urlpatterns = [
     # Köşe Yazısı
     path('yazi/<int:pk>/', yazi_detay, name='yazi_detay'),
 
+    # --- YENİ: ŞİİR KÖŞESİ ---
+    path('siir-kosesi/', siir_listesi, name='siir_listesi'),
+    path('siir/<int:pk>/', siir_detay, name='siir_detay'),
+
     # Sabit Sayfalar
     path('kimdir/', kimdir, name='kimdir'),
     path('iletisim/', iletisim, name='iletisim'),
@@ -44,7 +52,7 @@ urlpatterns = [
     path('destek-ol/', destek, name='destek'),
     path('tesekkur/', tesekkur, name='tesekkur'),
 
-    # Editör Resim Yükleme Yolu
+    # Editör Resim Yükleme Yolu (CKEditor)
     path('ckeditor/', include('ckeditor_uploader.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

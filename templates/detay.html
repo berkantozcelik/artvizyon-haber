@@ -3,8 +3,10 @@
 {% block content %}
 
 <style>
+    /* Haber içeriğindeki resimler taşmasın */
     .haber-icerik { width: 100%; overflow: hidden; }
     .haber-icerik img { max-width: 100% !important; height: auto !important; display: block !important; margin: 15px auto !important; border-radius: 8px; }
+    /* CKEditor'den gelen iframe'leri de responsive yap */
     .haber-icerik iframe, .haber-icerik video, .haber-icerik embed { max-width: 100% !important; width: 100% !important; aspect-ratio: 16 / 9; height: auto !important; }
 </style>
 
@@ -33,7 +35,7 @@
                         <span class="badge bg-secondary me-2">{{ haber.ilce.isim }}</span>
                     {% endif %}
                     <span class="me-3"><i class="far fa-clock me-1"></i> {{ haber.yayin_tarihi|date:"d F Y, H:i" }}</span>
-                    <span><i class="fas fa-user-edit me-1"></i> Sami Özçelik</span>
+                    <span><i class="fas fa-user-edit me-1"></i> {{ haber.yazar.ad_soyad|default:"Sami Özçelik" }}</span>
                 </div>
 
                 {% if haber.resim %}
@@ -41,6 +43,44 @@
                 {% endif %}
 
                 <div class="haber-icerik fs-5 lh-lg text-dark">{{ haber.icerik|safe }}</div>
+
+                {% if haber.embed_video_url %}
+                <div class="mt-4 mb-4">
+                    <h5 class="fw-bold mb-2"><i class="fab fa-youtube text-danger me-2"></i>Haber Videosu</h5>
+                    <div class="ratio ratio-16x9 shadow-sm rounded overflow-hidden border border-secondary">
+                        <iframe src="{{ haber.embed_video_url }}" title="Haber Videosu" allowfullscreen></iframe>
+                    </div>
+                </div>
+                {% endif %}
+                {% if haber.yazar %}
+                <div class="d-flex align-items-center p-3 rounded mt-5 mb-4 shadow-sm" style="background-color: #f8f9fa; border-left: 4px solid var(--ahsap-koyu);">
+                    {% if haber.yazar.resim %}
+                    <div class="flex-shrink-0">
+                        <img src="{{ haber.yazar.resim.url }}" alt="{{ haber.yazar.ad_soyad }}" 
+                             class="rounded-circle border border-white shadow-sm" 
+                             style="width: 70px; height: 70px; object-fit: cover;">
+                    </div>
+                    {% else %}
+                    <div class="flex-shrink-0">
+                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center fw-bold" 
+                             style="width: 70px; height: 70px; font-size: 1.5rem;">
+                            {{ haber.yazar.ad_soyad|slice:":1" }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="flex-grow-1 ms-3">
+                        <small class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size: 0.65rem; letter-spacing: 1px;">
+                            HABERİN YAZARI
+                        </small>
+                        <h6 class="mb-0 fw-bold text-dark fs-5">
+                            {{ haber.yazar.ad_soyad }}
+                            {% if haber.yazar.basyazar_mi %}
+                                <span class="badge bg-dark text-white ms-2 align-middle" style="font-size: 0.6rem;">BAŞYAZAR</span>
+                            {% endif %}
+                        </h6>
+                    </div>
+                </div>
+                {% endif %}
 
                 <div class="my-5 text-center">
                     <div class="d-inline-block bg-light border dashed-border p-3" style="width: 100%; max-width: 728px; height: 90px; display: flex; align-items: center; justify-content: center;">

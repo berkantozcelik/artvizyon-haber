@@ -27,8 +27,7 @@
     {% endif %}
 
     {% if mansetler and not secilen_kategori and not haberler.has_previous %}
-    <div class="row justify-content-center mb-5">
-
+    <div class="row justify-content-center mb-5 align-items-start">
         <div class="col-lg-2 d-none d-lg-flex justify-content-end">
             <div class="sticky-top" style="top: 20px; z-index: 1;">
                 <div style="width: 160px; height: 500px; background-color: #f8f9fa; border: 1px dashed #ced4da; display: flex; align-items: center; justify-content: center; text-align: center;">
@@ -42,24 +41,25 @@
         </div>
         
         <div class="col-lg-8">
-            <div id="mansetSlider" class="carousel slide shadow" data-bs-ride="carousel">
+            <div id="mansetSlider" class="carousel slide shadow" data-bs-ride="carousel" 
+                 style="height: 500px; overflow: hidden; border-radius: 4px;">
                 <div class="carousel-indicators">
                     {% for haber in mansetler %}
                     <button type="button" data-bs-target="#mansetSlider" data-bs-slide-to="{{ forloop.counter0 }}" 
                         class="{% if forloop.first %}active{% endif %}" aria-current="true"></button>
                     {% endfor %}
                 </div>
-                <div class="carousel-inner">
+                <div class="carousel-inner" style="height: 100%;">
                     {% for haber in mansetler %}
-                    <div class="carousel-item {% if forloop.first %}active{% endif %}" data-bs-interval="4000">
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}" data-bs-interval="4000" style="height: 100%;">
                         {% if haber.resim %}
                             <img src="{{ haber.resim.url }}" class="d-block w-100" alt="{{ haber.baslik }}" 
-                                 style="height: 500px; object-fit: cover; filter: brightness(0.7);">
+                                 style="height: 500px !important; min-height: 500px !important; object-fit: cover !important; object-position: center; filter: brightness(0.8);">
                         {% else %}
                             <div class="d-block w-100 bg-secondary" style="height: 500px;"></div>
                         {% endif %}
                         <div class="carousel-caption d-none d-md-block text-start p-4" 
-                             style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); bottom: 0; left: 0; width: 100%;">
+                             style="background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); bottom: 0; left: 0; width: 100%;">
                             <span class="badge mb-2" style="background-color: var(--artvin-yesil);">{{ haber.kategori.isim }}</span>
                             <h2 class="fw-bold display-6 font-monospace">
                                 <a href="{% url 'haber_detay' haber.pk %}" class="text-white text-decoration-none">{{ haber.baslik }}</a>
@@ -89,43 +89,43 @@
                 </div>
             </div>
         </div>
-
     </div>
     {% endif %}
 
     {% if yazarlar and not secilen_kategori and not haberler.has_previous %}
     <div class="container mb-5 mt-4">
-        
         <div class="d-flex align-items-center mb-4 pb-2 border-bottom border-secondary">
             <h4 class="fw-bold m-0" style="color: var(--ahsap-koyu); font-family: 'Playfair Display', serif;">
                 <i class="fas fa-feather-alt me-2"></i>KÖŞE YAZARLARI
             </h4>
             <small class="ms-auto text-muted fst-italic">Artvin'in Kalemleri</small>
         </div>
-        
         <div class="d-flex overflow-auto py-3 px-2" style="gap: 30px; scrollbar-width: thin; scrollbar-color: var(--ahsap-koyu) #eee;">
             {% for yazar in yazarlar %}
                 {% if yazar.son_yazisi %}
                 <div class="text-center position-relative" style="min-width: 140px; max-width: 140px; cursor: pointer; transition: transform 0.2s;">
                     <a href="{% url 'yazi_detay' yazar.son_yazisi.pk %}" class="text-decoration-none yazar-karti">
-                        
                         <div class="position-relative d-inline-block mb-2">
                             <img src="{{ yazar.resim.url }}" alt="{{ yazar.ad_soyad }}" 
                                  class="rounded-circle shadow" 
                                  style="width: 105px; height: 105px; object-fit: cover; border: 4px solid #fff; outline: 3px solid var(--ahsap-koyu);">
+                            {% if yazar.basyazar_mi %}
+                                <span class="position-absolute start-50 translate-middle badge rounded-pill bg-danger border border-white shadow-sm" 
+                                      style="bottom: -10px; font-size: 0.65rem; letter-spacing: 1px; z-index: 10;">
+                                    BAŞYAZAR
+                                </span>
+                            {% endif %}
                         </div>
-                        
-                        <div class="mt-2">
+                        <div class="mt-3">
                             <h6 class="fw-bold text-dark text-uppercase mb-2" style="font-size: 0.85rem; letter-spacing: 0.5px;">
                                 {{ yazar.ad_soyad }}
                             </h6>
-                            
-                            <div class="bg-light rounded p-2 border border-light shadow-sm position-relative">
-                                <span class="position-absolute top-0 start-50 translate-middle badge bg-danger" style="font-size: 0.6rem;">SON YAZISI</span>
-                                
-                                <p class="mb-0 fw-bold lh-sm mt-1" 
-                                   style="font-family: 'Playfair Display', serif; color: var(--ahsap-koyu); font-size: 0.95rem; text-decoration: underline; text-decoration-color: #D4AF37;">
-                                    "{{ yazar.son_yazisi.baslik|truncatechars:40 }}"
+                            <div class="bg-light rounded p-2 border border-light shadow-sm position-relative d-flex flex-column align-items-center justify-content-center" 
+                                 style="height: 85px; overflow: hidden;">
+                                <span class="badge bg-danger mb-1" style="font-size: 0.55rem;">SON YAZISI</span>
+                                <p class="mb-0 fw-bold lh-sm text-center" 
+                                   style="font-family: 'Playfair Display', serif; color: var(--ahsap-koyu); font-size: 0.75rem; text-decoration: underline; text-decoration-color: #D4AF37;">
+                                    "{{ yazar.son_yazisi.baslik|truncatechars:55 }}"
                                 </p>
                             </div>
                         </div>
@@ -135,16 +135,9 @@
             {% endfor %}
         </div>
     </div>
-    
     <style>
-        .yazar-karti:hover img {
-            transform: scale(1.05);
-            transition: transform 0.3s ease;
-            outline-color: #D4AF37 !important; /* Altın rengi çerçeve */
-        }
-        .yazar-karti:hover p {
-            color: #d63384 !important; /* Başlık rengi değişsin */
-        }
+        .yazar-karti:hover img { transform: scale(1.05); transition: transform 0.3s ease; outline-color: #D4AF37 !important; }
+        .yazar-karti:hover p { color: #d63384 !important; }
     </style>
     {% endif %}
 
@@ -152,6 +145,40 @@
         
         <div class="col-lg-8">
             
+            {% if gunun_siiri and not secilen_kategori and not haberler.has_previous %}
+            <div class="card border-0 shadow-sm mb-5 position-relative overflow-hidden" 
+                 style="background-color: #fffaf0; border-left: 6px solid #D4AF37 !important;">
+                <i class="fas fa-feather-alt position-absolute end-0 bottom-0 text-secondary opacity-10" style="font-size: 10rem; margin-right: -30px; margin-bottom: -30px;"></i>
+                <div class="card-body p-4 position-relative">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom" style="border-color: rgba(0,0,0,0.1) !important;">
+                        <h6 class="text-uppercase fw-bold text-muted small mb-0" style="letter-spacing: 2px;">
+                            <i class="fas fa-bookmark me-2 text-warning"></i>GÜNÜN ŞİİRİ
+                        </h6>
+                        <span class="badge bg-light text-dark border">Edebiyat Köşesi</span>
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
+                            <h3 class="card-title fw-bold mb-1" style="font-family: 'Playfair Display', serif; color: var(--ahsap-koyu);">
+                                {{ gunun_siiri.baslik }}
+                            </h3>
+                            <p class="fst-italic text-muted mb-3 small">- {{ gunun_siiri.sair }} -</p>
+                            <a href="{% url 'siir_detay' gunun_siiri.pk %}" class="btn btn-outline-dark btn-sm rounded-pill fw-bold w-100 stretched-link">
+                                Tamamını Oku
+                            </a>
+                        </div>
+                        <div class="col-md-8 border-start border-warning border-opacity-50 ps-md-4 position-relative">
+                            <div class="lh-lg text-dark" style="font-family: 'Georgia', serif; font-size: 1.05rem; max-height: 150px; overflow: hidden; position: relative;">
+                                {{ gunun_siiri.siir_metni|safe }}
+                                <div class="position-absolute bottom-0 start-0 w-100" 
+                                     style="height: 50px; background: linear-gradient(to bottom, transparent, #fffaf0);">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
             <div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-2 mb-4">
                 {% if secilen_kategori %}
                     <h3 class="text-dark m-0">{{ secilen_kategori.isim }} Haberleri</h3>
@@ -164,38 +191,40 @@
             <div class="row">
                 {% for haber in haberler %}
                 <div class="col-md-6 mb-4">
-                    <div class="card h-100 shadow-sm haber-kart">
-                        {% if haber.resim %}
-                            <img src="{{ haber.resim.url }}" class="card-img-top haber-resim" alt="{{ haber.baslik }}">
-                        {% else %}
-                            <div class="bg-secondary text-white d-flex align-items-center justify-content-center haber-resim" style="background-color: #5D4037 !important;">
-                                <span class="opacity-50">Resim Yok</span>
+                    <div class="card h-100 shadow-sm border-0 haber-karti overflow-hidden">
+                        <div class="position-relative" style="height: 240px;">
+                            {% if haber.resim %}
+                                <img src="{{ haber.resim.url }}" class="card-img-top w-100 h-100 object-fit-cover transition-zoom" alt="{{ haber.baslik }}">
+                            {% else %}
+                                <div class="w-100 h-100 bg-secondary d-flex align-items-center justify-content-center text-white-50">
+                                    <i class="fas fa-camera fa-3x"></i>
+                                </div>
+                            {% endif %}
+                            <div class="position-absolute top-0 start-0 m-2">
+                                <span class="badge bg-success shadow-sm text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.5px;">{{ haber.kategori.isim }}</span>
                             </div>
-                        {% endif %}
-                        <div class="card-body">
-                            <div class="mb-2">
-                                <a href="{% url 'kategori_haberleri' haber.kategori.pk %}" class="text-decoration-none" style="position: relative; z-index: 2;">
-                                    <span class="badge" style="background-color: var(--artvin-yesil);">{{ haber.kategori.isim }}</span>
-                                </a>
-                                {% if haber.ilce %}
-                                    <a href="{% url 'ilce_haberleri' haber.ilce.pk %}" class="text-decoration-none" style="position: relative; z-index: 2;">
-                                        <span class="badge bg-secondary">{{ haber.ilce.isim }}</span>
-                                    </a>
-                                {% endif %}
-                            </div>
-
-                            <h5 class="card-title fw-bold mt-1">{{ haber.baslik }}</h5>
-                            <p class="card-text text-secondary small">{{ haber.ozet|truncatechars:80 }}</p>
-                            <a href="{% url 'haber_detay' haber.pk %}" class="btn btn-sm btn-outline-dark stretched-link mt-2">Devamını Oku</a>
                         </div>
-                        <div class="card-footer bg-white border-0 text-muted small">
-                            📅 {{ haber.yayin_tarihi|date:"d M Y" }}
+                        <div class="card-body d-flex flex-column pt-3">
+                            <h5 class="card-title fw-bold text-dark lh-sm mb-2">
+                                <a href="{% url 'haber_detay' haber.pk %}" class="text-decoration-none text-dark stretched-link haber-baslik-link">
+                                    {{ haber.baslik }}
+                                </a>
+                            </h5>
+                            <p class="card-text text-muted small flex-grow-1" style="line-height: 1.5;">
+                                {{ haber.ozet|truncatechars:90 }}
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center mt-3 border-top pt-2">
+                                <small class="text-muted" style="font-size: 0.75rem;">
+                                    <i class="far fa-clock me-1"></i>{{ haber.yayin_tarihi|date:"d M Y" }}
+                                </small>
+                                <span class="btn btn-sm btn-link text-decoration-none p-0 fw-bold text-primary">Oku &rarr;</span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 {% empty %}
-                <div class="col-12 text-center mt-5">
-                    <h4 style="color: var(--ahsap-koyu);">Henüz içerik eklenmedi.</h4>
+                <div class="col-12 text-center py-5">
+                    <h4 class="text-muted">Henüz haber eklenmemiş.</h4>
                 </div>
                 {% endfor %}
             </div>
@@ -224,8 +253,35 @@
                     <i class="fas fa-coins me-2"></i> PİYASALAR
                 </div>
                 <div class="card-body p-0">
-                    <iframe src="https://s.tradingview.com/embed-widget/tickers/?locale=tr&colorTheme=light&symbols=FX:USDTRY%2CFX:EURTRY%2CBITSTAMP:BTCUSD%2CIST:XU100" 
-                            width="100%" height="200" frameborder="0" scrolling="no"></iframe>
+                    <div class="tradingview-widget-container">
+                        <div class="tradingview-widget-container__widget"></div>
+                        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
+                        {
+                          "colorTheme": "light",
+                          "dateRange": "12M",
+                          "showChart": false,
+                          "locale": "tr",
+                          "largeChartUrl": "",
+                          "isTransparent": true,
+                          "showSymbolLogo": true,
+                          "showFloatingTooltip": false,
+                          "width": "100%",
+                          "height": "400",
+                          "tabs": [
+                            {
+                              "title": "Döviz & Borsa",
+                              "symbols": [
+                                { "s": "FX:USDTRY", "d": "DOLAR" },
+                                { "s": "FX:EURTRY", "d": "EURO" },
+                                { "s": "FX_IDC:XAUTRY", "d": "GRAM ALTIN" },
+                                { "s": "BIST:XU100", "d": "BIST 100" }
+                              ],
+                              "originalTitle": "Indices"
+                            }
+                          ]
+                        }
+                        </script>
+                    </div>
                 </div>
             </div>
 
@@ -276,4 +332,14 @@
                 </div>
             </div>
 
-        </div> </div> {% endblock %}
+        </div> 
+    </div> 
+
+    <style>
+        .haber-karti { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .haber-karti:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.15) !important; }
+        .transition-zoom { transition: transform 0.5s ease; }
+        .haber-karti:hover .transition-zoom { transform: scale(1.05); }
+        .haber-baslik-link:hover { color: #d4af37 !important; }
+    </style>
+{% endblock %}

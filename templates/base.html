@@ -3,214 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title>{% block title %}Artvizyon Haber - Gzt. Sami Özçelik{% endblock %}</title>
-
+    
     <meta name="description" content="{% block description %}Artvin'den son dakika haberleri, güncel gelişmeler, ilçe haberleri, köşe yazıları ve Artvin gündemi Artvizyon Haber'de.{% endblock %}">
     <meta name="author" content="Sami Özçelik">
-    <meta name="keywords" content="Artvin, Haber, Artvin Haberleri, Artvizyon, Hopa, Arhavi, Borçka, Şavşat, Yusufeli">
-
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ request.build_absolute_uri }}">
-    <meta property="og:title" content="{% block og_title %}Artvizyon Haber - Artvin'in Sesi{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}Artvin güncel haber ve köşe yazıları platformu.{% endblock %}">
     <meta property="og:image" content="{% block og_image %}/static/img/logo-kare.png{% endblock %}">
-
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{% block twitter_title %}Artvizyon Haber{% endblock %}">
-    <meta name="twitter:description" content="{% block twitter_description %}Artvin'den haberler.{% endblock %}">
-    <meta name="twitter:image" content="{% block twitter_image %}/static/img/logo-kare.png{% endblock %}">
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- ORTAK RENK PALETİ --- */
-        :root {
-            --ahsap-koyu: #3E2723;
-            --artvin-yesil: #2E4A38;
-            --kagit-krem: #F4F1EA;
-            --altin-detay: #D4AF37;
-        }
-
-        body { 
-            background-color: var(--kagit-krem); 
-            font-family: 'Roboto', sans-serif; 
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        h1, h2, h3, h5, .marka-font { font-family: 'Playfair Display', serif; }
-
+        /* GENEL STİLLER */
+        :root { --ahsap-koyu: #3E2723; --artvin-yesil: #2E4A38; --kagit-krem: #F4F1EA; --altin-detay: #D4AF37; }
+        body { background-color: var(--kagit-krem); font-family: 'Roboto', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+        h1, h2, h3, h4, h5 { font-family: 'Playfair Display', serif; }
         .icerik-alani { flex: 1; }
 
-        /* HEADER & LOGO ALANI */
-        .navbar-custom {
-            background-color: var(--ahsap-koyu);
-            border-bottom: 4px solid var(--artvin-yesil);
-            padding: 1rem 0;
-            position: relative;
-        }
-        .site-logo {
-            max-height: 160px;
-            width: auto;
-            transition: all 0.3s ease;
-        }
-        @media (max-width: 768px) {
-            .site-logo { max-height: 100px; }
-        }
-
-        /* LİNKLER & DROPDOWN */
-        .nav-link { font-size: 0.95rem; letter-spacing: 0.5px; }
+        /* NAVBAR & LOGO */
+        .navbar-custom { background-color: var(--ahsap-koyu); border-bottom: 4px solid var(--artvin-yesil); padding: 1rem 0; }
+        .site-logo { max-height: 160px; width: auto; transition: transform 0.3s; }
+        .site-logo:hover { transform: scale(1.02); }
+        .dropdown-menu { background-color: #2b1b18; border: 1px solid var(--altin-detay); }
+        .dropdown-item { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .dropdown-item:hover { background-color: var(--artvin-yesil); color: #fff; padding-left: 25px; transition: 0.2s; }
         .nav-link:hover { color: var(--altin-detay) !important; }
-        
-        /* Dropdown Menü Tasarımı */
-        .dropdown-menu { 
-            background-color: #2b1b18; 
-            border: 1px solid var(--altin-detay); 
-            min-width: 200px;
-        }
-        .dropdown-item { 
-            color: #fff; 
-            padding: 10px 20px; 
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .dropdown-item:hover { 
-            background-color: var(--artvin-yesil); 
-            color: #fff; 
-            padding-left: 25px; /* Hoverda sağa kayma efekti */
-            transition: all 0.2s;
-        }
-        
-        /* Haber Kartları */
-        .haber-kart {
-            border: none;
-            border-radius: 2px;
-            background-color: #fff;
-            border-bottom: 3px solid var(--ahsap-koyu);
-        }
-        .haber-resim { height: 220px; object-fit: cover; }
 
-        /* Sosyal Medya İkonları */
-        .social-icon {
-            color: #fff;
-            font-size: 1.5rem;
-            margin: 0 10px;
-            transition: color 0.3s;
-            text-decoration: none;
-        }
-        .social-icon:hover { color: var(--altin-detay); }
+        /* --- SON DAKİKA ŞERİDİ --- */
+        .son-dakika-seridi { background-color: #212529; color: #fff; overflow: hidden; white-space: nowrap; height: 42px; display: flex; align-items: center; border-bottom: 3px solid #dc3545; }
+        .son-dakika-etiket { background-color: #dc3545; color: #fff; padding: 0 20px; height: 100%; display: flex; align-items: center; font-weight: bold; font-size: 0.9rem; z-index: 10; box-shadow: 2px 0 10px rgba(0,0,0,0.5); }
+        .kayan-yazi { display: inline-block; padding-left: 100%; animation: kayanYazi 35s linear infinite; }
+        .kayan-yazi a { color: #fff; text-decoration: none; margin-right: 60px; font-weight: 500; font-size: 0.95rem; }
+        .kayan-yazi a:hover { color: var(--altin-detay); text-decoration: underline; }
+        @keyframes kayanYazi { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
 
-        /* Arama Kutusu Stili */
-        .search-input {
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: #fff;
-        }
-        .search-input::placeholder { color: rgba(255, 255, 255, 0.6); }
-        .search-input:focus {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: #fff;
-            border-color: var(--altin-detay);
-            box-shadow: none;
-        }
+        /* RESİM KORUMASI */
+        img { max-width: 100% !important; height: auto !important; }
+        .haber-icerik img, .yazi-icerik img { display: block !important; margin: 20px auto !important; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        
+        /* SOSYAL MEDYA İKONLARI */
+        .social-icon { width: 35px; height: 35px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255,255,255,0.1); color: #fff; text-decoration: none; transition: 0.3s; }
+        .social-icon:hover { background: var(--altin-detay); color: #000; transform: translateY(-3px); }
     </style>
 </head>
 <body>
 
     <nav class="navbar-custom mb-0 shadow py-3">
         <div class="container d-flex justify-content-center align-items-center position-relative">
-            
             <a class="navbar-brand p-0" href="{% url 'anasayfa' %}">
                 <img src="/media/site-logo.png" alt="Artvizyon Haber" class="img-fluid site-logo">
             </a>
-
             <div class="position-absolute end-0 d-none d-lg-block">
-                <a class="btn btn-danger fw-bold rounded-pill px-4 shadow-sm" href="{% url 'destek' %}">
+                <a class="btn btn-danger fw-bold rounded-pill px-4 shadow-sm border border-light" href="{% url 'destek' %}">
                     <i class="fas fa-heart me-2"></i> DESTEK OL
                 </a>
             </div>
-
-        </div>
-        <div class="container d-lg-none text-center mt-3">
-            <a class="btn btn-sm btn-danger fw-bold rounded-pill px-4 w-50" href="{% url 'destek' %}">
-                <i class="fas fa-heart me-2"></i> DESTEK OL
-            </a>
         </div>
     </nav>
 
-    <div class="container-fluid py-2 mb-4 shadow-sm" style="background-color: #2b1b18;">
+    <div class="container-fluid py-2 shadow-sm" style="background-color: #2b1b18; position: relative; z-index: 100;">
         <div class="container">
             <div class="d-flex flex-wrap justify-content-between align-items-center">
-                
                 <ul class="nav justify-content-center justify-content-lg-start flex-grow-1">
                     <li class="nav-item"><a class="nav-link text-white fw-bold mx-2" href="{% url 'anasayfa' %}">ANASAYFA</a></li>
                     <li class="nav-item"><a class="nav-link text-white fw-bold mx-2" href="{% url 'kimdir' %}">EDİTÖRDEN</a></li>
-                    
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-white fw-bold mx-2" href="#" role="button" data-bs-toggle="dropdown">
-                            İLÇELER
-                        </a>
+                        <a class="nav-link dropdown-toggle text-white fw-bold mx-2" href="#" data-bs-toggle="dropdown">İLÇELER</a>
                         <ul class="dropdown-menu shadow">
-                            {% for ilce in global_ilceler %}
-                            <li><a class="dropdown-item text-uppercase fw-bold" href="{% url 'ilce_haberleri' ilce.pk %}">{{ ilce.isim }}</a></li>
-                            {% endfor %}
+                            {% for ilce in global_ilceler %}<li><a class="dropdown-item text-uppercase fw-bold" href="{% url 'ilce_haberleri' ilce.pk %}">{{ ilce.isim }}</a></li>{% endfor %}
                         </ul>
                     </li>
-
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-white fw-bold mx-2" href="#" role="button" data-bs-toggle="dropdown">
-                            KATEGORİLER
-                        </a>
+                        <a class="nav-link dropdown-toggle text-white fw-bold mx-2" href="#" data-bs-toggle="dropdown">KATEGORİLER</a>
                         <ul class="dropdown-menu shadow">
-                            {% for kategori in global_kategoriler %}
-                            <li>
-                                <a class="dropdown-item text-uppercase fw-bold" href="{% url 'kategori_haberleri' kategori.pk %}">
-                                    {{ kategori.isim }}
-                                </a>
-                            </li>
-                            {% endfor %}
+                            {% for kategori in global_kategoriler %}<li><a class="dropdown-item text-uppercase fw-bold" href="{% url 'kategori_haberleri' kategori.pk %}">{{ kategori.isim }}</a></li>{% endfor %}
                         </ul>
                     </li>
-
+                    <li class="nav-item"><a class="nav-link text-white fw-bold mx-2" href="{% url 'siir_listesi' %}">ŞİİR KÖŞESİ</a></li>
                     <li class="nav-item"><a class="nav-link text-white fw-bold mx-2" href="{% url 'galeri_listesi' %}">GALERİ</a></li>
                     <li class="nav-item"><a class="nav-link text-white fw-bold mx-2" href="{% url 'iletisim' %}">İLETİŞİM</a></li>
                 </ul>
-                
                 <form action="{% url 'arama' %}" method="get" class="d-flex mt-2 mt-lg-0">
                     <div class="input-group">
-                        <input class="form-control form-control-sm search-input" type="search" name="q" placeholder="Haber ara..." aria-label="Search">
-                        <button class="btn btn-sm btn-light text-dark" type="submit">
-                            <i class="fas fa-search"></i>
-                        </button>
+                        <input class="form-control form-control-sm search-input" type="search" name="q" placeholder="Haber ara..." aria-label="Search" style="background: rgba(255,255,255,0.1); border: 1px solid #555; color: white;">
+                        <button class="btn btn-sm btn-light text-dark" type="submit"><i class="fas fa-search"></i></button>
                     </div>
                 </form>
-
             </div>
         </div>
     </div>
 
-    <div class="container icerik-alani">
+    <div class="son-dakika-seridi">
+        <div class="container d-flex p-0 align-items-center h-100">
+            <div class="son-dakika-etiket">SON DAKİKA</div>
+            <div class="kayan-yazi">
+                {% for haber in son_dakika %}
+                    <a href="{% url 'haber_detay' haber.pk %}">
+                        <span class="text-warning me-2">●</span> {{ haber.baslik }}
+                    </a>
+                {% empty %}
+                    <span class="text-white-50">Artvin'den güncel haberler...</span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="container icerik-alani mt-4">
         {% block content %} {% endblock %}
     </div>
 
-    <footer class="text-center py-5 mt-5 text-white" style="background-color: var(--ahsap-koyu);">
+    <footer class="py-5 mt-5 text-white" style="background-color: var(--ahsap-koyu);">
         <div class="container">
-            <h4 class="font-monospace mb-3">Artvizyon Haber</h4>
-            <div class="mb-4">
-                <a href="https://facebook.com" target="_blank" class="social-icon" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://twitter.com" target="_blank" class="social-icon" title="X (Twitter)"><i class="fab fa-x-twitter"></i></a>
-                <a href="https://instagram.com" target="_blank" class="social-icon" title="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="https://wa.me/905320000000" target="_blank" class="social-icon" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                <a href="mailto:sami@artvinvizyonu.com" class="social-icon" title="E-Posta"><i class="fas fa-envelope"></i></a>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5 class="border-bottom pb-2 mb-3 border-secondary">ARTVİZYON HABER</h5>
+                    <p class="small text-white-50">Gazeteci Sami Özçelik yönetiminde, Artvin'in tarafsız ve ilkeli sesi.</p>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <h5 class="border-bottom pb-2 mb-3 border-secondary">BİZE ULAŞIN</h5>
+                    <p class="small mb-2"><i class="fas fa-envelope me-2 text-warning"></i> <a href="mailto:samiozcelik38@gmail.com" class="text-white-50 text-decoration-none">samiozcelik38@gmail.com</a></p>
+                    <p class="small mb-2"><i class="fas fa-phone me-2 text-warning"></i> <a href="tel:+905458088408" class="text-white-50 text-decoration-none">+90 545 808 84 08</a></p>
+                    <p class="small mb-2"><i class="fab fa-whatsapp me-2 text-success"></i> <a href="https://wa.me/905458088408" target="_blank" class="text-white-50 text-decoration-none">WhatsApp Hattı</a></p>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <h5 class="border-bottom pb-2 mb-3 border-secondary">TAKİP EDİN</h5>
+                    <div class="d-flex gap-2">
+                        <a href="https://www.facebook.com/albersam2001" target="_blank" class="social-icon" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://instagram.com/artvizyonhaber" target="_blank" class="social-icon" title="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="https://youtube.com" target="_blank" class="social-icon" title="YouTube"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    <div class="mt-4">
+                        <a href="https://wa.me/905458088408" target="_blank" class="btn btn-outline-light btn-sm w-100">
+                            <i class="fab fa-whatsapp me-2"></i>Reklam Verin
+                        </a>
+                    </div>
+                </div>
             </div>
-            <small class="text-white-50 d-block">Gazeteci Sami Özçelik © {% now "Y" %} | Tüm Hakları Saklıdır.</small>
+            <div class="border-top border-secondary pt-4 mt-3 text-center small text-white-50">
+                © {% now "Y" %} Gazeteci Sami Özçelik | Tüm Hakları Saklıdır. <br> Yazılım: Artvizyon Dijital Ekibi
+            </div>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>

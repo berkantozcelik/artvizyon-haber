@@ -4,30 +4,19 @@ from django.db.models import Q
 from django.utils import timezone
 from .models import (
     Haber, Kategori, Galeri, HaftaninFotografi, 
-    Ilce, EczaneLinki, KoseYazari, KoseYazisi, Destekci
+    Ilce, EczaneLinki, KoseYazari, KoseYazisi, Destekci, Siir
 )
 from .forms import YorumForm
 
 # --- YARDIMCI FONKSİYON: ROZET SİSTEMİ ---
 def yorumlara_rozet_ekle(yorumlar):
-    """
-    Bu fonksiyon yorumları tarar. Eğer yorumu yapan kişinin e-postası
-    aktif bir destekçi ile eşleşiyorsa, yorum nesnesine 'destekci_tipi' bilgisini ekler.
-    """
-    # 1. Aktif ve süresi dolmamış destekçileri çek
     aktif_destekciler = Destekci.objects.filter(aktif_mi=True, bitis_tarihi__gte=timezone.now())
-    
-    # 2. Hızlı arama için sözlüğe çevir: {'ahmet@mail.com': 'gonul'}
     destekci_dict = {d.email: d.paket for d in aktif_destekciler}
-
-    # 3. Yorumları tek tek kontrol et
     for yorum in yorumlar:
         if yorum.email in destekci_dict:
-            # Eşleşme var! Rozet tipini (gonul, sponsor vs.) yoruma ekle
             yorum.destekci_tipi = destekci_dict[yorum.email]
         else:
             yorum.destekci_tipi = None
-            
     return yorumlar
 
 # --- ANASAYFA ---
@@ -40,14 +29,20 @@ def anasayfa(request):
     mansetler = Haber.objects.filter(aktif_mi=True, manset_mi=True).order_by('-yayin_tarihi')[:10]
     haftanin_fotosu = HaftaninFotografi.objects.filter(aktif_mi=True).last()
     eczaneler = EczaneLinki.objects.all().order_by('sira')
-    yazarlar = KoseYazari.objects.filter(aktif_mi=True)
+    
+    # DÜZELTME BURADA: Başyazar en başta görünsün
+    yazarlar = KoseYazari.objects.filter(aktif_mi=True).order_by('-basyazar_mi', 'id')
+
+    # Günün Şiiri (Rastgele)
+    gunun_siiri = Siir.objects.filter(aktif_mi=True).order_by('?').first()
 
     return render(request, 'anasayfa.html', {
         'haberler': haberler, 
         'mansetler': mansetler,
         'haftanin_fotosu': haftanin_fotosu,
         'eczaneler': eczaneler,
-        'yazarlar': yazarlar
+        'yazarlar': yazarlar,
+        'gunun_siiri': gunun_siiri
     })
 
 # --- KATEGORİ SAYFASI ---
@@ -68,12 +63,10 @@ def ilce_haberleri(request, pk):
     haberler = paginator.get_page(sayfa_no)
     return render(request, 'anasayfa.html', {'haberler': haberler, 'secilen_kategori': secilen_ilce})
 
-# --- HABER DETAY (DÜZELTİLDİ: TEKRARLAMA ENGELLENDİ) ---
+# --- HABER DETAY ---
 def haber_detay(request, pk):
     haber = get_object_or_404(Haber, pk=pk)
     benzer_haberler = Haber.objects.filter(kategori=haber.kategori, aktif_mi=True).exclude(id=haber.id).order_by('-yayin_tarihi')[:3]
-
-    # Yorumları getir ve ROZET KONTROLÜ yap
     ham_yorumlar = haber.yorumlar.filter(aktif=True)
     onayli_yorumlar = yorumlara_rozet_ekle(ham_yorumlar)
 
@@ -83,7 +76,6 @@ def haber_detay(request, pk):
             yeni_yorum = yorum_form.save(commit=False)
             yeni_yorum.haber = haber
             yeni_yorum.save()
-            # KRİTİK EKLEME: Kayıt bitince sayfayı temizleyip yeniden yükle
             return redirect('haber_detay', pk=pk)
     else:
         yorum_form = YorumForm()
@@ -96,11 +88,9 @@ def haber_detay(request, pk):
     }
     return render(request, 'detay.html', context)
 
-# --- KÖŞE YAZISI DETAY (DÜZELTİLDİ: TEKRARLAMA ENGELLENDİ) ---
+# --- KÖŞE YAZISI DETAY ---
 def yazi_detay(request, pk):
     yazi = get_object_or_404(KoseYazisi, pk=pk)
-    
-    # Yorumları getir ve ROZET KONTROLÜ yap
     ham_yorumlar = yazi.yorumlar.filter(aktif=True)
     onayli_yorumlar = yorumlara_rozet_ekle(ham_yorumlar)
 
@@ -110,27 +100,35 @@ def yazi_detay(request, pk):
             yeni_yorum = yorum_form.save(commit=False)
             yeni_yorum.kose_yazisi = yazi 
             yeni_yorum.save()
-            # KRİTİK EKLEME: Kayıt bitince sayfayı temizleyip yeniden yükle
             return redirect('yazi_detay', pk=pk)
     else:
         yorum_form = YorumForm()
 
-    return render(request, 'yazi_detay.html', {
-        'yazi': yazi,
-        'yorumlar': onayli_yorumlar,
-        'yorum_form': yorum_form
-    })
+    return render(request, 'yazi_detay.html', {'yazi': yazi, 'yorumlar': onayli_yorumlar, 'yorum_form': yorum_form})
 
-# --- DESTEKÇİLER SAYFASI ---
+# --- ŞİİR LİSTESİ ---
+def siir_listesi(request):
+    siirler = Siir.objects.filter(aktif_mi=True).order_by('-yayin_tarihi')
+    paginator = Paginator(siirler, 9)
+    sayfa_no = request.GET.get('page')
+    siirler_sayfasi = paginator.get_page(sayfa_no)
+    return render(request, 'siir_listesi.html', {'siirler': siirler_sayfasi})
+
+# --- ŞİİR DETAY ---
+def siir_detay(request, pk):
+    siir = get_object_or_404(Siir, pk=pk)
+    return render(request, 'siir_detay.html', {'siir': siir})
+
+# --- DESTEK ---
 def destek(request):
-    # Sadece 'sponsor' paketini alan, aktif olan ve süresi dolmamış kişileri getir
-    # En yeniden eskiye doğru sırala
-    sponsorlar = Destekci.objects.filter(
-        paket='sponsor', 
-        aktif_mi=True, 
-        bitis_tarihi__gte=timezone.now()
-    ).order_by('-baslangic_tarihi')
+    if request.method == 'POST':
+        isim = request.POST.get('isim')
+        email = request.POST.get('email')
+        paket = request.POST.get('paket')
+        Destekci.objects.create(isim=isim, email=email, paket=paket, aktif_mi=False)
+        return redirect('tesekkur')
 
+    sponsorlar = Destekci.objects.filter(paket='sponsor', aktif_mi=True, bitis_tarihi__gte=timezone.now()).order_by('-baslangic_tarihi')
     return render(request, 'destek.html', {'sponsorlar': sponsorlar})
 
 # --- DİĞER SAYFALAR ---
@@ -144,7 +142,6 @@ def galeri_detay(request, pk):
 
 def kimdir(request): return render(request, 'kimdir.html')
 def iletisim(request): return render(request, 'iletisim.html')
-def destek(request): return render(request, 'destek.html')
 def tesekkur(request): return render(request, 'tesekkur.html')
 
 def arama(request):
