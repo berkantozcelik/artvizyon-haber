@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5 d-flex justify-content-center">
+    <div class="card shadow-lg border-0" style="width: 450px;">
+        <div class="card-header text-white text-center py-3" style="background-color: #2E4A38;">
+            <h4 class="mb-0 fw-bold"><i class="fas fa-user-plus me-2"></i> ARAMIZA KATIL</h4>
+        </div>
+        <div class="card-body p-4">
+            
+            <button class="btn btn-light border w-100 mb-3 d-flex align-items-center justify-content-center gap-2 shadow-sm">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" style="width: 20px;">
+                <span class="fw-bold text-secondary">Google ile Kayıt Ol</span>
+            </button>
+            
+            <div class="text-center text-muted mb-3 small">- VEYA -</div>
+
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="mb-3">
+                    <label class="form-label text-muted fw-bold small text-uppercase">{{ field.label }}</label>
+                    {{ field }} {% if field.help_text %}
+                    <div class="form-text small">{{ field.help_text }}</div>
+                    {% endif %}
+                    {% for error in field.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+                
+                <button type="submit" class="btn w-100 fw-bold py-2 mt-2 text-white" style="background-color: #3E2723;">
+                    KAYIT OL
+                </button>
+            </form>
+            <div class="text-center mt-3">
+                <small>Zaten üye misin? <a href="{% url 'login' %}" class="fw-bold" style="color: #2E4A38;">Giriş Yap</a></small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var inputs = document.querySelectorAll('input');
+    inputs.forEach(function(input) {
+        input.classList.add('form-control');
+    });
+</script>
+{% endblock %}

@@ -3,10 +3,8 @@
 {% block content %}
 
 <style>
-    /* Resimlerin ve videoların taşmasını önleyen sigorta CSS */
     .yazi-icerik { width: 100%; overflow: hidden; }
     .yazi-icerik img { max-width: 100% !important; height: auto !important; display: block !important; margin: 15px auto !important; border-radius: 8px; }
-    .yazi-icerik iframe, .yazi-icerik video, .yazi-icerik embed { max-width: 100% !important; width: 100% !important; aspect-ratio: 16 / 9; height: auto !important; }
 </style>
 
 <div class="container my-5">
@@ -31,27 +29,43 @@
                 <div class="yazi-icerik fs-5 lh-lg text-dark" style="font-family: 'Georgia', serif;">
                     {{ yazi.icerik|safe }}
                 </div>
-
+                
                 {% if yazi.embed_video_url %}
                 <div class="mt-5 mb-4">
-                    <h6 class="fw-bold mb-2 text-muted"><i class="fab fa-youtube text-danger me-2"></i>Yazı Videosu</h6>
-                    <div class="ratio ratio-16x9 shadow-sm rounded overflow-hidden border border-secondary">
-                        <iframe src="{{ yazi.embed_video_url }}" title="Yazı Videosu" allowfullscreen></iframe>
+                    <div class="ratio ratio-16x9 shadow-sm rounded overflow-hidden">
+                        <iframe src="{{ yazi.embed_video_url }}" allowfullscreen></iframe>
                     </div>
                 </div>
                 {% endif %}
-                <div class="mt-5 pt-3 border-top">
-                    <small class="text-muted fw-bold d-block mb-2">BU YAZIYI PAYLAŞ</small>
-                    <a href="https://api.whatsapp.com/send?text={{ request.build_absolute_uri }}" target="_blank" class="btn btn-sm btn-success"><i class="fab fa-whatsapp"></i></a>
-                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="btn btn-sm btn-primary"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://twitter.com/intent/tweet?text={{ yazi.baslik }}&url={{ request.build_absolute_uri }}" target="_blank" class="btn btn-sm btn-dark"><i class="fab fa-x-twitter"></i></a>
-                </div>
             </div>
 
             <div class="mb-5" id="yorumlar">
                 <h4 class="border-bottom pb-2 mb-4 fw-bold" style="color: var(--ahsap-koyu);">
                     Okur Yorumları ({{ yorumlar.count }})
                 </h4>
+
+                {% if user.is_authenticated %}
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-body p-4 bg-light">
+                            <span class="text-muted small mb-2 d-block"><strong>{{ user.first_name }} {{ user.last_name }}</strong> olarak yorum yapıyorsunuz.</span>
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <textarea name="govde" class="form-control" rows="3" placeholder="Yorumunuz..." required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-dark w-100 py-2 fw-bold" style="background-color: #3E2723;">GÖNDER</button>
+                            </form>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning text-center border-0 shadow-sm py-4 mb-4">
+                        <h5 class="fw-bold text-dark">Yorum Yapmak İçin Giriş Yapın</h5>
+                        <div class="mt-3">
+                            <a href="{% url 'login' %}" class="btn btn-outline-dark rounded-pill px-4 me-2">Giriş Yap</a>
+                            <a href="{% url 'register' %}" class="btn btn-success rounded-pill px-4" style="background-color: #3E2723; border: none;">Kayıt Ol</a>
+                        </div>
+                    </div>
+                {% endif %}
 
                 <div class="yorum-listesi mb-5">
                     {% for yorum in yorumlar %}
@@ -60,13 +74,7 @@
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <h6 class="fw-bold text-dark mb-0">
                                     {{ yorum.isim }}
-                                    {% if yorum.destekci_tipi == 'gonul' %}
-                                        <span class="badge bg-success ms-2" style="font-size: 0.7em;" title="Gönül Dostu"><i class="fas fa-heart me-1"></i> Gönül Dostu</span>
-                                    {% elif yorum.destekci_tipi == 'sponsor' %}
-                                        <span class="badge bg-warning text-dark ms-2" style="font-size: 0.7em;" title="Sponsor"><i class="fas fa-crown me-1"></i> SPONSOR</span>
-                                    {% elif yorum.destekci_tipi == 'okur' %}
-                                        <span class="badge bg-primary ms-2" style="font-size: 0.7em;" title="Okur Desteği"><i class="fas fa-thumbs-up me-1"></i> Okur Desteği</span>
-                                    {% endif %}
+                                    {% if yorum.destekci_tipi == 'okur' %}<span class="badge bg-info ms-2">Abone</span>{% endif %}
                                 </h6>
                                 <small class="text-muted">{{ yorum.olusturulma_tarihi|date:"d M Y" }}</small>
                             </div>
@@ -74,44 +82,9 @@
                         </div>
                     </div>
                     {% empty %}
-                        <div class="alert alert-light border text-center py-4">
-                            <i class="far fa-comment-dots fa-2x mb-2 text-muted"></i><br>
-                            Henüz yorum yapılmamış. İlk yorumu sen yap!
-                        </div>
+                        <div class="alert alert-light border text-center py-4">Henüz yorum yapılmamış.</div>
                     {% endfor %}
                 </div>
-
-                <div class="card shadow-sm border-0">
-                    <div class="card-header bg-white fw-bold py-3 border-bottom">
-                        <i class="fas fa-pen me-2"></i>Düşüncelerini Paylaş
-                    </div>
-                    <div class="card-body p-4">
-                        <form method="post">
-                            {% csrf_token %}
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label text-muted small">Adınız Soyadınız</label>
-                                    {{ yorum_form.isim }}
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label text-muted small">E-posta (Yayınlanmaz)</label>
-                                    {{ yorum_form.email }}
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label text-muted small">Yorumunuz</label>
-                                {{ yorum_form.govde }}
-                            </div>
-                            <button type="submit" class="btn btn-dark w-100 py-2 fw-bold">
-                                <i class="fas fa-paper-plane me-2"></i>GÖNDER
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-5 text-center">
-                <a href="{% url 'anasayfa' %}" class="btn btn-outline-secondary btn-sm">← Anasayfaya Dön</a>
             </div>
 
         </div>

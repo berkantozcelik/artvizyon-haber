@@ -57,15 +57,18 @@ class KoseYazari(models.Model):
                     img.save(self.resim.path, quality=70, optimize=True)
             except: pass
 
-# --- 3. HABER (VİDEO EKLENDİ) ---
+# --- 3. HABER (SON DAKİKA EKLENDİ) ---
 class Haber(models.Model):
     baslik = models.CharField(max_length=200, verbose_name="Haber Başlığı")
     ozet = models.TextField(verbose_name="Kısa Özet", blank=True)
     icerik = RichTextUploadingField(verbose_name="Haber İçeriği")
     resim = models.ImageField(upload_to='haber_resimleri/', verbose_name="Haber Resmi", blank=True)
     
-    # YENİ: Video Linki Alanı
+    # YENİ: Video Linki
     video_link = models.URLField(blank=True, null=True, verbose_name="Video Linki (YouTube)", help_text="Örn: https://www.youtube.com/watch?v=VIDEO_ID")
+
+    # YENİ: Son Dakika Kutucuğu
+    son_dakika = models.BooleanField(default=False, verbose_name="Son Dakika Haberi mi?")
 
     kategori = models.ForeignKey(Kategori, on_delete=models.CASCADE, verbose_name="Kategori")
     ilce = models.ForeignKey(Ilce, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="İlçe (Varsa)")
@@ -78,7 +81,6 @@ class Haber(models.Model):
     def __str__(self): return self.baslik
     class Meta: verbose_name_plural = "Haberler"
 
-    # Embed linkini çağırmak için özellik
     @property
     def embed_video_url(self):
         return get_youtube_embed(self.video_link)
@@ -100,10 +102,7 @@ class KoseYazisi(models.Model):
     yazar = models.ForeignKey(KoseYazari, on_delete=models.CASCADE, related_name='yazilar', verbose_name="Yazar")
     baslik = models.CharField(max_length=200, verbose_name="Yazı Başlığı")
     icerik = RichTextUploadingField(verbose_name="Yazı İçeriği")
-    
-    # YENİ: Köşe Yazısı için de Video
     video_link = models.URLField(blank=True, null=True, verbose_name="Video Linki (YouTube)")
-
     yayin_tarihi = models.DateTimeField(default=timezone.now, verbose_name="Yayın Tarihi")
     aktif_mi = models.BooleanField(default=True, verbose_name="Yayında mı?")
 

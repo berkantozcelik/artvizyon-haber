@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5 d-flex justify-content-center">
+    <div class="card shadow-lg border-0" style="width: 400px;">
+        <div class="card-header text-white text-center py-3" style="background-color: #2E4A38;">
+            <h4 class="mb-0 fw-bold"><i class="fas fa-sign-in-alt me-2"></i> GİRİŞ YAP</h4>
+        </div>
+        <div class="card-body p-4">
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label text-muted fw-bold">Kullanıcı Adı</label>
+                    <input type="text" name="username" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-muted fw-bold">Şifre</label>
+                    <input type="password" name="password" class="form-control" required>
+                </div>
+                <button type="submit" class="btn w-100 fw-bold py-2 mt-2 text-white" style="background-color: #3E2723;">GİRİŞ YAP</button>
+            </form>
+            <div class="text-center mt-3">
+                <small>Hesabın yok mu? <a href="{% url 'register' %}" class="fw-bold" style="color: #2E4A38;">Hemen Kayıt Ol</a></small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
