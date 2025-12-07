@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Artvizyon Haber - Gzt. Sami Özçelik{% endblock %}</title>
     
+    {% block meta_tags %}{% endblock %}
+    
     <meta name="description" content="{% block description %}Artvin'den son dakika haberleri, güncel gelişmeler, ilçe haberleri, köşe yazıları ve Artvin gündemi Artvizyon Haber'de.{% endblock %}">
     <meta name="author" content="Sami Özçelik">
     <meta property="og:image" content="{% block og_image %}/static/img/logo-kare.png{% endblock %}">
@@ -35,7 +37,6 @@
         }
         .site-logo { max-height: 160px; width: auto; transition: all 0.4s ease-in-out; }
 
-        /* STICKY HEADER EFEKTİ */
         .navbar-custom.sticky-top {
             position: fixed; top: 0; padding: 0.5rem 0;
             background-color: rgba(62, 39, 35, 0.98); 
@@ -55,7 +56,7 @@
             background-color: var(--artvin-yesil); 
             color: #fff; 
             overflow: hidden; white-space: nowrap; height: 42px; display: flex; align-items: center; 
-            border-bottom: 3px solid #3E2723; /* Kahverengi çizgi */
+            border-bottom: 3px solid #3E2723; 
         }
         .son-dakika-etiket { background-color: #cc0000; color: #fff; padding: 0 20px; height: 100%; display: flex; align-items: center; font-weight: bold; font-size: 0.9rem; z-index: 10; box-shadow: 2px 0 10px rgba(0,0,0,0.5); }
         .kayan-yazi { display: inline-block; padding-left: 100%; animation: kayanYazi 35s linear infinite; }
@@ -85,7 +86,7 @@
         <div class="container position-relative">
             <div class="d-flex justify-content-center w-100">
                 <a class="navbar-brand p-0" href="{% url 'anasayfa' %}">
-                    <img src="/media/site-logo.png" alt="Artvizyon Haber" class="img-fluid site-logo">
+                    <img src="/media/site-logo.webp" alt="Artvizyon Haber" class="img-fluid site-logo">
                 </a>
             </div>
 
@@ -205,12 +206,18 @@
                     <p class="small mb-2"><i class="fas fa-envelope me-2 text-warning"></i> samiozcelik38@gmail.com</p>
                     <p class="small mb-2"><i class="fas fa-phone me-2 text-warning"></i> +90 545 808 84 08</p>
                 </div>
+                
                 <div class="col-md-3 mb-4">
                     <h5 class="border-bottom pb-2 mb-3 border-secondary">TAKİP EDİN</h5>
-                    <div class="d-flex gap-2">
+                    <div class="d-flex gap-2 mb-3">
                         <a href="https://www.facebook.com/albersam2001" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
                         <a href="https://instagram.com/artvizyonhaber" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.youtube.com/@samiozcelikgzt" target="_blank" class="social-icon"><i class="fab fa-youtube"></i></a>
                     </div>
+                    
+                    <a href="https://wa.me/905458088408?text=Merhaba,%20sitenize%20reklam%20vermek%20istiyorum." target="_blank" class="btn btn-success btn-sm w-100 fw-bold shadow-sm">
+                        <i class="fas fa-whatsapp me-2"></i> Reklam Ver
+                    </a>
                 </div>
             </div>
             <div class="border-top border-secondary pt-4 mt-3 text-center small text-white-50">© {% now "Y" %} Gazeteci Sami Özçelik | Tüm Hakları Saklıdır.</div>
@@ -218,6 +225,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
         document.addEventListener("DOMContentLoaded", function(){
             window.addEventListener('scroll', function() {

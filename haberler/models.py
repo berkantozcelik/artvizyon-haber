@@ -1,154 +1,242 @@
 from django.db import models
 from django.utils import timezone
 from ckeditor_uploader.fields import RichTextUploadingField
-from PIL import Image
-import os
-from datetime import timedelta
+from django.core.files.base import ContentFile
+from django.utils.text import slugify # Slug oluşturmak için
+import textwrap
+from django.core.files.base import ContentFile
+from io import BytesIO
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 
-# --- YARDIMCI FONKSİYON: YOUTUBE LINK DÖNÜŞTÜRÜCÜ ---
+# --- YARDIMCI FONKSİYON: YOUTUBE EMBED ÇEVİRİCİ ---
 def get_youtube_embed(url):
-    """
-    Normal YouTube linkini (watch?v=...) alır,
-    Embed linkine (embed/...) çevirir.
-    """
     if not url: return None
-    if "youtube.com/embed/" in url: return url # Zaten embed ise dokunma
-    if "youtu.be/" in url: # Kısa link (youtu.be/ID)
-        video_id = url.split("youtu.be/")[1].split("?")[0]
+    if "embed" in url: return url
+    if "youtu.be" in url:
+        video_id = url.split("/")[-1].split("?")[0]
         return f"https://www.youtube.com/embed/{video_id}"
-    if "v=" in url: # Standart link (watch?v=ID)
-        video_id = url.split("v=")[1].split("&")[0]
+    if "watch?v=" in url:
+        video_id = url.split("watch?v=")[1].split("&")[0]
         return f"https://www.youtube.com/embed/{video_id}"
-    return url # Tanımsız format, olduğu gibi döndür
+    return url
 
-# --- 1. BAĞIMSIZ MODELLER ---
+# ==========================================
+# 📌 TEMEL KATEGORİ VE İLÇE MODELLERİ
+# ==========================================
+
+class Kategori(models.Model):
+    isim = models.CharField(max_length=100, verbose_name="Kategori Adı")
+    # BURASI DÜZELTİLDİ: null=True, blank=True eklendi. Migration hatası vermez.
+    slug = models.SlugField(unique=True, verbose_name="Link Uzantısı", null=True, blank=True)
+    
+    def __str__(self): return self.isim
+    class Meta: verbose_name_plural = "Kategoriler"
+
+    # Otomatik Slug Oluşturma
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.isim)
+        super().save(*args, **kwargs)
+
 class Ilce(models.Model):
     isim = models.CharField(max_length=100, verbose_name="İlçe Adı")
     def __str__(self): return self.isim
     class Meta: verbose_name_plural = "İlçeler"
 
-class Kategori(models.Model):
-    isim = models.CharField(max_length=100, verbose_name="Kategori Adı")
-    def __str__(self): return self.isim
-    class Meta: verbose_name_plural = "Kategoriler"
+# ==========================================
+# ✍️ KÖŞE YAZARLARI VE YAZILARI
+# ==========================================
 
-# --- 2. KÖŞE YAZARI ---
 class KoseYazari(models.Model):
-    ad_soyad = models.CharField(max_length=100, verbose_name="Yazar Adı Soyadı")
-    resim = models.ImageField(upload_to='yazar_resimleri/', verbose_name="Yazar Resmi (Kare)")
-    basyazar_mi = models.BooleanField(default=False, verbose_name="Başyazar mı? (En başa sabitler)")
-    aktif_mi = models.BooleanField(default=True, verbose_name="Sitede Göster")
-
+    ad_soyad = models.CharField(max_length=100, verbose_name="Ad Soyad")
+    resim = models.ImageField(upload_to='yazarlar/', verbose_name="Yazar Resmi")
+    biyografi = models.TextField(blank=True, verbose_name="Kısa Biyografi")
+    aktif_mi = models.BooleanField(default=True, verbose_name="Aktif mi?")
+    basyazar_mi = models.BooleanField(default=False, verbose_name="Başyazar mı?")
     def __str__(self): return self.ad_soyad
+    class Meta: verbose_name_plural = "Köşe Yazarları"
     
+    @property
     def son_yazisi(self):
         return self.yazilar.filter(aktif_mi=True).order_by('-yayin_tarihi').first()
-
-    class Meta: verbose_name = "Köşe Yazarı"; verbose_name_plural = "Köşe Yazarları"
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        if self.resim:
-            try:
-                img = Image.open(self.resim.path)
-                if img.height > 600 or img.width > 600:
-                    output_size = (600, 600)
-                    img.thumbnail(output_size)
-                    img.save(self.resim.path, quality=70, optimize=True)
-            except: pass
-
-# --- 3. HABER (SON DAKİKA EKLENDİ) ---
-class Haber(models.Model):
-    baslik = models.CharField(max_length=200, verbose_name="Haber Başlığı")
-    ozet = models.TextField(verbose_name="Kısa Özet", blank=True)
-    icerik = RichTextUploadingField(verbose_name="Haber İçeriği")
-    resim = models.ImageField(upload_to='haber_resimleri/', verbose_name="Haber Resmi", blank=True)
-    
-    # YENİ: Video Linki
-    video_link = models.URLField(blank=True, null=True, verbose_name="Video Linki (YouTube)", help_text="Örn: https://www.youtube.com/watch?v=VIDEO_ID")
-
-    # YENİ: Son Dakika Kutucuğu
-    son_dakika = models.BooleanField(default=False, verbose_name="Son Dakika Haberi mi?")
-
-    kategori = models.ForeignKey(Kategori, on_delete=models.CASCADE, verbose_name="Kategori")
-    ilce = models.ForeignKey(Ilce, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="İlçe (Varsa)")
-    yazar = models.ForeignKey(KoseYazari, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Haberin Yazarı")
-    
-    yayin_tarihi = models.DateTimeField(default=timezone.now, verbose_name="Yayınlanma Tarihi")
-    aktif_mi = models.BooleanField(default=True, verbose_name="Yayında mı?")
-    manset_mi = models.BooleanField(default=False, verbose_name="Manşette Göster")
-
-    def __str__(self): return self.baslik
-    class Meta: verbose_name_plural = "Haberler"
-
-    @property
-    def embed_video_url(self):
-        return get_youtube_embed(self.video_link)
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        if self.resim:
-            try:
-                img = Image.open(self.resim.path)
-                if img.height > 1000 or img.width > 1000:
-                    output_size = (1000, 1000)
-                    img.thumbnail(output_size)
-                    img.save(self.resim.path, quality=60, optimize=True)
-            except: pass
-
-# --- 4. DİĞER MODELLER ---
 
 class KoseYazisi(models.Model):
     yazar = models.ForeignKey(KoseYazari, on_delete=models.CASCADE, related_name='yazilar', verbose_name="Yazar")
     baslik = models.CharField(max_length=200, verbose_name="Yazı Başlığı")
     icerik = RichTextUploadingField(verbose_name="Yazı İçeriği")
-    video_link = models.URLField(blank=True, null=True, verbose_name="Video Linki (YouTube)")
-    yayin_tarihi = models.DateTimeField(default=timezone.now, verbose_name="Yayın Tarihi")
+    
+    # Manşet Ayarları
+    manset_mi = models.BooleanField(default=False, verbose_name="Manşette Gösterilsin mi?")
+    manset_resmi = models.ImageField(upload_to='manset_yazilari/', verbose_name="Manşet Görseli (Yatay)", blank=True, null=True)
+    
+    yayin_tarihi = models.DateTimeField(default=timezone.now, verbose_name="Yayınlanma Tarihi")
     aktif_mi = models.BooleanField(default=True, verbose_name="Yayında mı?")
+    video_link = models.URLField(blank=True, null=True, verbose_name="Video Linki (YouTube)")
 
     def __str__(self): return f"{self.yazar.ad_soyad} - {self.baslik}"
-    class Meta: verbose_name = "Köşe Yazısı"; verbose_name_plural = "Köşe Yazıları"
+    class Meta: verbose_name_plural = "Köşe Yazıları"; ordering = ['-yayin_tarihi']
+    
+    @property
+    def embed_video_url(self): return get_youtube_embed(self.video_link)
+
+# ==========================================
+# 📰 HABER MODELİ
+# ==========================================
+
+class Haber(models.Model):
+    baslik = models.CharField(max_length=200, verbose_name="Haber Başlığı")
+    ozet = models.TextField(verbose_name="Kısa Özet", blank=True)
+    icerik = RichTextUploadingField(verbose_name="Haber İçeriği")
+    resim = models.ImageField(upload_to='haber_resimleri/', verbose_name="Haber Resmi", blank=True)
+    video_link = models.URLField(blank=True, null=True, verbose_name="Video Linki (YouTube)")
+    
+    son_dakika = models.BooleanField(default=False, verbose_name="Son Dakika Haberi mi?")
+    ulusal_mi = models.BooleanField(default=False, verbose_name="Ulusal Haber mi?")
+    manset_mi = models.BooleanField(default=False, verbose_name="Manşette Göster")
+
+    kategori = models.ForeignKey(Kategori, on_delete=models.CASCADE, verbose_name="Kategori")
+    ilce = models.ForeignKey(Ilce, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="İlçe (Varsa)")
+    yayin_tarihi = models.DateTimeField(default=timezone.now, verbose_name="Yayınlanma Tarihi")
+    aktif_mi = models.BooleanField(default=True, verbose_name="Yayında mı?")
+
+    def __str__(self): return self.baslik
+    class Meta: verbose_name_plural = "Haberler"; ordering = ['-yayin_tarihi']
 
     @property
-    def embed_video_url(self):
-        return get_youtube_embed(self.video_link)
+    def embed_video_url(self): return get_youtube_embed(self.video_link)
+
+# ==========================================
+# 🎄 ÖZEL GÜN VE TEBRİK MESAJLARI
+# ==========================================
+
+class OzelGun(models.Model):
+    baslik = models.CharField(max_length=200, verbose_name="Özel Gün Adı (Örn: 2025 Yılbaşı)")
+    slug = models.SlugField(unique=True, verbose_name="Link Uzantısı (Otomatik)")
+    aciklama = models.TextField(blank=True, verbose_name="Sayfa Üst Yazısı / Artvizyon Mesajı")
+    kapak_resmi = models.ImageField(upload_to='ozel_gunler/', blank=True, verbose_name="Sayfa Kapak Resmi")
+    
+    aktif_mi = models.BooleanField(default=True, verbose_name="Aktif mi?")
+    anasayfada_goster = models.BooleanField(default=False, verbose_name="Anasayfada Slayt Olarak Göster")
+    olusturulma_tarihi = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self): return self.baslik
+    class Meta: verbose_name_plural = "Özel Gün Yönetimi"
+
+class TebrikMesaji(models.Model):
+    ozel_gun = models.ForeignKey(OzelGun, on_delete=models.CASCADE, related_name='mesajlar')
+    ad_soyad = models.CharField(max_length=100, verbose_name="Kişi / Kurum Adı")
+    unvan = models.CharField(max_length=150, blank=True, verbose_name="Ünvanı")
+    mesaj_metni = models.TextField(blank=True, verbose_name="Mesajı")
+    resim = models.ImageField(upload_to='tebrikler/', verbose_name="Kişi Fotoğrafı")
+    
+    # Instagram Görseli
+    instagram_gorseli = models.ImageField(upload_to='instagram_postlari/', blank=True, null=True, verbose_name="Hazır Post")
+    
+    video_link = models.URLField(blank=True, null=True, verbose_name="Video Linki (Varsa)")
+    sira = models.PositiveIntegerField(default=0, verbose_name="Sıralama")
+
+    def __str__(self): return self.ad_soyad
+    class Meta: ordering = ['sira']
+    
+    @property
+    def embed_video_url(self): return get_youtube_embed(self.video_link)
+
+    # --- SİHİRLİ KISIM: GARANTİLİ RESİM OLUŞTURMA ---
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs) # Önce kaydet
+
+        # Resim var ama insta postu yoksa OLUŞTUR
+        if self.resim and not self.instagram_gorseli:
+            self.instagram_gorseli_olustur()
+
+    def instagram_gorseli_olustur(self):
+        try:
+            # 1. Tuval
+            W, H = 1080, 1080
+            img = Image.new('RGB', (W, H), color='#0f2c1f') # Koyu Yeşil Zemin
+            draw = ImageDraw.Draw(img)
+
+            # 2. Çerçeve
+            draw.rectangle([(20, 20), (W-20, H-20)], outline="#D4AF37", width=15)
+            
+            # 3. Font Ayarı (Mac/Windows/Linux Uyumlu - HATA VERMEZ!)
+            try:
+                # Önce standart fontları dene
+                font_baslik = ImageFont.truetype("Arial", 60)
+                font_isim = ImageFont.truetype("Arial", 55)
+                font_unvan = ImageFont.truetype("Arial", 35)
+                font_mesaj = ImageFont.truetype("Arial", 40)
+            except:
+                # Bulamazsa varsayılanı yükle (Hata vermez, çalışır)
+                font_baslik = ImageFont.load_default()
+                font_isim = ImageFont.load_default()
+                font_unvan = ImageFont.load_default()
+                font_mesaj = ImageFont.load_default()
+
+            # Başlıklar
+            draw.text((W/2, 100), "ARTVİZYON HABER", font=font_baslik, fill="#D4AF37", anchor="mm")
+            draw.text((W/2, 170), "YENİ YIL ÖZEL", font=font_unvan, fill="white", anchor="mm")
+
+            # 4. Kişi Resmi
+            if self.resim:
+                kisi_img = Image.open(self.resim.path).convert("RGBA")
+                size = (450, 450)
+                mask = Image.new('L', size, 0)
+                draw_mask = ImageDraw.Draw(mask)
+                draw_mask.ellipse((0, 0) + size, fill=255)
+                kisi_img = ImageOps.fit(kisi_img, size, centering=(0.5, 0.5))
+                kisi_img.putalpha(mask)
+                img.paste(kisi_img, (int((W-450)/2), 250), kisi_img)
+                draw.ellipse((int((W-450)/2), 250, int((W-450)/2)+450, 700), outline="#D4AF37", width=8)
+
+            # 5. Yazılar
+            draw.text((W/2, 760), self.ad_soyad.upper(), font=font_isim, fill="white", anchor="mm")
+            draw.text((W/2, 820), self.unvan, font=font_unvan, fill="#cccccc", anchor="mm")
+
+            # Mesaj
+            mesaj = f'"{self.mesaj_metni}"'
+            lines = textwrap.wrap(mesaj, width=40)
+            y_text = 900
+            for line in lines:
+                draw.text((W/2, y_text), line, font=font_mesaj, fill="#D4AF37", anchor="mm")
+                y_text += 50
+
+            # 6. Kaydet
+            buffer = BytesIO()
+            img.save(buffer, format='JPEG', quality=95)
+            self.instagram_gorseli.save(f'insta_{self.id}.jpg', ContentFile(buffer.getvalue()), save=False)
+            
+            # Tekrar kaydet
+            super().save(update_fields=['instagram_gorseli'])
+            
+        except Exception as e:
+            print(f"HATA: {e}")
+# ==========================================
+# 🎭 DİĞER MODELLER (GALERİ, ŞİİR, ECZANE VS.)
+# ==========================================
 
 class Galeri(models.Model):
     baslik = models.CharField(max_length=200, verbose_name="Galeri Başlığı")
     kapak_resmi = models.ImageField(upload_to='galeri_kapak/', verbose_name="Kapak Resmi")
-    yayin_tarihi = models.DateTimeField(default=timezone.now, verbose_name="Yayın Tarihi")
+    yayin_tarihi = models.DateTimeField(default=timezone.now)
     def __str__(self): return self.baslik
-    class Meta: verbose_name_plural = "Foto Galerileri"
+    class Meta: verbose_name_plural = "Fotoğraf Galerileri"
 
 class GaleriResim(models.Model):
     galeri = models.ForeignKey(Galeri, on_delete=models.CASCADE, related_name='resimler')
     resim = models.ImageField(upload_to='galeri_resimleri/')
-    alt_yazi = models.CharField(max_length=200, blank=True, verbose_name="Alt Yazı (Opsiyonel)")
-    
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        if self.resim:
-            try:
-                img = Image.open(self.resim.path)
-                if img.height > 1000 or img.width > 1000:
-                    output_size = (1000, 1000)
-                    img.thumbnail(output_size)
-                    img.save(self.resim.path, quality=60, optimize=True)
-            except: pass
+    aciklama = models.CharField(max_length=200, blank=True, verbose_name="Resim Açıklaması (Opsiyonel)")
 
 class HaftaninFotografi(models.Model):
-    baslik = models.CharField(max_length=200, verbose_name="Fotoğraf Adı")
-    fotografci = models.CharField(max_length=100, verbose_name="Fotoğrafçı")
-    resim = models.ImageField(upload_to='haftanin_fotografi/', verbose_name="Fotoğraf Dosyası")
-    aktif_mi = models.BooleanField(default=True, verbose_name="Sitede Göster")
-    class Meta: verbose_name_plural = "Haftanın Fotoğrafları"
-
-class EczaneLinki(models.Model):
-    ilce_adi = models.CharField(max_length=100, verbose_name="İlçe Adı (Örn: Hopa)")
-    url = models.URLField(max_length=500, verbose_name="Eczane Listesi Linki")
-    sira = models.IntegerField(default=0, verbose_name="Sıralama")
-    def __str__(self): return self.ilce_adi
-    class Meta: verbose_name_plural = "Nöbetçi Eczane Linkleri"; ordering = ['sira']
+    resim = models.ImageField(upload_to='haftanin_fotografi/', verbose_name="Fotoğraf")
+    baslik = models.CharField(max_length=200, verbose_name="Başlık / Açıklama")
+    
+    # BURASI DÜZELTİLDİ: default='Artvizyon' eklendi.
+    ceken = models.CharField(max_length=100, verbose_name="Fotoğrafı Çeken", default='Artvizyon')
+    
+    aktif_mi = models.BooleanField(default=True)
+    def __str__(self): return self.baslik
+    class Meta: verbose_name_plural = "Haftanın Fotoğrafı"
 
 class Siir(models.Model):
     baslik = models.CharField(max_length=200, verbose_name="Şiir Başlığı")
@@ -157,43 +245,35 @@ class Siir(models.Model):
     resim = models.ImageField(upload_to='siir_resimleri/', verbose_name="Şiir Görseli", blank=True)
     yayin_tarihi = models.DateTimeField(default=timezone.now, verbose_name="Eklenme Tarihi")
     aktif_mi = models.BooleanField(default=True, verbose_name="Yayında mı?")
+    def __str__(self): return self.baslik
+    class Meta: verbose_name_plural = "Şiir Köşesi"; ordering = ['-yayin_tarihi']
 
-    def __str__(self): return f"{self.baslik} - {self.sair}"
-    class Meta: verbose_name = "Şiir"; verbose_name_plural = "Şiir Köşesi"; ordering = ['-yayin_tarihi']
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        if self.resim:
-            try:
-                img = Image.open(self.resim.path)
-                if img.height > 800 or img.width > 800:
-                    output_size = (800, 800)
-                    img.thumbnail(output_size)
-                    img.save(self.resim.path, quality=60, optimize=True)
-            except: pass
+class EczaneLinki(models.Model):
+    ilce_adi = models.CharField(max_length=50, verbose_name="İlçe Adı (Örn: Hopa)")
+    url = models.URLField(verbose_name="Eczane Listesi Linki")
+    sira = models.PositiveIntegerField(default=0)
+    def __str__(self): return self.ilce_adi
+    class Meta: verbose_name_plural = "Nöbetçi Eczane Linkleri"; ordering = ['sira']
 
 class Yorum(models.Model):
-    haber = models.ForeignKey(Haber, on_delete=models.CASCADE, related_name='yorumlar', verbose_name="Haber", null=True, blank=True)
-    kose_yazisi = models.ForeignKey(KoseYazisi, on_delete=models.CASCADE, related_name='yorumlar', verbose_name="Köşe Yazısı", null=True, blank=True)
-    siir = models.ForeignKey(Siir, on_delete=models.CASCADE, related_name='yorumlar', verbose_name="Şiir", null=True, blank=True)
+    haber = models.ForeignKey(Haber, on_delete=models.CASCADE, related_name='yorumlar', null=True, blank=True)
+    kose_yazisi = models.ForeignKey(KoseYazisi, on_delete=models.CASCADE, related_name='yorumlar', null=True, blank=True)
+    siir = models.ForeignKey(Siir, on_delete=models.CASCADE, related_name='yorumlar', null=True, blank=True)
     isim = models.CharField(max_length=80, verbose_name="Ad Soyad")
     email = models.EmailField(verbose_name="E-posta", blank=True)
     govde = models.TextField(verbose_name="Yorumunuz")
-    olusturulma_tarihi = models.DateTimeField(auto_now_add=True, verbose_name="Tarih")
+    olusturulma_tarihi = models.DateTimeField(auto_now_add=True)
     aktif = models.BooleanField(default=False, verbose_name="Yayınlansın mı?")
-    class Meta: ordering = ['-olusturulma_tarihi']; verbose_name = "Yorum"; verbose_name_plural = "Yorumlar"
     def __str__(self): return f"Yorum: {self.isim}"
+    class Meta: ordering = ['-olusturulma_tarihi']
 
 class Destekci(models.Model):
-    PAKETLER = (('okur', 'Okur Desteği (250 TL)'), ('gonul', 'Gönül Dostu (500 TL)'), ('sponsor', 'Sponsor (1.000 TL)'))
-    isim = models.CharField(max_length=100, verbose_name="Destekçi Adı")
-    email = models.EmailField(verbose_name="E-Posta Adresi")
-    paket = models.CharField(max_length=10, choices=PAKETLER, default='okur', verbose_name="Abonelik Paketi")
-    baslangic_tarihi = models.DateTimeField(default=timezone.now, verbose_name="Abonelik Başlangıcı")
-    bitis_tarihi = models.DateTimeField(verbose_name="Abonelik Bitişi", blank=True, null=True)
-    aktif_mi = models.BooleanField(default=True, verbose_name="Aktif mi?")
-    def save(self, *args, **kwargs):
-        if not self.bitis_tarihi: self.bitis_tarihi = self.baslangic_tarihi + timedelta(days=30)
-        super().save(*args, **kwargs)
-    def __str__(self): return f"{self.isim} - {self.get_paket_display()}"
-    class Meta: verbose_name = "Abone"; verbose_name_plural = "Aboneler"
+    PAKETLER = (('okur', 'Okur Destekçisi'), ('gonul', 'Gönül Dostu'), ('sponsor', 'Ana Sponsor'))
+    isim = models.CharField(max_length=100, verbose_name="Destekçi Adı / Firma")
+    email = models.EmailField(blank=True)
+    paket = models.CharField(max_length=20, choices=PAKETLER, default='okur')
+    baslangic_tarihi = models.DateTimeField(auto_now_add=True)
+    bitis_tarihi = models.DateTimeField(null=True, blank=True, verbose_name="Destek Bitiş Tarihi")
+    aktif_mi = models.BooleanField(default=False)
+    def __str__(self): return self.isim
+    class Meta: verbose_name_plural = "Aboneler ve Destekçiler"

@@ -7,14 +7,16 @@ import os
 import textwrap
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageOps 
 
+# Modellerin hepsini içeri alıyoruz
 from .models import (
     Haber, Kategori, Ilce, KoseYazari, KoseYazisi, 
     Galeri, GaleriResim, HaftaninFotografi, Siir, 
-    EczaneLinki, Yorum, Destekci
+    EczaneLinki, Yorum, Destekci,
+    OzelGun, TebrikMesaji 
 )
 
 # =========================================================
-# 📸 1. INSTAGRAM POST OLUŞTURMA MOTORU (MEVCUT KODUN)
+# 📸 1. HABERLER İÇİN INSTAGRAM POST OLUŞTURUCU (ACTION)
 # =========================================================
 
 def draw_text_left_aligned(draw, text, x_pos, y_pos, font, max_width, fill):
@@ -51,7 +53,7 @@ def generate_instagram_post(modeladmin, request, queryset):
     draw = ImageDraw.Draw(img)
     text_color = (255, 255, 255)
     try:
-        # Font yolları sunucuda farklı olabilir, hata almamak için try-except var
+        # Font yolları (Linux sunucu uyumlu)
         font_baslik = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 75)
         font_ozet = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 40)
         font_handle = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 30)
@@ -62,16 +64,7 @@ def generate_instagram_post(modeladmin, request, queryset):
         
     left_margin = 60
     current_y = 60
-    logo_path = os.path.join(settings.BASE_DIR, 'logo.png') # Logo varsa ekler
-    if os.path.exists(logo_path):
-        try:
-            logo_img = Image.open(logo_path).convert("RGBA")
-            wpercent = (250 / float(logo_img.size[0]))
-            hsize = int((float(logo_img.size[1]) * float(wpercent)))
-            logo_img = logo_img.resize((250, hsize), Image.Resampling.LANCZOS)
-            img.paste(logo_img, (left_margin, current_y), logo_img)
-        except: pass
-        
+    
     text_x = 100
     text_y = 450
     text_width = 880
@@ -87,20 +80,18 @@ def generate_instagram_post(modeladmin, request, queryset):
     return response
 
 # =========================================================
-# 📝 2. MODELLERİN KAYDI
+# 📝 2. MODEL KAYITLARI
 # =========================================================
 
 # --- HABER YÖNETİMİ ---
 @admin.register(Haber)
 class HaberAdmin(admin.ModelAdmin):
-    # Listede görünecek sütunlar (Son Dakika eklendi)
     list_display = ('baslik', 'kategori', 'yayin_tarihi', 'aktif_mi', 'manset_mi', 'son_dakika')
-    # Listeden çıkmadan tik atıp değiştirebileceğin alanlar
     list_editable = ('aktif_mi', 'manset_mi', 'son_dakika') 
     list_filter = ('aktif_mi', 'manset_mi', 'son_dakika', 'kategori')
     search_fields = ('baslik', 'ozet')
     date_hierarchy = 'yayin_tarihi'
-    actions = [generate_instagram_post] # Instagram butonu burada
+    actions = [generate_instagram_post]
 
 # --- GALERİ YÖNETİMİ ---
 class GaleriResimInline(admin.TabularInline):
@@ -124,7 +115,7 @@ class KoseYazisiAdmin(admin.ModelAdmin):
     list_filter = ('yazar', 'aktif_mi')
     search_fields = ('baslik',)
 
-# --- YORUM YÖNETİMİ (GELİŞMİŞ) ---
+# --- YORUM YÖNETİMİ ---
 @admin.register(Yorum)
 class YorumAdmin(admin.ModelAdmin):
     list_display = ('isim', 'govde_kisalt', 'icerik_kaynagi', 'olusturulma_tarihi', 'durum_ikonu')
@@ -149,23 +140,12 @@ class YorumAdmin(admin.ModelAdmin):
         return format_html('<span style="color:green;">✔ Yayında</span>') if obj.aktif else format_html('<span style="color:red;">⏳ Onay Bekliyor</span>')
     durum_ikonu.short_description = "Durum"
 
-# --- ABONE / DESTEKÇİ YÖNETİMİ ---
+# --- DESTEKÇİLER ---
 @admin.register(Destekci)
 class DestekciAdmin(admin.ModelAdmin):
-    list_display = ('isim', 'paket_renkli', 'bitis_tarihi', 'kalan_gun', 'aktif_mi')
+    list_display = ('isim', 'paket', 'bitis_tarihi', 'aktif_mi')
     list_filter = ('paket', 'aktif_mi')
     search_fields = ('isim', 'email')
-    
-    def kalan_gun(self, obj):
-        if not obj.bitis_tarihi: return "-"
-        fark = obj.bitis_tarihi - timezone.now()
-        if fark.days > 0: return f"{fark.days} Gün Kaldı"
-        return format_html('<span style="color:red; font-weight:bold;">SÜRESİ DOLDU</span>')
-    
-    def paket_renkli(self, obj):
-        renkler = {'okur': 'blue', 'gonul': 'green', 'sponsor': 'orange'}
-        renk = renkler.get(obj.paket, 'black')
-        return format_html('<span style="color:{}; font-weight:bold;">{}</span>', renk, obj.get_paket_display())
 
 # --- ŞİİR KÖŞESİ ---
 @admin.register(Siir)
@@ -180,7 +160,35 @@ class EczaneLinkiAdmin(admin.ModelAdmin):
     list_display = ('ilce_adi', 'url', 'sira')
     list_editable = ('url', 'sira')
 
-# --- DİĞER BASİT KAYITLAR ---
+# --- ÖZEL GÜN VE INSTAGRAM İNDİRME BUTONU ---
+class TebrikMesajiInline(admin.TabularInline):
+    model = TebrikMesaji
+    extra = 1
+    # 'instagram_indir' alanını listeye ekliyoruz, yoksa görünmez!
+    fields = ('sira', 'ad_soyad', 'unvan', 'mesaj_metni', 'resim', 'video_link', 'instagram_indir')
+    readonly_fields = ('instagram_indir',) 
+
+    def instagram_indir(self, obj):
+        # Eğer resim oluşturulmuşsa butonu göster
+        if obj.instagram_gorseli:
+            return format_html(
+                '''<a href="{}" target="_blank" 
+                style="background-color:#E1306C; color:white; padding:6px 12px; border-radius:15px; text-decoration:none; font-weight:bold; font-size:12px;">
+                📸 Instagram İndir
+                </a>''',
+                obj.instagram_gorseli.url
+            )
+        return "Görsel, kaydettikten sonra oluşur."
+    instagram_indir.short_description = "Sosyal Medya"
+
+@admin.register(OzelGun)
+class OzelGunAdmin(admin.ModelAdmin):
+    list_display = ('baslik', 'aktif_mi', 'anasayfada_goster')
+    list_editable = ('aktif_mi', 'anasayfada_goster')
+    prepopulated_fields = {'slug': ('baslik',)} 
+    inlines = [TebrikMesajiInline]
+
+# --- BASİT KAYITLAR ---
 admin.site.register(Kategori)
 admin.site.register(Ilce)
 admin.site.register(HaftaninFotografi)

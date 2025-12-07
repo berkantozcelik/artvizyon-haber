@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% block title %}{{ yazi.baslik }} - Artvizyon Haber{% endblock %}
+
 {% block content %}
 
 <style>
@@ -29,7 +31,7 @@
                 <div class="yazi-icerik fs-5 lh-lg text-dark" style="font-family: 'Georgia', serif;">
                     {{ yazi.icerik|safe }}
                 </div>
-                
+
                 {% if yazi.embed_video_url %}
                 <div class="mt-5 mb-4">
                     <div class="ratio ratio-16x9 shadow-sm rounded overflow-hidden">
@@ -37,6 +39,21 @@
                     </div>
                 </div>
                 {% endif %}
+
+                <div class="mt-5 pt-4 border-top d-flex justify-content-center align-items-center gap-2 flex-wrap">
+                    <span class="fw-bold text-muted small me-2">BU YAZIYI PAYLAŞ:</span>
+                    
+                    <a href="https://api.whatsapp.com/send?text={{ yazi.baslik }} {{ request.build_absolute_uri }}" target="_blank" class="btn btn-success btn-sm rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;"><i class="fab fa-whatsapp fs-5"></i></a>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="btn btn-primary btn-sm rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;"><i class="fab fa-facebook-f fs-5"></i></a>
+                    <a href="https://twitter.com/intent/tweet?text={{ yazi.baslik }}&url={{ request.build_absolute_uri }}" target="_blank" class="btn btn-dark btn-sm rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background-color: #000;"><i class="fab fa-x-twitter fs-5"></i></a>
+                    
+                    <button onclick="linkiKopyala()" class="btn btn-secondary btn-sm rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" title="Linki Kopyala">
+                        <i class="fas fa-link fs-5"></i>
+                    </button>
+                </div>
+                <div id="kopyalandiMesaj" class="alert alert-success small py-1 px-3 m-2 text-center fw-bold" style="display: none;">
+                    <i class="fas fa-check-circle"></i> Bağlantı kopyalandı!
+                </div>
             </div>
 
             <div class="mb-5" id="yorumlar">
@@ -85,6 +102,10 @@
                         <div class="alert alert-light border text-center py-4">Henüz yorum yapılmamış.</div>
                     {% endfor %}
                 </div>
+            </div>
+
+            <div class="mt-5 text-center">
+                <a href="{% url 'anasayfa' %}" class="btn btn-outline-secondary btn-sm">← Anasayfaya Dön</a>
             </div>
 
         </div>

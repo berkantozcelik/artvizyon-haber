@@ -48,4 +48,7 @@ urlpatterns = [
     # Editör Resim Yükleme (CKEditor)
     path('ckeditor/', include('ckeditor_uploader.urls')),
 
+    # Özel Gün Detay Sayfası
+    path('ozel-gun/<slug:slug>/', views.ozel_gun_detay, name='ozel_gun_detay'),
+    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

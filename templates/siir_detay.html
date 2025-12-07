@@ -1,31 +1,132 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ siir.baslik }} - {{ siir.sair }} | Artvizyon{% endblock %}
-
-{% block description %}{{ siir.siir_metni|striptags|truncatechars:200 }}{% endblock %}
-
-{% block og_title %}{{ siir.baslik }} - {{ siir.sair }}{% endblock %}
-{% block og_description %}{{ siir.siir_metni|striptags|truncatechars:300 }}{% endblock %}
-{% block og_image %}{% if siir.resim %}{{ request.scheme }}://{{ request.get_host }}{{ siir.resim.url }}{% else %}/static/img/logo-kare.png{% endif %}{% endblock %}
+{% block title %}{{ siir.baslik }} - Artvizyon Haber{% endblock %}
 
 {% block content %}
-<div class="container my-5 text-center">
+<div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <div class="p-5 shadow-lg" style="background-color: #fffaf0; border: 1px solid #eee;">
-                {% if siir.resim %}
-                <img src="{{ siir.resim.url }}" class="rounded mb-4 shadow-sm" style="max-height: 300px; width: auto;">
-                {% endif %}
-                <h1 class="display-5 fw-bold mb-2" style="font-family: 'Playfair Display', serif;">{{ siir.baslik }}</h1>
-                <p class="text-muted fst-italic mb-5">- {{ siir.sair }} -</p>
-                <div class="fs-5 lh-lg text-dark" style="font-family: 'Georgia', serif;">
-                    {{ siir.siir_metni|safe }}
-                </div>
-                <div class="mt-5">
-                    <a href="{% url 'siir_listesi' %}" class="btn btn-outline-secondary rounded-pill">← Şiir Köşesine Dön</a>
+            
+            <div class="card shadow-sm border-0 mb-5">
+                <div class="card-body p-5 text-center" style="background-color: #fffaf0; border: 1px solid #eee;">
+                    
+                    {% if siir.resim %}
+                        <img src="{{ siir.resim.url }}" class="img-fluid rounded shadow-sm mb-4" style="max-height: 400px; object-fit: cover; width: 100%;" alt="{{ siir.baslik }}">
+                    {% else %}
+                        <i class="fas fa-feather-alt text-muted mb-3" style="font-size: 2rem; opacity: 0.3;"></i>
+                    {% endif %}
+
+                    <h2 class="fw-bold mb-2" style="font-family: 'Playfair Display', serif; color: #3E2723;">{{ siir.baslik }}</h2>
+                    <p class="text-muted fst-italic mb-4" style="font-family: 'Georgia', serif;">- {{ siir.sair }} -</p>
+                    <hr class="w-25 mx-auto mb-4 border-secondary">
+                    
+                    <div class="lh-lg fs-5 text-dark" style="font-family: 'Georgia', serif; white-space: pre-wrap;">{{ siir.siir_metni|safe }}</div>
+
+                    <div class="mt-5 pt-4 border-top d-flex justify-content-center align-items-center gap-2 flex-wrap">
+                        <span class="fw-bold text-muted small me-2">BU ŞİİRİ PAYLAŞ:</span>
+                        
+                        <a href="https://api.whatsapp.com/send?text={{ siir.baslik }} - {{ siir.sair }} {{ request.build_absolute_uri }}" target="_blank" class="btn btn-success btn-sm rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" title="WhatsApp">
+                            <i class="fab fa-whatsapp fs-5"></i>
+                        </a>
+
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="btn btn-primary btn-sm rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" title="Facebook">
+                            <i class="fab fa-facebook-f fs-5"></i>
+                        </a>
+
+                        <a href="https://twitter.com/intent/tweet?text={{ siir.baslik }}&url={{ request.build_absolute_uri }}" target="_blank" class="btn btn-dark btn-sm rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background-color: #000; border-color: #000;" title="X (Twitter)">
+                            <i class="fab fa-x-twitter fs-5"></i>
+                        </a>
+
+                        <button onclick="linkiKopyala()" class="btn btn-secondary btn-sm rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" title="Bağlantıyı Kopyala">
+                            <i class="fas fa-link fs-5"></i>
+                        </button>
+                    </div>
+                    
+                    <div id="kopyalandiMesaj" class="text-success small fw-bold mt-2" style="display: none;">
+                        <i class="fas fa-check-circle"></i> Bağlantı panoya kopyalandı!
+                    </div>
+
                 </div>
             </div>
+
+            <div class="mt-5">
+                <h4 class="border-bottom pb-2 mb-4 fw-bold" style="color: #3E2723;">
+                    Okur Yorumları ({{ yorumlar.count }})
+                </h4>
+                
+                {% if user.is_authenticated %}
+                    <div class="card shadow-sm border-0 mb-4 bg-light">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2 fw-bold" style="width: 35px; height: 35px;">
+                                    {{ user.username|first|upper }}
+                                </div>
+                                <span class="text-muted small"><strong>{{ user.first_name }} {{ user.last_name }}</strong> olarak yorum yapıyorsunuz.</span>
+                            </div>
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <textarea name="govde" class="form-control" rows="3" placeholder="Bu şiir hakkında ne düşünüyorsunuz?" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-dark btn-sm px-4 rounded-pill fw-bold" style="background-color: #3E2723; border: none;">GÖNDER</button>
+                            </form>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning text-center border-0 shadow-sm py-4 mb-4">
+                        <h5 class="fw-bold text-dark">Yorum Yapmak İçin Giriş Yapın</h5>
+                        <div class="mt-3">
+                            <a href="{% url 'login' %}" class="btn btn-outline-dark rounded-pill px-4 me-2">Giriş Yap</a>
+                            <a href="{% url 'register' %}" class="btn btn-success rounded-pill px-4" style="background-color: #3E2723; border: none;">Kayıt Ol</a>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="list-group list-group-flush border-top">
+                    {% for yorum in yorumlar %}
+                        <div class="list-group-item bg-transparent border-bottom py-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h6 class="fw-bold mb-0 text-dark">
+                                    {{ yorum.isim }}
+                                    {% if yorum.destekci_tipi == 'okur' %}<span class="badge bg-info ms-2" style="font-size: 0.6em;">ABONE</span>{% endif %}
+                                    {% if yorum.destekci_tipi == 'gonul' %}<span class="badge bg-success ms-2" style="font-size: 0.6em;">GÖNÜL DOSTU</span>{% endif %}
+                                    {% if yorum.destekci_tipi == 'sponsor' %}<span class="badge bg-warning text-dark ms-2" style="font-size: 0.6em;">SPONSOR</span>{% endif %}
+                                </h6>
+                                <small class="text-muted" style="font-size: 0.8em;">{{ yorum.olusturulma_tarihi|timesince }} önce</small>
+                            </div>
+                            <p class="mb-0 text-secondary small">{{ yorum.govde }}</p>
+                        </div>
+                    {% empty %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="far fa-comment-dots fa-2x mb-2"></i><br>
+                            Henüz yorum yapılmamış. İlk yorumu sen yap!
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="text-center mt-5">
+                <a href="{% url 'siir_listesi' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-4">
+                    <i class="fas fa-arrow-left me-2"></i> Şiir Köşesine Dön
+                </a>
+            </div>
+
         </div>
     </div>
 </div>
+
+<script>
+    function linkiKopyala() {
+        var url = window.location.href;
+        navigator.clipboard.writeText(url).then(function() {
+            var mesaj = document.getElementById("kopyalandiMesaj");
+            mesaj.style.display = "block";
+            setTimeout(function() { 
+                mesaj.style.display = "none"; 
+            }, 3000); // 3 saniye sonra kaybolur
+        }, function(err) {
+            alert('Kopyalama başarısız oldu!');
+        });
+    }
+</script>
 {% endblock %}
