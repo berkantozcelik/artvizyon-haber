@@ -1,27 +1,167 @@
 {% extends 'base.html' %}
+
+{% block title %}Şiir Köşesi - Artvizyon Haber{% endblock %}
+
 {% block content %}
-<div class="container my-5">
-    <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold" style="font-family: 'Playfair Display', serif; color: var(--ahsap-koyu);">Şiir Köşesi</h1>
-        <p class="lead text-muted fst-italic">"Sözün bittiği yerde şiir başlar..."</p>
+
+<div class="container mt-3 mb-4">
+    <div class="d-flex justify-content-center align-items-center bg-light border border-secondary" style="height: 100px; border-style: dashed;">
+        <div class="text-center text-muted">
+            <small>SPONSORLU BAĞLANTI</small><br><strong>TEPE REKLAM ALANI (970x90)</strong>
+        </div>
     </div>
+</div>
+
+<div class="container my-4">
     <div class="row">
-        {% for siir in siirler %}
-        <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card h-100 border-0 shadow-sm text-center p-3" style="background-color: #fffaf0;">
-                <div class="card-body">
-                    {% if siir.resim %}
-                    <img src="{{ siir.resim.url }}" class="rounded-circle mb-3 shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
-                    {% else %}
-                    <i class="fas fa-feather-alt fa-3x text-muted mb-3"></i>
+        
+        <div class="col-lg-8">
+            
+            <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-2">
+                <h2 class="fw-bold m-0" style="color: #2E4A38; font-family: 'Playfair Display', serif;">
+                    <i class="fas fa-feather-alt me-2"></i> Şiir Köşesi
+                </h2>
+                <span class="text-muted fst-italic small d-none d-md-block">"Sözün bittiği yerde şiir başlar..."</span>
+            </div>
+
+            {% if gunun_siiri %}
+            <div class="card shadow-sm mb-5 border-0 overflow-hidden">
+                <div class="card-header text-white fw-bold d-flex align-items-center" style="background-color: #2E4A38;">
+                    <i class="fas fa-star text-warning me-2"></i> GÜNÜN ŞİİRİ
+                </div>
+                <div class="card-body p-0">
+                    <div class="row g-0">
+                        <div class="col-md-4 bg-light border-end d-flex flex-column align-items-center justify-content-center p-4">
+                            <div class="mb-3 position-relative">
+                                {% if gunun_siiri.resim %}
+                                    <img src="{{ gunun_siiri.resim.url }}" class="shadow border border-3 border-white" alt="{{ gunun_siiri.sair }}"
+                                         style="width: 140px !important; height: 140px !important; object-fit: cover !important; border-radius: 50% !important; aspect-ratio: 1/1 !important; display: block;">
+                                {% else %}
+                                    <div class="bg-white shadow d-flex align-items-center justify-content-center" style="width: 140px; height: 140px; border-radius: 50%;">
+                                        <i class="fas fa-image fa-3x text-secondary"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="d-flex align-items-center justify-content-center gap-2 mt-2 w-100 px-2">
+                                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 24px; height: 24px;">
+                                    <i class="fas fa-pen-nib" style="font-size: 12px;"></i>
+                                </div>
+                                <h6 class="fw-bold m-0 text-dark text-nowrap" style="font-size: 1rem;">{{ gunun_siiri.sair }}</h6>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-8 p-4 d-flex flex-column justify-content-center">
+                            <h3 class="card-title fw-bold mb-3" style="font-family: 'Playfair Display', serif; color: #000;">
+                                <a href="{% url 'siir_detay' gunun_siiri.pk %}" class="text-dark text-decoration-none hover-link">{{ gunun_siiri.baslik }}</a>
+                            </h3>
+                            <div class="text-muted fst-italic mb-4 pe-3 siir-ozet-kutu" style="font-family: 'Georgia', serif; line-height: 1.4; max-height: 160px; overflow: hidden;">
+                                {{ gunun_siiri.siir_metni|safe|truncatewords_html:20 }}
+                            </div>
+                            <a href="{% url 'siir_detay' gunun_siiri.pk %}" class="btn btn-outline-dark btn-sm rounded-pill px-4 fw-bold align-self-start">
+                                Tamamını Oku <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <h5 class="fw-bold text-secondary mb-3 border-start border-4 border-warning ps-2">ŞİİR ARŞİVİ</h5>
+            
+            <div class="row row-cols-1 row-cols-md-2 g-4 mb-5">
+                {% for siir in siirler %}
+                <div class="col">
+                    <div class="card h-100 border-0 shadow-sm hover-shadow transition-card text-center">
+                        <div class="card-body p-4 d-flex flex-column align-items-center">
+                            
+                            <div class="mb-3">
+                                {% if siir.resim %}
+                                    <img src="{{ siir.resim.url }}" class="border shadow-sm" 
+                                         style="width: 90px !important; height: 90px !important; object-fit: cover !important; border-radius: 50% !important; aspect-ratio: 1/1;">
+                                {% else %}
+                                    <div class="bg-light d-flex align-items-center justify-content-center border rounded-circle" style="width: 90px; height: 90px;">
+                                        <i class="fas fa-feather text-muted fs-4"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <h5 class="fw-bold mb-2 w-100 text-truncate px-2">
+                                <a href="{% url 'siir_detay' siir.pk %}" class="text-dark text-decoration-none stretched-link">{{ siir.baslik }}</a>
+                            </h5>
+                            
+                            <div class="d-flex align-items-center justify-content-center gap-2 mb-3">
+                                <div class="rounded-circle bg-light border text-secondary d-flex align-items-center justify-content-center" style="width: 20px; height: 20px;">
+                                    <i class="fas fa-pen-fancy" style="font-size: 10px;"></i>
+                                </div>
+                                <small class="text-muted fw-bold">{{ siir.sair }}</small>
+                            </div>
+                            
+                            <div class="text-secondary small fst-italic px-2 mb-3 w-100 siir-ozet-kutu" 
+                                 style="font-family: 'Georgia', serif; line-height: 1.4; height: 5.5em; overflow: hidden;">
+                                {{ siir.siir_metni|safe|truncatewords_html:12 }}
+                            </div>
+
+                            <span class="badge bg-light text-secondary border rounded-pill small mt-auto">
+                                <i class="far fa-calendar-alt me-1"></i> {{ siir.yayin_tarihi|date:"d M Y" }}
+                            </span>
+
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if siirler.has_other_pages %}
+            <nav aria-label="Sayfalama">
+                <ul class="pagination justify-content-center">
+                    {% if siirler.has_previous %}
+                        <li class="page-item"><a class="page-link text-dark" href="?page={{ siirler.previous_page_number }}">&laquo;</a></li>
                     {% endif %}
-                    <h4 class="card-title fw-bold">{{ siir.baslik }}</h4>
-                    <p class="text-muted small">{{ siir.sair }}</p>
-                    <a href="{% url 'siir_detay' siir.pk %}" class="btn btn-outline-dark btn-sm rounded-pill mt-2">Okumaya Başla</a>
+                    {% for num in siirler.paginator.page_range %}
+                        {% if siirler.number == num %}
+                            <li class="page-item active"><span class="page-link bg-dark border-dark">{{ num }}</span></li>
+                        {% elif num > siirler.number|add:'-3' and num < siirler.number|add:'3' %}
+                            <li class="page-item"><a class="page-link text-dark" href="?page={{ num }}">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if siirler.has_next %}
+                        <li class="page-item"><a class="page-link text-dark" href="?page={{ siirler.next_page_number }}">&raquo;</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-4 ps-lg-4">
+            <div class="mb-4 text-center">
+                <div class="bg-light d-flex align-items-center justify-content-center border border-secondary mx-auto" style="width: 300px; height: 250px; border-style: dashed;">
+                    <span class="text-muted">KARE REKLAM (300x250)</span>
+                </div>
+            </div>
+            <div class="card border-0 shadow-sm mb-4 bg-light">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-envelope-open-text fa-2x text-warning mb-3"></i>
+                    <h6 class="fw-bold text-dark">Şiir Göndermek İster misiniz?</h6>
+                    <p class="small text-muted mb-3">Kendi şiirlerinizi bizimle paylaşın.</p>
+                    <a href="{% url 'iletisim' %}" class="btn btn-outline-dark btn-sm rounded-pill w-100">Bize Ulaşın</a>
+                </div>
+            </div>
+            <div class="mb-4 text-center sticky-top" style="top: 20px;">
+                <div class="bg-light d-flex align-items-center justify-content-center border border-secondary mx-auto" style="width: 300px; height: 600px; border-style: dashed;">
+                    <span class="text-muted">DİKEY REKLAM (300x600)</span>
                 </div>
             </div>
         </div>
-        {% endfor %}
     </div>
 </div>
+
+<style>
+    .hover-shadow:hover { transform: translateY(-3px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; }
+    .transition-card { transition: all 0.3s ease; }
+    .hover-link:hover { color: #cc0000 !important; text-decoration: underline !important; }
+    /* Şiirlerin kart içinde çok dağılmasını engellemek için */
+    .siir-ozet-kutu p { margin-bottom: 0 !important; }
+    .siir-ozet-kutu br { display: block; content: ""; margin-top: 5px; }
+</style>
+
 {% endblock %}

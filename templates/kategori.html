@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if secilen_kategori.isim %}{{ secilen_kategori.isim }}{% else %}{{ secilen_kategori }}{% endif %} Haberleri - Artvizyon
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+    
+    <div class="d-flex align-items-center mb-4 pb-2 border-bottom border-2 border-dark">
+        <h2 class="m-0 fw-bold text-uppercase" style="color: #2E4A38; font-family: 'Playfair Display', serif;">
+            {% if secilen_kategori.isim %}{{ secilen_kategori.isim }}{% else %}{{ secilen_kategori }}{% endif %}
+        </h2>
+        <span class="ms-3 badge bg-danger rounded-pill">Güncel Haberler</span>
+    </div>
+
+    <div class="row">
+        
+        <div class="col-lg-8">
+            
+            <div class="row">
+                {% for haber in haberler %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 border-0 shadow-sm haber-card">
+                        
+                        <div class="haber-card-wrapper position-relative">
+                            <a href="{% url 'haber_detay' haber.pk %}">
+                                {% if haber.resim %}
+                                <img src="{{ haber.resim.url }}" class="card-img-top" 
+                                     style="height: 220px; width: 100%; object-fit: cover;" 
+                                     alt="{{ haber.baslik }}">
+                                {% else %}
+                                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 220px;">
+                                    <i class="fas fa-newspaper fa-3x text-secondary"></i>
+                                </div>
+                                {% endif %}
+                            </a>
+                            {% if haber.video_link %}
+                            <span class="position-absolute top-0 end-0 bg-dark text-white px-2 py-1 small m-2 rounded-circle">
+                                <i class="fas fa-play"></i>
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="card-body">
+                            <div class="mb-2 small text-muted">
+                                <i class="far fa-clock me-1"></i> {{ haber.yayin_tarihi|timesince }} önce
+                                {% if haber.ilce %}
+                                <span class="ms-2 text-primary"><i class="fas fa-map-marker-alt me-1"></i>{{ haber.ilce.isim }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <h5 class="card-title fw-bold" style="font-size: 1.1rem; line-height: 1.3;">
+                                <a href="{% url 'haber_detay' haber.pk %}" class="text-dark text-decoration-none hover-underline">
+                                    {{ haber.baslik }}
+                                </a>
+                            </h5>
+                            
+                            <p class="card-text text-secondary small mt-2">
+                                {{ haber.ozet|truncatechars:90 }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-light text-center border py-5">
+                        <i class="fas fa-search fa-2x text-muted mb-3"></i><br>
+                        Bu kategoride henüz haber bulunmuyor.
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if haberler.has_other_pages %}
+            <div class="row mt-4">
+                <div class="col-12 d-flex justify-content-center">
+                    <nav>
+                        <ul class="pagination">
+                            {% if haberler.has_previous %}
+                            <li class="page-item"><a class="page-link text-dark" href="?page={{ haberler.previous_page_number }}">&laquo; Önceki</a></li>
+                            {% endif %}
+                            <li class="page-item disabled"><span class="page-link bg-dark text-white border-dark">{{ haberler.number }}</span></li>
+                            {% if haberler.has_next %}
+                            <li class="page-item"><a class="page-link text-dark" href="?page={{ haberler.next_page_number }}">Sonraki &raquo;</a></li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+
+        <div class="col-lg-4 ps-lg-4">
+            
+            <div class="card mb-4 border-0 shadow-sm">
+                <div class="card-header text-white fw-bold text-center" style="background-color: #3E2723;">
+                    <i class="fas fa-clinic-medical me-2"></i> NÖBETÇİ ECZANELER
+                </div>
+                <div class="card-body p-0">
+                    <iframe src="https://www.eczaneler.gen.tr/iframe.php?lokasyon=8" style="width:100%; height:300px; border:none;"></iframe>
+                </div>
+            </div>
+
+            <div class="card mb-4 border-0 shadow-sm">
+                <div class="card-header text-white fw-bold text-center" style="background-color: #3E2723;">
+                    <i class="fas fa-cloud-sun-rain me-2"></i> HAVA DURUMU
+                </div>
+                <div class="card-body p-2 bg-light">
+                    <div id="havaDurumuKategori" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3500">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <h6 class="text-center fw-bold mt-2 mb-2" style="color: #3E2723;">ARTVİN MERKEZ</h6>
+                                <div class="d-flex justify-content-center"><iframe src="https://api.wo-cloud.com/content/widget/?geoObjectKey=16563146&language=tr&region=TR&timeFormat=HH:mm&windUnit=kmh&systemOfMeasurement=metric&temperatureUnit=celsius" name="CW2" scrolling="no" width="290" height="318" frameborder="0" style="border: 1px solid #3E2723; border-radius: 8px"></iframe></div>
+                            </div>
+                            <div class="carousel-item">
+                                <h6 class="text-center fw-bold mt-2 mb-2" style="color: #3E2723;">HOPA</h6>
+                                <div class="d-flex justify-content-center"><iframe src="https://api.wo-cloud.com/content/widget/?geoObjectKey=11987537&language=tr&region=TR&timeFormat=HH:mm&windUnit=kmh&systemOfMeasurement=metric&temperatureUnit=celsius" name="CW2" scrolling="no" width="290" height="318" frameborder="0" style="border: 1px solid #3E2723; border-radius: 8px"></iframe></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mb-4 sticky-top" style="top: 20px;">
+                 <div style="background-color: #eee; height: 600px; display: flex; align-items: center; justify-content: center; border: 1px dashed #999;">
+                    <div><h5 class="text-muted">DİKEY REKLAM</h5><small>300x600</small></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .haber-card:hover { transform: translateY(-5px); transition: transform 0.3s; }
+    .hover-underline:hover { text-decoration: underline !important; color: #cc0000 !important; }
+</style>
+
+{% endblock %}

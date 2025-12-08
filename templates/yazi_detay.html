@@ -1,114 +1,147 @@
 {% extends 'base.html' %}
 
+{% block meta_tags %}
+    <meta property="og:title" content="{{ yazi.baslik }} - {{ yazi.yazar.ad_soyad }}" />
+    <meta property="og:description" content="{{ yazi.icerik|striptags|truncatechars:150 }}" />
+    {% if yazi.yazar.resim %}
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ yazi.yazar.resim.url }}" />
+    {% endif %}
+{% endblock %}
+
 {% block title %}{{ yazi.baslik }} - Artvizyon Haber{% endblock %}
 
 {% block content %}
 
 <style>
-    .yazi-icerik { width: 100%; overflow: hidden; }
-    .yazi-icerik img { max-width: 100% !important; height: auto !important; display: block !important; margin: 15px auto !important; border-radius: 8px; }
+    .yazi-icerik { font-family: 'Georgia', serif; font-size: 1.15rem; line-height: 1.7; color: #222; }
+    .yazi-icerik p { margin-bottom: 1.5rem; }
+    /* ARTVİN YEŞİLİ DÜZENLEMESİ: Çizgi rengi değişti */
+    .yazar-karti { background: linear-gradient(to right, #f8f9fa, #fff); border-left: 5px solid #2E4A38; }
 </style>
 
-<div class="container my-5">
-    <div class="row justify-content-center">
+<div class="container mt-3 mb-4">
+    <div class="d-flex justify-content-center align-items-center bg-light border border-secondary" style="height: 100px; border-style: dashed;">
+        <div class="text-center text-muted">
+            <small>SPONSORLU BAĞLANTI</small><br><strong>TEPE REKLAM ALANI (970x90)</strong>
+        </div>
+    </div>
+</div>
+
+<div class="container my-4">
+    <div class="row">
+        
         <div class="col-lg-8">
             
-            <div class="d-flex align-items-center mb-4 p-4 bg-light rounded border border-warning shadow-sm">
+            <div class="yazar-karti p-4 mb-4 rounded shadow-sm d-flex align-items-center gap-3">
                 {% if yazi.yazar.resim %}
-                <img src="{{ yazi.yazar.resim.url }}" class="rounded-circle me-4 shadow" 
-                     style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #D4AF37;">
+                <img src="{{ yazi.yazar.resim.url }}" class="rounded-circle shadow border border-3 border-white" 
+                     style="width: 90px; height: 90px; object-fit: cover;">
                 {% endif %}
                 <div>
-                    <h5 class="fw-bold mb-1" style="color: var(--ahsap-koyu);">{{ yazi.yazar.ad_soyad }}</h5>
-                    <span class="badge bg-warning text-dark">Köşe Yazarı</span>
+                    <h5 class="fw-bold mb-1 text-uppercase" style="color: #2E4A38;">{{ yazi.yazar.ad_soyad }}</h5>
+                    <span class="badge bg-secondary">Köşe Yazarı</span>
+                    <div class="text-muted small mt-1"><i class="far fa-clock me-1"></i> {{ yazi.yayin_tarihi|date:"d F Y" }}</div>
                 </div>
             </div>
 
-            <div class="bg-white p-5 shadow-sm border-top border-5 border-dark mb-5">
-                <h1 class="mb-4 fw-bold display-6" style="font-family: 'Playfair Display', serif;">{{ yazi.baslik }}</h1>
-                <p class="text-muted small mb-4"><i class="far fa-clock me-1"></i> {{ yazi.yayin_tarihi|date:"d F Y" }}</p>
+            <div class="bg-white p-lg-4 mb-5">
+                <h1 class="mb-4 fw-bold display-6" style="font-family: 'Playfair Display', serif; color: #000;">{{ yazi.baslik }}</h1>
                 
-                <div class="yazi-icerik fs-5 lh-lg text-dark" style="font-family: 'Georgia', serif;">
+                <article class="yazi-icerik">
                     {{ yazi.icerik|safe }}
+                </article>
+
+                <div class="my-5 bg-light border border-secondary p-3 text-center" style="border-style: dashed;">
+                    <small class="text-muted d-block mb-1">REKLAM</small>
+                    <strong>YAZI ALTI REKLAM ALANI</strong>
                 </div>
 
-                {% if yazi.embed_video_url %}
-                <div class="mt-5 mb-4">
-                    <div class="ratio ratio-16x9 shadow-sm rounded overflow-hidden">
-                        <iframe src="{{ yazi.embed_video_url }}" allowfullscreen></iframe>
+                <div class="card bg-light border-0">
+                    <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <span class="fw-bold text-muted small">BU YAZIYI PAYLAŞ:</span>
+                        <div class="d-flex gap-2">
+                            <a href="https://api.whatsapp.com/send?text={{ yazi.baslik }} {{ request.build_absolute_uri }}" target="_blank" class="btn btn-success btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; padding:0;"><i class="fab fa-whatsapp fs-5"></i></a>
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="btn btn-primary btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; padding:0;"><i class="fab fa-facebook-f fs-5"></i></a>
+                            <a href="https://twitter.com/intent/tweet?text={{ yazi.baslik }}&url={{ request.build_absolute_uri }}" target="_blank" class="btn btn-dark btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; padding:0; background-color: #000;"><i class="fab fa-x-twitter fs-5"></i></a>
+                            <button onclick="linkiKopyala()" class="btn btn-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; padding:0;"><i class="fas fa-link fs-5"></i></button>
+                        </div>
                     </div>
                 </div>
-                {% endif %}
-
-                <div class="mt-5 pt-4 border-top d-flex justify-content-center align-items-center gap-2 flex-wrap">
-                    <span class="fw-bold text-muted small me-2">BU YAZIYI PAYLAŞ:</span>
-                    
-                    <a href="https://api.whatsapp.com/send?text={{ yazi.baslik }} {{ request.build_absolute_uri }}" target="_blank" class="btn btn-success btn-sm rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;"><i class="fab fa-whatsapp fs-5"></i></a>
-                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="btn btn-primary btn-sm rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;"><i class="fab fa-facebook-f fs-5"></i></a>
-                    <a href="https://twitter.com/intent/tweet?text={{ yazi.baslik }}&url={{ request.build_absolute_uri }}" target="_blank" class="btn btn-dark btn-sm rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background-color: #000;"><i class="fab fa-x-twitter fs-5"></i></a>
-                    
-                    <button onclick="linkiKopyala()" class="btn btn-secondary btn-sm rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" title="Linki Kopyala">
-                        <i class="fas fa-link fs-5"></i>
-                    </button>
-                </div>
-                <div id="kopyalandiMesaj" class="alert alert-success small py-1 px-3 m-2 text-center fw-bold" style="display: none;">
-                    <i class="fas fa-check-circle"></i> Bağlantı kopyalandı!
-                </div>
+                <div id="kopyalandiMesaj" class="alert alert-success small py-1 px-3 m-2 text-center fw-bold" style="display: none;">Bağlantı kopyalandı!</div>
             </div>
 
-            <div class="mb-5" id="yorumlar">
-                <h4 class="border-bottom pb-2 mb-4 fw-bold" style="color: var(--ahsap-koyu);">
-                    Okur Yorumları ({{ yorumlar.count }})
-                </h4>
-
+            <div class="mb-5">
+                <h4 class="border-bottom pb-2 mb-4 fw-bold text-dark">Okur Yorumları ({{ yorumlar.count }})</h4>
                 {% if user.is_authenticated %}
-                    <div class="card shadow-sm border-0 mb-4">
-                        <div class="card-body p-4 bg-light">
-                            <span class="text-muted small mb-2 d-block"><strong>{{ user.first_name }} {{ user.last_name }}</strong> olarak yorum yapıyorsunuz.</span>
-                            <form method="post">
-                                {% csrf_token %}
-                                <div class="mb-3">
-                                    <textarea name="govde" class="form-control" rows="3" placeholder="Yorumunuz..." required></textarea>
-                                </div>
-                                <button type="submit" class="btn btn-dark w-100 py-2 fw-bold" style="background-color: #3E2723;">GÖNDER</button>
-                            </form>
+                <form method="post" class="mb-4">
+                    {% csrf_token %}
+                    <div class="card shadow-sm border-0 bg-light">
+                        <div class="card-body">
+                            <textarea name="govde" class="form-control mb-3" rows="3" placeholder="Yorumunuzu yazın..." required></textarea>
+                            <button type="submit" class="btn btn-dark btn-sm px-4 fw-bold" style="background-color: #2E4A38; border: none;">GÖNDER</button>
                         </div>
                     </div>
+                </form>
                 {% else %}
-                    <div class="alert alert-warning text-center border-0 shadow-sm py-4 mb-4">
-                        <h5 class="fw-bold text-dark">Yorum Yapmak İçin Giriş Yapın</h5>
-                        <div class="mt-3">
-                            <a href="{% url 'login' %}" class="btn btn-outline-dark rounded-pill px-4 me-2">Giriş Yap</a>
-                            <a href="{% url 'register' %}" class="btn btn-success rounded-pill px-4" style="background-color: #3E2723; border: none;">Kayıt Ol</a>
-                        </div>
-                    </div>
+                <div class="alert alert-warning text-center border-0 shadow-sm py-3 mb-4">Yorum yapmak için <a href="{% url 'login' %}" class="fw-bold text-dark">giriş yapmalısınız.</a></div>
                 {% endif %}
 
-                <div class="yorum-listesi mb-5">
+                <div class="list-group list-group-flush">
                     {% for yorum in yorumlar %}
-                    <div class="card mb-3 bg-light border-0">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h6 class="fw-bold text-dark mb-0">
-                                    {{ yorum.isim }}
-                                    {% if yorum.destekci_tipi == 'okur' %}<span class="badge bg-info ms-2">Abone</span>{% endif %}
-                                </h6>
-                                <small class="text-muted">{{ yorum.olusturulma_tarihi|date:"d M Y" }}</small>
-                            </div>
-                            <p class="mb-0 text-secondary">{{ yorum.govde }}</p>
+                    <div class="list-group-item bg-transparent border-bottom py-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <h6 class="fw-bold mb-0">{{ yorum.isim }}</h6>
+                            <small class="text-muted">{{ yorum.olusturulma_tarihi|date:"d M Y" }}</small>
                         </div>
+                        <p class="mb-0 text-secondary small">{{ yorum.govde }}</p>
                     </div>
                     {% empty %}
-                        <div class="alert alert-light border text-center py-4">Henüz yorum yapılmamış.</div>
+                    <div class="alert alert-light border text-center py-3 text-muted fst-italic">Henüz yorum yapılmamış.</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 ps-lg-4">
+            
+            <div class="mb-4 text-center">
+                <div class="bg-light d-flex align-items-center justify-content-center border border-secondary mx-auto" style="width: 300px; height: 250px; border-style: dashed;">
+                    <span class="text-muted">KARE REKLAM (300x250)</span>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white fw-bold py-3 text-dark border-bottom">
+                    <i class="fas fa-bolt text-warning me-2"></i> SON DAKİKA
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for haber in son_dakika|slice:":5" %}
+                    <a href="{% url 'haber_detay' haber.pk %}" class="list-group-item list-group-item-action py-3">
+                        <span class="fw-bold text-dark small d-block mb-1">{{ haber.baslik|truncatechars:60 }}</span>
+                        <small class="text-muted" style="font-size: 11px;">{{ haber.yayin_tarihi|timesince }} önce</small>
+                    </a>
                     {% endfor %}
                 </div>
             </div>
 
-            <div class="mt-5 text-center">
-                <a href="{% url 'anasayfa' %}" class="btn btn-outline-secondary btn-sm">← Anasayfaya Dön</a>
+            <div class="mb-4 text-center sticky-top" style="top: 20px;">
+                <div class="bg-light d-flex align-items-center justify-content-center border border-secondary mx-auto" style="width: 300px; height: 600px; border-style: dashed;">
+                    <span class="text-muted">DİKEY REKLAM (300x600)</span>
+                </div>
             </div>
 
         </div>
     </div>
 </div>
+
+<script>
+    function linkiKopyala() {
+        var url = "{{ request.build_absolute_uri }}";
+        navigator.clipboard.writeText(url).then(function() {
+            var mesaj = document.getElementById("kopyalandiMesaj");
+            mesaj.style.display = "block";
+            setTimeout(function() { mesaj.style.display = "none"; }, 3000);
+        });
+    }
+</script>
 {% endblock %}

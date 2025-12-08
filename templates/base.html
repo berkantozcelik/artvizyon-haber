@@ -79,6 +79,36 @@
         .social-icon { width: 35px; height: 35px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255,255,255,0.1); color: #fff; text-decoration: none; transition: 0.3s; }
         .social-icon:hover { background: var(--artvin-yesil); color: #fff; transform: translateY(-3px); }
     </style>
+    <style>
+    /* VİDEO İÇİN SİHİRLİ KUTU */
+    .haber-icerik iframe, .haber-icerik embed, .haber-icerik video {
+        width: 100% !important;
+        aspect-ratio: 16 / 9; /* Otomatik geniş ekran oranı */
+        height: auto !important;
+        border-radius: 8px;
+        margin: 20px 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    /* HABER METNİ OKUNABİLİRLİĞİ */
+    .haber-icerik p {
+        font-size: 1.15rem; /* Yazı biraz daha büyük ve okunaklı */
+        line-height: 1.7;   /* Satır araları ferah */
+        margin-bottom: 20px;
+        color: #333;
+        font-family: 'Georgia', serif; /* Ciddi haber fontu */
+    }
+    
+    /* İLK HARF (Dropcap) - Hürriyet Tarzı */
+    .haber-icerik > p:first-of-type::first-letter {
+        font-size: 3.5rem;
+        float: left;
+        line-height: 0.8;
+        margin-right: 10px;
+        color: #cc0000;
+        font-weight: bold;
+    }
+</style>
 </head>
 <body>
 
@@ -215,9 +245,9 @@
                         <a href="https://www.youtube.com/@samiozcelikgzt" target="_blank" class="social-icon"><i class="fab fa-youtube"></i></a>
                     </div>
                     
-                    <a href="https://wa.me/905458088408?text=Merhaba,%20sitenize%20reklam%20vermek%20istiyorum." target="_blank" class="btn btn-success btn-sm w-100 fw-bold shadow-sm">
-                        <i class="fas fa-whatsapp me-2"></i> Reklam Ver
-                    </a>
+                    <a href="https://wa.me/905458088408?text=Reklam%20vermek%20istiyorum" target="_blank" class="btn btn-success btn-sm fw-bold">
+    <i class="fab fa-whatsapp me-1"></i> Reklam Ver
+</a>
                 </div>
             </div>
             <div class="border-top border-secondary pt-4 mt-3 text-center small text-white-50">© {% now "Y" %} Gazeteci Sami Özçelik | Tüm Hakları Saklıdır.</div>
