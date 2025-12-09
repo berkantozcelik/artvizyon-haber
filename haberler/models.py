@@ -6,10 +6,11 @@ from django.utils.text import slugify
 import textwrap
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont, ImageOps
+import re  # <-- YENİ EKLENDİ
 
 # --- DÜZELTME: Doğru Kütüphane Eklendi ---
 from imagekit.models import ProcessedImageField
-from imagekit.processors import ResizeToFit  # <-- Doğrusu bu!
+from imagekit.processors import ResizeToFit
 
 # --- YARDIMCI FONKSİYON: YOUTUBE EMBED ÇEVİRİCİ ---
 def get_youtube_embed(url):
@@ -51,7 +52,6 @@ class Ilce(models.Model):
 class KoseYazari(models.Model):
     ad_soyad = models.CharField(max_length=100, verbose_name="Ad Soyad")
     
-    # GÜNCELLENDİ: ResizeToFit kullanıldı
     resim = ProcessedImageField(
         upload_to='yazarlar/',
         processors=[ResizeToFit(500, 500)],
@@ -77,7 +77,6 @@ class KoseYazisi(models.Model):
     
     manset_mi = models.BooleanField(default=False, verbose_name="Manşette Gösterilsin mi?")
     
-    # GÜNCELLENDİ: ResizeToFit kullanıldı
     manset_resmi = ProcessedImageField(
         upload_to='manset_yazilari/',
         processors=[ResizeToFit(800, 600)],
@@ -98,7 +97,7 @@ class KoseYazisi(models.Model):
     def embed_video_url(self): return get_youtube_embed(self.video_link)
 
 # ==========================================
-# 📰 HABER MODELİ (En Kritik Yer)
+# 📰 HABER MODELİ (GÜNCELLENDİ)
 # ==========================================
 
 class Haber(models.Model):
@@ -106,7 +105,6 @@ class Haber(models.Model):
     ozet = models.TextField(verbose_name="Kısa Özet", blank=True)
     icerik = RichTextUploadingField(verbose_name="Haber İçeriği")
     
-    # GÜNCELLENDİ: Haber resimleri otomatik küçülür (Max 800px genişlik)
     resim = ProcessedImageField(
         upload_to='haber_resimleri/',
         processors=[ResizeToFit(800, 600)],
@@ -116,6 +114,7 @@ class Haber(models.Model):
         blank=True
     )
 
+    # 1. Alan zaten buradaydı, koruyoruz:
     video_link = models.URLField(blank=True, null=True, verbose_name="Video Linki (YouTube)")
     
     son_dakika = models.BooleanField(default=False, verbose_name="Son Dakika Haberi mi?")
@@ -130,8 +129,26 @@ class Haber(models.Model):
     def __str__(self): return self.baslik
     class Meta: verbose_name_plural = "Haberler"; ordering = ['-yayin_tarihi']
 
+    # 2. Template'de kullanacağımız SİHİRLİ DÖNÜŞTÜRÜCÜ (Yeni ekledim)
     @property
-    def embed_video_url(self): return get_youtube_embed(self.video_link)
+    def youtube_embed_url(self):
+        if self.video_link:
+            # YouTube linkinden ID'yi çeken basit mantık
+            video_id = None
+            if "youtube.com" in self.video_link and "v=" in self.video_link:
+                try:
+                    video_id = self.video_link.split("v=")[1].split("&")[0]
+                except:
+                    return None
+            elif "youtu.be" in self.video_link:
+                try:
+                    video_id = self.video_link.split("/")[-1].split("?")[0]
+                except:
+                    return None
+            
+            if video_id:
+                return f"https://www.youtube.com/embed/{video_id}"
+        return None
 
 # ==========================================
 # 🎄 ÖZEL GÜN VE TEBRİK MESAJLARI
@@ -142,7 +159,6 @@ class OzelGun(models.Model):
     slug = models.SlugField(unique=True, verbose_name="Link Uzantısı (Otomatik)")
     aciklama = models.TextField(blank=True, verbose_name="Sayfa Üst Yazısı / Artvizyon Mesajı")
     
-    # GÜNCELLENDİ
     kapak_resmi = ProcessedImageField(
         upload_to='ozel_gunler/',
         processors=[ResizeToFit(1000, 800)],
@@ -165,7 +181,6 @@ class TebrikMesaji(models.Model):
     unvan = models.CharField(max_length=150, blank=True, verbose_name="Ünvanı")
     mesaj_metni = models.TextField(blank=True, verbose_name="Mesajı")
     
-    # GÜNCELLENDİ
     resim = ProcessedImageField(
         upload_to='tebrikler/',
         processors=[ResizeToFit(600, 600)],
@@ -245,7 +260,6 @@ class TebrikMesaji(models.Model):
 
 class Galeri(models.Model):
     baslik = models.CharField(max_length=200, verbose_name="Galeri Başlığı")
-    # GÜNCELLENDİ
     kapak_resmi = ProcessedImageField(
         upload_to='galeri_kapak/',
         processors=[ResizeToFit(800, 600)],
@@ -259,7 +273,6 @@ class Galeri(models.Model):
 
 class GaleriResim(models.Model):
     galeri = models.ForeignKey(Galeri, on_delete=models.CASCADE, related_name='resimler')
-    # GÜNCELLENDİ
     resim = ProcessedImageField(
         upload_to='galeri_resimleri/',
         processors=[ResizeToFit(1024, 768)], 
@@ -269,7 +282,6 @@ class GaleriResim(models.Model):
     aciklama = models.CharField(max_length=200, blank=True, verbose_name="Resim Açıklaması (Opsiyonel)")
 
 class HaftaninFotografi(models.Model):
-    # GÜNCELLENDİ
     resim = ProcessedImageField(
         upload_to='haftanin_fotografi/',
         processors=[ResizeToFit(1200, 900)],
@@ -288,7 +300,6 @@ class Siir(models.Model):
     sair = models.CharField(max_length=100, verbose_name="Şair")
     siir_metni = RichTextUploadingField(verbose_name="Şiir Metni")
     
-    # GÜNCELLENDİ: Resim ayarı ve Yeni Özellik
     resim = ProcessedImageField(
         upload_to='siir_resimleri/',
         processors=[ResizeToFit(600, 600)],
@@ -298,7 +309,6 @@ class Siir(models.Model):
         blank=True
     )
     
-    # YENİ EKLENEN KISIM: Günün Şiiri Seçeneği
     gunun_siiri_mi = models.BooleanField(default=False, verbose_name="Günün Şiiri Olarak Ayarla")
     
     yayin_tarihi = models.DateTimeField(default=timezone.now, verbose_name="Eklenme Tarihi")
@@ -307,10 +317,8 @@ class Siir(models.Model):
     def __str__(self): return self.baslik
     class Meta: verbose_name_plural = "Şiir Köşesi"; ordering = ['-yayin_tarihi']
 
-    # --- SİHİRLİ KOD: BİRİNİ SEÇİNCE DİĞERLERİNİ İPTAL ET ---
     def save(self, *args, **kwargs):
         if self.gunun_siiri_mi:
-            # Eğer bu şiir "Günün Şiiri" seçildiyse, diğerlerinin tikini kaldır
             Siir.objects.filter(gunun_siiri_mi=True).exclude(id=self.id).update(gunun_siiri_mi=False)
         super().save(*args, **kwargs)
 

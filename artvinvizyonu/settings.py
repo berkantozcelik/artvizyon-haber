@@ -197,3 +197,36 @@ JAZZMIN_UI_TWEAKS = {
 LOGIN_REDIRECT_URL = 'anasayfa'
 LOGOUT_REDIRECT_URL = 'anasayfa'
 LOGIN_URL = 'login'
+
+import os  # Dosyanın en tepesinde zaten varsa buraya yazmana gerek yok
+
+# MEDYA AYARLARI (Resim/Video için)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# CKEDITOR AYARLARI (Video Dostu Versiyon)
+CKEDITOR_UPLOAD_PATH = "uploads/"
+CKEDITOR_IMAGE_BACKEND = "pillow"
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'height': 500,
+        'width': '100%',
+        # BU İKİ SATIR VİDEOLAR İÇİN HAYATİ:
+        'allowedContent': True,  # Filtrelemeyi tamamen kapatır
+        'removePlugins': 'stylesheetparser', # Bazen çakışma yapar, kapatıyoruz
+        'extraAllowedContent': 'iframe[*];script[*];div[*]', # Iframe ve Scriptlere özel izin
+    },
+}
+
+# GÜVENLİK DUVARLARINI VİDEOLAR İÇİN İNDİRİYORUZ
+X_FRAME_OPTIONS = 'SAMEORIGIN' 
+XS_SHARING_ALLOWED_METHODS = ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE']
+
+# YouTube/Dailymotion pencerelerinin açılmasına izin ver
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+# Diğer ayarların altına ekle
+SECURE_REFERRER_POLICY = "no-referrer-when-downgrade"
+# YouTube ve Google servislerinin çalışması için kritik:
+SECURE_CROSS_ORIGIN_OPENER_POLICY = None

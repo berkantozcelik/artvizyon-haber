@@ -50,5 +50,11 @@ urlpatterns = [
 
     # Özel Gün Detay Sayfası
     path('ozel-gun/<slug:slug>/', views.ozel_gun_detay, name='ozel_gun_detay'),
+
+    path('ckeditor/', include('ckeditor_uploader.urls')),
+    # Senin diğer url'lerin burada duruyor, dokunma...
+    path('', include('haberler.urls')),
+    ]
     
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
