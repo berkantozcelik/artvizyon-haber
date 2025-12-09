@@ -13,15 +13,39 @@ from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFit
 
 # --- YARDIMCI FONKSİYON: YOUTUBE EMBED ÇEVİRİCİ ---
+# --- GÜNCELLENMİŞ YARDIMCI FONKSİYON ---
 def get_youtube_embed(url):
+    """
+    Normal videoları ve SHORTS videolarını embed koduna çevirir.
+    """
     if not url: return None
+    
+    # 1. Eğer zaten embed linki ise dokunma
     if "embed" in url: return url
+
+    # 2. Eğer SHORTS videosu ise (YENİ EKLENEN KISIM)
+    if "shorts/" in url:
+        try:
+            # youtube.com/shorts/VIDEO_ID?feature=share gibi gelebilir
+            video_id = url.split("shorts/")[1].split("?")[0]
+            return f"https://www.youtube.com/embed/{video_id}"
+        except:
+            return url
+
+    # 3. Eğer kısaltılmış link ise (youtu.be)
     if "youtu.be" in url:
-        video_id = url.split("/")[-1].split("?")[0]
-        return f"https://www.youtube.com/embed/{video_id}"
+        try:
+            video_id = url.split("/")[-1].split("?")[0]
+            return f"https://www.youtube.com/embed/{video_id}"
+        except: return url
+        
+    # 4. Eğer normal link ise (watch?v=)
     if "watch?v=" in url:
-        video_id = url.split("watch?v=")[1].split("&")[0]
-        return f"https://www.youtube.com/embed/{video_id}"
+        try:
+            video_id = url.split("watch?v=")[1].split("&")[0]
+            return f"https://www.youtube.com/embed/{video_id}"
+        except: return url
+        
     return url
 
 # ==========================================
