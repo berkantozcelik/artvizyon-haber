@@ -12,15 +12,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-s^$-b*^=_bn2#npf-#=mlby5x2u@p0mp7fpnk&==wxntuq(e#8'
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True 
 
-ALLOWED_HOSTS = ['*']
+# PythonAnywhere için izin verilen adresler
+ALLOWED_HOSTS = ['*'] 
 
 
 # Application definition
@@ -33,15 +29,34 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # ------------------------------------------------
+    # --- SOCIAL LOGIN (ALLAUTH) İÇİN GEREKLİLER ---
+    # ------------------------------------------------
+    'django.contrib.sites', # Allauth için şart
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.facebook',
+    # ------------------------------------------------
+    
     'imagekit', # Resim işleme kütüphanesi
     'haberler', # Senin uygulaman
     'ckeditor',
     'ckeditor_uploader',
+
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    
+    # ------------------------------------------------
+    # --- ALLAUTH MIDDLEWARE'İ BURAYA EKLE (ÇOK ÖNEMLİ) ---
+    'allauth.account.middleware.AccountMiddleware',
+    # ------------------------------------------------
+    
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -54,14 +69,16 @@ ROOT_URLCONF = 'artvinvizyonu.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'haberler.views.global_context', # Menülerin ve Son Dakika'nın çalışması için şart
+                # Custom Context Processor
+                'haberler.views.global_context',
             ],
         },
     },
@@ -81,125 +98,62 @@ DATABASES = {
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
-    { 'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },
-    { 'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', },
-    { 'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator', },
-    { 'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
 
 
 # Internationalization
 LANGUAGE_CODE = 'tr'
-
 TIME_ZONE = 'Europe/Istanbul'
-
 USE_I18N = True
 USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles' 
-
-# Medya Dosyaları (Resimler vb.)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # PythonAnywhere için şart
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# --- CKEDITOR AYARLARI ---
-CKEDITOR_UPLOAD_PATH = "uploads/"
-
-CKEDITOR_CONFIGS = {
-    'default': {
-        'toolbar': 'full',
-        'height': 500,
-        'width': '100%',
-    },
-}
-
-
-# --- JAZZMIN ADMİN PANELİ AYARLARI ---
+# --- JAZZMIN AYARLARI (MEVCUT) ---
 JAZZMIN_SETTINGS = {
-    "site_title": "Artvizyon Panel",
-    "site_header": "Artvizyon Yönetim",
-    "site_brand": "Gzt. Sami Özçelik",
-    "site_logo": None, 
-    "login_logo": None,
-    "login_logo_dark": None,
-    "site_logo_classes": "img-circle",
-    "site_icon": None,
-    "welcome_sign": "Haber Merkezi Yönetim Paneli",
-    "copyright": "Artvizyon Haber",
-    "search_model": "haberler.Haber",
+    "site_title": "Artvizyon Yönetim",
+    "site_header": "Artvizyon",
+    "site_brand": "Artvizyon Haber Yönetim",
+    "welcome_sign": "Hoş Geldiniz, Artvizyon Yönetim Paneli",
+    "show_ui_builder": False,
     "topmenu_links": [
-        {"name": "🔥 Siteyi Görüntüle", "url": "anasayfa", "permissions": ["auth.view_user"]},
-        {"name": "📞 Teknik Destek", "url": "https://wa.me/905320000000", "new_window": True},
+        {"name": "Anasayfa",  "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "Siteyi Gör", "url": "/"},
     ],
-    
-    # SADECE BU LİSTEDEKİLER GÖRÜNÜR (TarihiYer Eklendi!)
-    "order_with_respect_to": [
-        "haberler.Haber", 
-        "haberler.Kategori", 
-        "haberler.Ilce", 
-        "haberler.Galeri", 
-        "haberler.HaftaninFotografi",
-        "haberler.EczaneLinki",
-        "haberler.TarihiYer",   # <--- İŞTE KRAL BURADA!
-        "haberler.OzelGun",
-        "haberler.Siir",
-        "haberler.KoseYazari",
-        "haberler.KoseYazisi",
-        "haberler.Yorum",
-        "haberler.Destekci"
-    ],
-    
-    # İKONLAR (TarihiYer Eklendi!)
+    "order_with_respect_to": ["haberler.haber", "haberler.koseyazisi", "haberler.koseyazari", "haberler.kategori", "haberler.ilce", "haberler.galeri"],
     "icons": {
-        "auth": "fas fa-users-cog",
-        "auth.user": "fas fa-user",
+        "auth.user": "fas fa-user-circle",
         "auth.Group": "fas fa-users",
-        "haberler.Haber": "fas fa-newspaper",
-        "haberler.Kategori": "fas fa-tags",
-        "haberler.Ilce": "fas fa-map-marker-alt",
-        "haberler.Galeri": "fas fa-images",
-        "haberler.GaleriResim": "fas fa-image",
-        "haberler.HaftaninFotografi": "fas fa-camera-retro",
-        "haberler.EczaneLinki": "fas fa-clinic-medical",
-        "haberler.Yorum": "fas fa-comments",       
-        "haberler.Destekci": "fas fa-hand-holding-heart",
-        "haberler.TarihiYer": "fas fa-landmark", # <--- İKONU DA BURADA
-        "haberler.OzelGun": "fas fa-calendar-day",
-        "haberler.Siir": "fas fa-feather-alt",
-        "haberler.KoseYazari": "fas fa-user-edit",
-        "haberler.KoseYazisi": "fas fa-pen-nib",
+        "haberler.haber": "fas fa-newspaper",
+        "haberler.koseyazisi": "fas fa-pencil-alt",
+        "haberler.koseyazari": "fas fa-quidditch",
+        "haberler.kategori": "fas fa-tags",
+        "haberler.ilce": "fas fa-city",
+        "haberler.galeri": "fas fa-images",
+        "haberler.yorum": "fas fa-comment-dots",
+        "haberler.destekci": "fas fa-hand-holding-heart",
+        "haberler.siir": "fas fa-feather",
+        "haberler.ozelgun": "fas fa-calendar-day",
+        "haberler.tebrikmesaji": "fas fa-birthday-cake",
+        "haberler.tarihiyer": "fas fa-map-marker-alt",
     },
     "default_icon_parents": "fas fa-chevron-circle-right",
-    "default_icon_children": "fas fa-circle",
-    
-    # !!! KRİTİK AYAR: Bunu False yapıyoruz ki senin kodlarını okusun !!!
-    "show_ui_builder": False, 
-}
-
-# --- RENK VE TEMA AYARLARI ---
-JAZZMIN_UI_TWEAKS = {
-    "navbar_small_text": False,
-    "footer_small_text": False,
-    "body_small_text": False,
-    "brand_small_text": False,
-    "brand_colour": "navbar-dark",
-    "accent": "accent-primary",
-    "navbar": "navbar-dark",
-    "no_navbar_border": False,
-    "navbar_fixed": False,
-    "layout_boxed": False,
-    "footer_fixed": False,
-    "sidebar_fixed": True,
-    "sidebar": "sidebar-dark-warning",
-    "sidebar_nav_small_text": False,
-    "theme": "sandstone", 
+    "navigation_expanded": True,
+    "hide_apps": [],
+    "hide_models": [],
+    "theme": "united",
     "dark_mode_theme": None,
     "button_classes": {
         "primary": "btn-primary",
@@ -212,11 +166,12 @@ JAZZMIN_UI_TWEAKS = {
 }
 
 # --- GİRİŞ / ÇIKIŞ AYARLARI ---
-LOGIN_REDIRECT_URL = 'anasayfa'
-LOGOUT_REDIRECT_URL = 'anasayfa'
-LOGIN_URL = 'login'
+# Django'nun login URL'ini allauth'un login URL'ine yönlendiriyoruz
+LOGIN_URL = 'account_login' 
+# Giriş/Çıkış sonrası yönlendirme anasayfa
+LOGIN_REDIRECT_URL = '/'
+ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 
-import os  # Dosyanın en tepesinde zaten varsa buraya yazmana gerek yok
 
 # MEDYA AYARLARI (Resim/Video için)
 MEDIA_URL = '/media/'
@@ -232,19 +187,37 @@ CKEDITOR_CONFIGS = {
         'height': 500,
         'width': '100%',
         # BU İKİ SATIR VİDEOLAR İÇİN HAYATİ:
-        'allowedContent': True,  # Filtrelemeyi tamamen kapatır
-        'removePlugins': 'stylesheetparser', # Bazen çakışma yapar, kapatıyoruz
-        'extraAllowedContent': 'iframe[*];script[*];div[*]', # Iframe ve Scriptlere özel izin
+        'allowedContent': True,
+        'removePlugins': 'stylesheetparser',
+        'extraAllowedContent': 'iframe[*];script[*];div[*]',
     },
 }
 
-# GÜVENLİK DUVARLARINI VİDEOLAR İÇİN İNDİRİYORUZ
-X_FRAME_OPTIONS = 'SAMEORIGIN' 
-XS_SHARING_ALLOWED_METHODS = ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE']
-
-# YouTube/Dailymotion pencerelerinin açılmasına izin ver
+# GÜVENLİK DUVARLARINI VİDEOLAR İÇİN İPTAL EDEN AYARLAR
 X_FRAME_OPTIONS = 'SAMEORIGIN'
-# Diğer ayarların altına ekle
-SECURE_REFERRER_POLICY = "no-referrer-when-downgrade"
-# YouTube ve Google servislerinin çalışması için kritik:
-SECURE_CROSS_ORIGIN_OPENER_POLICY = None
+
+
+# ------------------------------------------------
+# --- DJANGO-ALLAUTH SOSYAL GİRİŞ AYARLARI ---
+# ------------------------------------------------
+
+# Allauth'a Django'nun Authentication Backend'ini kullanmasını söyler
+AUTHENTICATION_BACKENDS = (
+    # Sosyal hesaplar için gerekli (Üstte olmalı)
+    'allauth.account.auth_backends.AuthenticationBackend', 
+    # Django'nun standart kimlik doğrulama yöntemi
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+# Allauth için Site ID'si (Admin panelindeki Sites tablosundan gelen ID)
+SITE_ID = 1 
+
+# Allauth ayarları
+ACCOUNT_AUTHENTICATION_METHOD = "username_email" # Kullanıcı adı veya e-posta ile giriş
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = True # Kayıtta e-postayı iki kere iste
+ACCOUNT_SESSION_REMEMBER = True
+ACCOUNT_UNIQUE_EMAIL = True
+SOCIALACCOUNT_EMAIL_VERIFICATION = "none" # Sosyal girişlerde doğrulamayı kapat
+SOCIALACCOUNT_EMAIL_REQUIRED = True

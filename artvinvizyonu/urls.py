@@ -58,6 +58,7 @@ urlpatterns = [
     path('ckeditor/', include('ckeditor_uploader.urls')),
     # Senin diğer url'lerin burada duruyor, dokunma...
     path('', include('haberler.urls')),
+    path('accounts/', include('allauth.urls')),
     ]
     
 if settings.DEBUG:
