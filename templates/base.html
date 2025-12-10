@@ -16,175 +16,280 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* GENEL RENKLER */
+        /* --- TEMEL RENKLER --- */
         :root { 
-            --ahsap-koyu: #3E2723; 
+            --ahsap-koyu: #3E2723;   
             --artvin-yesil: #2E4A38; 
-            --kagit-krem: #F4F1EA; 
-            --altin-detay: #D4AF37; 
+            --kagit-krem: #F4F1EA;   
+            --altin-detay: #D4AF37;  
+            --yazi-krem: #FDF5E6;    
         }
+        
         body { background-color: var(--kagit-krem); font-family: 'Roboto', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
         h1, h2, h3, h4, h5 { font-family: 'Playfair Display', serif; }
         .icerik-alani { flex: 1; }
 
-        /* NAVBAR & LOGO */
-        .navbar-custom { 
-            background-color: var(--ahsap-koyu); 
-            border-bottom: 4px solid var(--artvin-yesil); 
-            padding: 1rem 0; 
-            transition: all 0.4s ease-in-out; 
-            width: 100%; z-index: 1030;
+        /* --- YAPIŞKAN VE KÜÇÜLEN HEADER CSS --- */
+        
+        /* 1. Kapsayıcı: Bu kutu sayfanın tepesine yapışacak */
+        #sticky-wrapper {
+            position: sticky;
+            top: 0;
+            z-index: 1050; /* Diğer her şeyin üstünde */
+            width: 100%;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 0 0 rgba(0,0,0,0); /* Başta gölge yok */
         }
-        .site-logo { max-height: 160px; width: auto; transition: all 0.4s ease-in-out; }
 
-        .navbar-custom.sticky-top {
-            position: fixed; top: 0; padding: 0.5rem 0;
-            background-color: rgba(62, 39, 35, 0.98); 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            border-bottom: 3px solid var(--artvin-yesil) !important; 
+        /* Sayfa kaydırılınca gölge ekle */
+        #sticky-wrapper.is-scrolled {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
         }
-        .navbar-custom.sticky-top .site-logo { max-height: 60px; }
 
-        /* DROPDOWN */
-        .dropdown-menu { background-color: #2b1b18; border: 1px solid var(--artvin-yesil); }
+        /* 2. Header (Logo Alanı) */
+        .header-wrapper {
+            background-color: var(--ahsap-koyu);
+            border-bottom: 4px solid var(--artvin-yesil);
+            padding: 15px 0; /* Başlangıç yüksekliği */
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative; /* Dropdown için gerekli */
+            z-index: 1055; /* Navbar'dan yukarıda */
+            /* overflow: hidden; <-- BU KALDIRILDI Kİ DROPDOWN GÖRÜNSÜN */
+        }
+
+        /* Kaydırılınca Header Stili */
+        #sticky-wrapper.is-scrolled .header-wrapper {
+            padding: 5px 0; /* Yüksekliği azalt */
+            border-bottom-width: 2px; /* Çizgiyi incelt */
+        }
+
+        /* 3. Logo */
+        .site-logo { 
+            max-height: 110px; /* Başlangıç boyutu */
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Kaydırılınca Logo Stili */
+        #sticky-wrapper.is-scrolled .site-logo {
+            max-height: 50px; /* Logo küçülsün */
+        }
+
+        /* 4. Butonlar (Giriş/Abone Ol) */
+        .btn-ozel-artvin {
+            background-color: var(--artvin-yesil);
+            color: var(--yazi-krem);
+            border: 1px solid rgba(255,255,255,0.2);
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 10px 20px; /* Başlangıç boyutu */
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+            min-width: 140px;
+            display: inline-flex; justify-content: center; align-items: center;
+        }
+
+        /* Kaydırılınca Buton Stili */
+        #sticky-wrapper.is-scrolled .btn-ozel-artvin {
+            padding: 5px 15px; /* Buton küçülsün */
+            font-size: 0.75rem; /* Yazı küçülsün */
+            min-width: 110px;
+        }
+
+        .btn-ozel-artvin:hover { background-color: #1e3326; color: #fff; border-color: var(--altin-detay); }
+
+        /* 5. Navbar (Menü) */
+        .navbar-main {
+            background-color: #2b1b18;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding: 0;
+            transition: all 0.3s;
+        }
+        
+        /* Navbar Linkleri */
+        .nav-link-custom {
+            color: #fff !important; font-weight: bold; padding: 15px 20px !important; text-transform: uppercase; font-size: 0.9rem; transition: 0.3s; border-right: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        /* HOVER DÜZELTMESİ: Beyaz Zemin, Yeşil Yazı */
+        .nav-link-custom:hover { 
+            background-color: #ffffff; 
+            color: var(--artvin-yesil) !important; 
+        }
+
+        /* Kaydırılınca Navbar Linkleri (Biraz daralsın) */
+        #sticky-wrapper.is-scrolled .nav-link-custom {
+            padding: 10px 15px !important;
+            font-size: 0.85rem;
+        }
+        
+        /* DROPDOWN DÜZELTMESİ */
+        .dropdown-menu {
+            z-index: 9999 !important; /* En üste çıksın */
+            margin-top: 10px;
+            background-color: #2b1b18;
+            border: 1px solid var(--artvin-yesil);
+        }
         .dropdown-item { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .dropdown-item:hover { background-color: var(--artvin-yesil); color: #fff; padding-left: 25px; transition: 0.2s; }
-        .nav-link:hover { color: #b8e6c5 !important; }
+        .dropdown-item:hover { background-color: var(--artvin-yesil); color: #fff; }
 
-        /* SON DAKİKA */
+        /* SIDEBAR, FOOTER, VB. */
+        .offcanvas-custom { background-color: var(--ahsap-koyu); color: #fff; border-right: 4px solid var(--artvin-yesil); }
+        .sidebar-link { display: block; padding: 12px 15px; color: rgba(255,255,255,0.9); text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
+        .sidebar-link:hover { background-color: #fff; color: var(--artvin-yesil); padding-left: 20px; font-weight: bold; }
+        .sidebar-section-title { color: var(--altin-detay); font-size: 0.75rem; font-weight: bold; margin-top: 20px; margin-bottom: 10px; padding-left: 15px; }
+
         .son-dakika-seridi { 
-            background-color: var(--artvin-yesil); 
-            color: #fff; 
-            overflow: hidden; white-space: nowrap; height: 42px; display: flex; align-items: center; 
-            border-bottom: 3px solid #3E2723; 
-        }
-        .son-dakika-etiket { background-color: #cc0000; color: #fff; padding: 0 20px; height: 100%; display: flex; align-items: center; font-weight: bold; font-size: 0.9rem; z-index: 10; box-shadow: 2px 0 10px rgba(0,0,0,0.5); }
-        .kayan-yazi { display: inline-block; padding-left: 100%; animation: kayanYazi 35s linear infinite; }
-        .kayan-yazi a { color: #fff; text-decoration: none; margin-right: 60px; font-weight: 500; font-size: 0.95rem; }
-        .kayan-yazi a:hover { color: var(--altin-detay); text-decoration: underline; }
+    background-color: var(--artvin-yesil); 
+    color: #fff; 
+    overflow: hidden; 
+    white-space: nowrap; /* Metni tek satırda tutar */
+    height: 45px;        /* Yüksekliği 40'tan 45'e çektim, ferahlasın */
+    display: flex; 
+    align-items: center; 
+    flex-wrap: nowrap;   /* KRİTİK KOD: Asla alt satıra geçme */
+    border-bottom: 1px solid #3E2723; 
+}
+       .son-dakika-etiket { 
+    background-color: #cc0000; 
+    color: #fff; 
+    padding: 0 20px; 
+    height: 100%; 
+    display: flex; 
+    align-items: center; 
+    font-weight: bold; 
+    font-size: 0.85rem; 
+    z-index: 10; 
+    box-shadow: 2px 0 10px rgba(0,0,0,0.5); 
+    flex-shrink: 0;      /* KRİTİK KOD: Alan daralsa bile etiketi sıkıştırma */
+}
+        .kayan-yazi { display: inline-block; padding-left: 100%; animation: kayanYazi 35s linear infinite; white-space: nowrap; }
+        .kayan-yazi a { color: #fff; text-decoration: none; margin-right: 60px; font-weight: 500; font-size: 0.9rem; }
         @keyframes kayanYazi { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
 
-        /* ABONE OL BUTONU */
-        .btn-artvin {
-            background-color: var(--artvin-yesil); color: #fff; border: 1px solid #fff; transition: all 0.3s;
-        }
-        .btn-artvin:hover { background-color: #fff; color: var(--artvin-yesil); border-color: var(--artvin-yesil); }
-
-        /* ÜYELİK ALANI */
-        .user-avatar { width: 35px; height: 35px; background-color: var(--artvin-yesil); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid var(--altin-detay); }
-        .login-link { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 0.9rem; transition: 0.2s; }
-        .login-link:hover { color: #fff; color: var(--altin-detay); }
-
-        img { max-width: 100% !important; height: auto !important; }
+        .haber-icerik img { max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px; }
+        .haber-icerik p { font-size: 1.1rem; line-height: 1.7; font-family: 'Georgia', serif; color: #333; }
+        .haber-icerik > p:first-of-type::first-letter { font-size: 3.5rem; float: left; line-height: 0.8; margin-right: 10px; color: #cc0000; font-weight: bold; }
         .social-icon { width: 35px; height: 35px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255,255,255,0.1); color: #fff; text-decoration: none; transition: 0.3s; }
         .social-icon:hover { background: var(--artvin-yesil); color: #fff; transform: translateY(-3px); }
     </style>
-    <style>
-    /* VİDEO İÇİN SİHİRLİ KUTU */
-    .haber-icerik iframe, .haber-icerik embed, .haber-icerik video {
-        width: 100% !important;
-        aspect-ratio: 16 / 9; /* Otomatik geniş ekran oranı */
-        height: auto !important;
-        border-radius: 8px;
-        margin: 20px 0;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    
-    /* HABER METNİ OKUNABİLİRLİĞİ */
-    .haber-icerik p {
-        font-size: 1.15rem; /* Yazı biraz daha büyük ve okunaklı */
-        line-height: 1.7;   /* Satır araları ferah */
-        margin-bottom: 20px;
-        color: #333;
-        font-family: 'Georgia', serif; /* Ciddi haber fontu */
-    }
-    
-    /* İLK HARF (Dropcap) - Hürriyet Tarzı */
-    .haber-icerik > p:first-of-type::first-letter {
-        font-size: 3.5rem;
-        float: left;
-        line-height: 0.8;
-        margin-right: 10px;
-        color: #cc0000;
-        font-weight: bold;
-    }
-</style>
 </head>
 <body>
 
-    <nav class="navbar-custom mb-0 shadow" id="mainNav">
-        <div class="container position-relative">
-            <div class="d-flex justify-content-center w-100">
-                <a class="navbar-brand p-0" href="{% url 'anasayfa' %}">
-                    <img src="/media/site-logo.webp" alt="Artvizyon Haber" class="img-fluid site-logo">
-                </a>
-            </div>
-
-            <div class="position-absolute end-0 top-50 translate-middle-y d-none d-lg-flex align-items-center">
-                
-                <div class="me-4">
-                    {% if user.is_authenticated %}
-                        <div class="dropdown">
-                            <a href="#" class="text-white text-decoration-none dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown">
-                                <div class="user-avatar me-2">{{ user.username|first|upper }}</div>
-                                <span class="small fw-bold text-uppercase d-none d-xl-inline" style="letter-spacing: 0.5px;">{{ user.username }}</span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-                                <li><a class="dropdown-item py-2" href="{% url 'profil' %}"><i class="fas fa-user-circle me-2 text-success"></i> Hesabım</a></li>
-                                <li><a class="dropdown-item py-2" href="{% url 'destek' %}"><i class="fas fa-newspaper me-2 text-success"></i> Aboneliklerim</a></li>
-                                <li><hr class="dropdown-divider bg-secondary"></li>
-                                <li>
-                                    <form action="{% url 'logout' %}" method="post">
-                                        {% csrf_token %}
-                                        <button type="submit" class="dropdown-item py-2 text-danger fw-bold"><i class="fas fa-sign-out-alt me-2"></i> Çıkış Yap</button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                    {% else %}
-                        <div class="d-flex gap-3 align-items-center border-end pe-3 border-secondary">
-                            <a href="{% url 'login' %}" class="login-link"><i class="fas fa-sign-in-alt me-1"></i> Giriş</a>
-                            <a href="{% url 'register' %}" class="login-link"><i class="fas fa-user-plus me-1"></i> Kayıt</a>
-                        </div>
-                    {% endif %}
-                </div>
-
-                <a class="btn btn-artvin fw-bold rounded-pill px-4 shadow-sm" href="{% url 'destek' %}">
-                    <i class="fas fa-newspaper me-2"></i> ABONE OL
-                </a>
-            </div>
-        </div>
-    </nav>
-    <div id="navSpacer"></div>
-
-    <div class="container-fluid py-2 shadow-sm" style="background-color: #2b1b18; position: relative; z-index: 100;">
-        <div class="container">
-            <div class="d-flex flex-wrap justify-content-between align-items-center">
-                <ul class="nav justify-content-center justify-content-lg-start flex-grow-1">
-                    <li class="nav-item"><a class="nav-link text-white fw-bold mx-2" href="{% url 'anasayfa' %}">ANASAYFA</a></li>
-                    <li class="nav-item"><a class="nav-link text-white fw-bold mx-2" href="{% url 'kimdir' %}">EDİTÖRDEN</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-white fw-bold mx-2" href="#" data-bs-toggle="dropdown">İLÇELER</a>
-                        <ul class="dropdown-menu shadow">
-                            {% for ilce in global_ilceler %}<li><a class="dropdown-item text-uppercase fw-bold" href="{% url 'ilce_haberleri' ilce.pk %}">{{ ilce.isim }}</a></li>{% endfor %}
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-white fw-bold mx-2" href="#" data-bs-toggle="dropdown">KATEGORİLER</a>
-                        <ul class="dropdown-menu shadow">
-                            {% for kategori in global_kategoriler %}<li><a class="dropdown-item text-uppercase fw-bold" href="{% url 'kategori_haberleri' kategori.pk %}">{{ kategori.isim }}</a></li>{% endfor %}
-                        </ul>
-                    </li>
-                    <li class="nav-item"><a class="nav-link text-white fw-bold mx-2" href="{% url 'siir_listesi' %}">ŞİİR KÖŞESİ</a></li>
-                    <li class="nav-item"><a class="nav-link text-white fw-bold mx-2" href="{% url 'galeri_listesi' %}">GALERİ</a></li>
-                    <li class="nav-item"><a class="nav-link text-white fw-bold mx-2" href="{% url 'iletisim' %}">İLETİŞİM</a></li>
-                </ul>
-                <form action="{% url 'arama' %}" method="get" class="d-flex mt-2 mt-lg-0">
-                    <div class="input-group">
-                        <input class="form-control form-control-sm search-input" type="search" name="q" placeholder="Haber ara..." style="background: rgba(255,255,255,0.1); border: 1px solid #555; color: white;">
-                        <button class="btn btn-sm btn-light text-dark" type="submit"><i class="fas fa-search"></i></button>
+    <div id="sticky-wrapper">
+        
+        <header class="header-wrapper">
+            <div class="container">
+                <div class="row align-items-center">
+                    
+                    <div class="col-4 text-start d-none d-lg-block">
+                        {% if user.is_authenticated %}
+                            <div class="dropdown">
+                                <button class="btn-ozel-artvin dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    {% if user.profil.resim %}
+                                        <img src="{{ user.profil.resim.url }}" class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover; border: 2px solid #D4AF37;">
+                                    {% else %}
+                                        <i class="fas fa-user-circle me-2"></i> 
+                                    {% endif %}
+                                    {{ user.username|truncatechars:10 }}
+                                </button>
+                                
+                                <ul class="dropdown-menu shadow border-0 mt-2">
+                                    <li><a class="dropdown-item text-white" href="{% url 'profil' %}">Profilim</a></li>
+                                    <li><a class="dropdown-item text-white" href="{% url 'destek' %}">Aboneliklerim</a></li>
+                                    <li><hr class="dropdown-divider bg-secondary"></li>
+                                    <li>
+                                        <form action="{% url 'logout' %}" method="post">{% csrf_token %}
+                                            <button type="submit" class="dropdown-item text-danger fw-bold">Çıkış Yap</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        {% else %}
+                            <div class="btn-group" role="group">
+                                <a href="{% url 'login' %}" class="btn-ozel-artvin" style="border-radius: 50px 0 0 50px; border-right: 1px solid #4e342e;">
+                                    <i class="fas fa-sign-in-alt me-2"></i> GİRİŞ
+                                </a>
+                                <a href="{% url 'register' %}" class="btn-ozel-artvin" style="border-radius: 0 50px 50px 0;">
+                                    KAYIT <i class="fas fa-user-plus ms-2"></i>
+                                </a>
+                            </div>
+                        {% endif %}
                     </div>
-                </form>
+
+                    <div class="col-lg-4 col-12 text-center">
+                        <a href="{% url 'anasayfa' %}">
+                            <img src="/media/site-logo.webp" alt="Artvizyon Haber" class="site-logo">
+                        </a>
+                    </div>
+
+                    <div class="col-4 text-end d-none d-lg-block">
+                        <a href="{% url 'destek' %}" class="btn-ozel-artvin">
+                            <i class="fas fa-newspaper me-2"></i> ABONE OL
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <nav class="navbar navbar-expand-lg navbar-main">
+            <div class="container">
+                <button class="btn text-white d-lg-none me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
+                    <i class="fas fa-bars fa-lg"></i>
+                </button>
+
+                <button class="btn btn-outline-light border-0 me-3 d-none d-lg-inline-flex align-items-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
+                    <i class="fas fa-bars me-2"></i> <span style="font-weight: bold; letter-spacing: 1px;">MENÜ</span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'anasayfa' %}">ANASAYFA</a></li>
+                        <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'kimdir' %}">EDİTÖRDEN</a></li>
+                        <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'tarihi_yerler_listesi' %}">ARTVİN REHBERİ</a></li>
+                        <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'iletisim' %}">İLETİŞİM</a></li>
+                    </ul>
+                    <form action="{% url 'arama' %}" method="get" class="d-flex">
+                        <div class="input-group">
+                            <input class="form-control form-control-sm bg-dark text-white border-secondary" type="search" name="q" placeholder="Haber ara..." style="width: 200px;">
+                            <button class="btn btn-sm btn-outline-secondary" type="submit"><i class="fas fa-search text-white"></i></button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="d-lg-none text-end ms-auto">
+                    <a href="{% if user.is_authenticated %}{% url 'profil' %}{% else %}{% url 'login' %}{% endif %}" class="text-white text-decoration-none">
+                        <i class="fas fa-user-circle fa-lg"></i>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div> <div class="offcanvas offcanvas-start offcanvas-custom" tabindex="-1" id="sidebarMenu">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title fw-bold" style="color: var(--altin-detay);">ARTVİZYON HABER</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Kapat"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            <div class="sidebar-section-title">HABER KATEGORİLERİ</div>
+            {% for kategori in global_kategoriler %}
+                <a href="{% url 'kategori_haberleri' kategori.pk %}" class="sidebar-link"><i class="fas fa-chevron-right me-2 text-white-50 small"></i> {{ kategori.isim }}</a>
+            {% endfor %}
+            <div class="sidebar-section-title">İLÇE HABERLERİ</div>
+            {% for ilce in global_ilceler %}
+                <a href="{% url 'ilce_haberleri' ilce.pk %}" class="sidebar-link"><i class="fas fa-map-marker-alt me-2 text-white-50 small"></i> {{ ilce.isim }}</a>
+            {% endfor %}
+            <div class="sidebar-section-title">MEDYA & KÜLTÜR</div>
+            <a href="{% url 'galeri_listesi' %}" class="sidebar-link"><i class="fas fa-camera me-2"></i> Foto Galeri</a>
+            <a href="{% url 'siir_listesi' %}" class="sidebar-link"><i class="fas fa-feather-alt me-2"></i> Şiir Köşesi</a>
+            <a href="{% url 'tarihi_yerler_listesi' %}" class="sidebar-link"><i class="fas fa-landmark me-2"></i> Artvin Rehberi</a>
+            <div class="sidebar-section-title">KURUMSAL</div>
+            <a href="{% url 'kimdir' %}" class="sidebar-link">Hakkımızda / Künye</a>
+            <a href="{% url 'iletisim' %}" class="sidebar-link">İletişim</a>
+            <div class="p-3">
+                <a href="{% url 'destek' %}" class="btn btn-warning w-100 fw-bold text-dark shadow-sm">
+                    <i class="fas fa-star me-2"></i> ABONE OLUN
+                </a>
             </div>
         </div>
     </div>
@@ -202,27 +307,23 @@
         </div>
     </div>
 
-    <div class="container icerik-alani mt-4">{% block content %} {% endblock %}</div>
+    <div class="container icerik-alani mt-4">
+        {% block content %} {% endblock %}
+    </div>
 
-    <footer class="py-5 mt-5 text-white" style="background-color: var(--ahsap-koyu);">
+    <footer class="py-5 mt-5 text-white" style="background-color: var(--ahsap-koyu); border-top: 5px solid var(--artvin-yesil);">
         <div class="container">
             <div class="row">
                 <div class="col-md-3 mb-4">
-                    <h5 class="border-bottom pb-2 mb-3 border-secondary">ARTVİZYON HABER</h5>
+                    <h5 class="border-bottom pb-2 mb-3 border-secondary text-warning">ARTVİZYON HABER</h5>
                     <p class="small text-white-50">Gazeteci Sami Özçelik yönetiminde, Artvin'in ilkeli ve gür sesi.</p>
                 </div>
-                
                 <div class="col-md-3 mb-4">
-                    <h5 class="border-bottom pb-2 mb-3 border-secondary">ÜYELİK</h5>
+                    <h5 class="border-bottom pb-2 mb-3 border-secondary text-warning">ÜYELİK</h5>
                     <ul class="list-unstyled small">
                         {% if user.is_authenticated %}
-                            <li class="mb-2 text-warning">Hoşgeldin, {{ user.username }}</li>
-                            <li class="mb-2">
-                                <form action="{% url 'logout' %}" method="post" class="d-inline">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-link text-white-50 text-decoration-none p-0">Çıkış Yap</button>
-                                </form>
-                            </li>
+                            <li class="mb-2 text-success">Hoşgeldin, {{ user.username }}</li>
+                            <li class="mb-2"><a href="{% url 'logout' %}" class="text-white-50 text-decoration-none">Çıkış Yap</a></li>
                         {% else %}
                             <li class="mb-2"><a href="{% url 'login' %}" class="text-white-50 text-decoration-none">Giriş Yap</a></li>
                             <li class="mb-2"><a href="{% url 'register' %}" class="text-white-50 text-decoration-none">Kayıt Ol</a></li>
@@ -230,24 +331,18 @@
                         <li class="mb-2"><a href="{% url 'destek' %}" class="text-white-50 text-decoration-none">Abonelik Paketleri</a></li>
                     </ul>
                 </div>
-
                 <div class="col-md-3 mb-4">
-                    <h5 class="border-bottom pb-2 mb-3 border-secondary">BİZE ULAŞIN</h5>
-                    <p class="small mb-2"><i class="fas fa-envelope me-2 text-warning"></i> samiozcelik38@gmail.com</p>
-                    <p class="small mb-2"><i class="fas fa-phone me-2 text-warning"></i> +90 545 808 84 08</p>
+                    <h5 class="border-bottom pb-2 mb-3 border-secondary text-warning">BİZE ULAŞIN</h5>
+                    <p class="small mb-2"><i class="fas fa-envelope me-2 text-white-50"></i> samiozcelik38@gmail.com</p>
+                    <p class="small mb-2"><i class="fas fa-phone me-2 text-white-50"></i> +90 545 808 84 08</p>
                 </div>
-                
                 <div class="col-md-3 mb-4">
-                    <h5 class="border-bottom pb-2 mb-3 border-secondary">TAKİP EDİN</h5>
+                    <h5 class="border-bottom pb-2 mb-3 border-secondary text-warning">TAKİP EDİN</h5>
                     <div class="d-flex gap-2 mb-3">
-                        <a href="https://www.facebook.com/albersam2001" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://instagram.com/artvizyonhaber" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
-                        <a href="https://www.youtube.com/@samiozcelikgzt" target="_blank" class="social-icon"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
                     </div>
-                    
-                    <a href="https://wa.me/905458088408?text=Reklam%20vermek%20istiyorum" target="_blank" class="btn btn-success btn-sm fw-bold">
-    <i class="fab fa-whatsapp me-1"></i> Reklam Ver
-</a>
                 </div>
             </div>
             <div class="border-top border-secondary pt-4 mt-3 text-center small text-white-50">© {% now "Y" %} Gazeteci Sami Özçelik | Tüm Hakları Saklıdır.</div>
@@ -257,12 +352,15 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        document.addEventListener("DOMContentLoaded", function(){
-            window.addEventListener('scroll', function() {
-                var navbar = document.getElementById('mainNav');
-                var spacer = document.getElementById('navSpacer');
-                if (window.scrollY > 50) { navbar.classList.add('sticky-top'); spacer.style.height = "100px"; } 
-                else { navbar.classList.remove('sticky-top'); spacer.style.height = "0"; }
+        document.addEventListener("DOMContentLoaded", function() {
+            var stickyWrapper = document.getElementById("sticky-wrapper");
+            
+            window.addEventListener("scroll", function() {
+                if (window.scrollY > 50) {
+                    stickyWrapper.classList.add("is-scrolled");
+                } else {
+                    stickyWrapper.classList.remove("is-scrolled");
+                }
             });
         });
     </script>

@@ -1,0 +1,358 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<style>
+    /* Harita Alanı - Yükseklik 600px'e döndürüldü */
+    .map-wrapper {
+        position: relative;
+        height: 600px; /* ESKİ BOYUT */
+        width: 100%;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #ddd;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    #map-container {
+        height: 100%;
+        width: 100%;
+        z-index: 1;
+        background-color: #eee;
+    }
+
+    /* Şık Dropdown Menü */
+    .map-filter {
+        position: absolute;
+        top: 20px;
+        left: 60px;
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 8px 15px;
+        border-radius: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        display: flex;
+        align-items: center;
+        backdrop-filter: blur(4px);
+    }
+    
+    .map-filter select {
+        border: none;
+        background: transparent;
+        font-weight: bold;
+        color: #2e7d32;
+        outline: none;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+
+    /* Sağ Liste - Yükseklik Haritayla Eşitlendi */
+    .place-list-container { 
+        height: 600px; /* Harita ile aynı boy */
+        overflow-y: auto; /* İçerik taşarsa kaydırma çubuğu çıkar */
+        padding-right: 5px; 
+    }
+    
+    /* Scrollbar Tasarımı (Daha şık görünüm için) */
+    .place-list-container::-webkit-scrollbar { width: 8px; }
+    .place-list-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+    .place-list-container::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 4px; }
+    .place-list-container::-webkit-scrollbar-thumb:hover { background-color: #2e7d32; }
+
+    .place-item { 
+        cursor: pointer; 
+        transition: all 0.2s; 
+        background: #fff; 
+        margin-bottom: 10px; 
+        border-radius: 8px; 
+        border: 1px solid #f0f0f0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    }
+    .place-item:hover { 
+        background: #f1f8e9; 
+        border-color: #2e7d32; 
+        transform: translateY(-2px); 
+    }
+
+    /* Detay Alanı */
+    #detail-section {
+        display: none;
+        background: #fff;
+        border-radius: 15px;
+        padding: 30px;
+        margin-top: 30px;
+        border-top: 4px solid #2e7d32;
+        box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+    }
+    
+    .detail-content img { max-width: 100%; height: auto; border-radius: 8px; margin: 15px 0; }
+
+    /* REKLAM KUTULARI */
+    .ad-placeholder {
+        background-color: #f8f9fa;
+        border: 2px dashed #e0e0e0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #999;
+        font-size: 12px;
+        font-weight: bold;
+        margin: 0 auto;
+        overflow: hidden;
+    }
+</style>
+
+<div class="container-fluid mt-3 mb-5 px-3">
+    <div class="row">
+        
+        <div class="col-lg-2 d-none d-lg-block">
+            <div style="position: sticky; top: 100px;"> 
+                <div class="ad-placeholder mb-3" style="width: 100%; height: 600px; max-width: 160px;">
+                    <span>SOL KULE REKLAM<br>(160x600)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-10">
+
+            <div class="row mb-4 justify-content-center">
+                <div class="col-12 text-center">
+                    <div class="ad-placeholder" style="width: 100%; max-width: 970px; height: 90px;">
+                        <span>TEPE REKLAM ALANI (Leaderboard)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-md-8">
+                    <h2 class="fw-bold mb-0" style="color: #2e7d32;">🗺️ Artvin Keşif Haritası</h2>
+                    <small class="text-muted">İlçe seçerek veya harita üzerindeki noktalara tıklayarak keşfedin.</small>
+                </div>
+                <div class="col-md-4 text-end">
+                    <span class="badge bg-dark p-2">{{ yerler.count }} Rota Mevcut</span>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-lg-9">
+                    <div class="map-wrapper">
+                        <div class="map-filter">
+                            <label class="me-2 mb-0">📍</label>
+                            <select id="district-select" onchange="filterMap()">
+                                <option value="Tümü">Tümü (Artvin Geneli)</option>
+                                <option value="Merkez">Merkez</option>
+                                <option value="Arhavi">Arhavi</option>
+                                <option value="Borçka">Borçka</option>
+                                <option value="Hopa">Hopa</option>
+                                <option value="Şavşat">Şavşat</option>
+                                <option value="Yusufeli">Yusufeli</option>
+                                <option value="Ardanuç">Ardanuç</option>
+                                <option value="Murgul">Murgul</option>
+                                <option value="Kemalpaşa">Kemalpaşa</option>
+                            </select>
+                        </div>
+                        <div id="map-container"></div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3">
+                    <div class="place-list-container">
+                        {% for yer in yerler %}
+                        <div class="d-flex align-items-center p-2 place-item" 
+                             onclick="focusOnMap({{ yer.id }})" 
+                             data-district="{{ yer.ilce|default:'Merkez' }}">
+                             
+                            <img src="{% if yer.harita_ikonu %}{{ yer.harita_ikonu.url }}{% elif yer.resim %}{{ yer.resim.url }}{% else %}https://via.placeholder.com/50{% endif %}" 
+                                 class="rounded-circle border" style="width: 45px; height: 45px; object-fit: cover;">
+                            <div class="ms-2">
+                                <h6 class="mb-0 fw-bold text-dark" style="font-size: 0.95rem;">{{ yer.baslik }}</h6>
+                                <small class="text-muted" style="font-size: 0.75rem;">📍 {{ yer.ilce|default:"Merkez" }}</small>
+                            </div>
+
+                            <div id="data-{{ yer.id }}" style="display:none;">
+                                <div class="data-title">{{ yer.baslik }}</div>
+                                <div class="data-district">{{ yer.ilce|default:'Merkez' }}</div>
+                                <div class="data-img">{% if yer.resim %}{{ yer.resim.url }}{% endif %}</div>
+                                <div class="data-lat">{{ yer.enlem|default:'' }}</div>
+                                <div class="data-lng">{{ yer.boylam|default:'' }}</div>
+                                <div class="data-icon">{% if yer.harita_ikonu %}{{ yer.harita_ikonu.url }}{% else %}https://cdn-icons-png.flaticon.com/512/684/684908.png{% endif %}</div>
+                                <div class="data-content">{{ yer.icerik|safe }}</div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="alert alert-light border py-2 small text-center">Henüz rota eklenmemiş.</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div id="detail-section">
+                <div class="d-flex justify-content-between align-items-start mb-3 border-bottom pb-2">
+                    <h2 class="h3 fw-bold text-dark mb-0" id="detail-title">Yer Başlığı</h2>
+                    <button class="btn btn-sm btn-outline-danger" onclick="closeDetail()">Kapat ✖</button>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <img id="detail-img" src="" class="img-fluid rounded shadow-sm w-100" style="max-height: 350px; object-fit: cover; display: none;">
+                    </div>
+                    <div class="col-md-8">
+                        <div id="detail-content" class="detail-content text-secondary"></div>
+                        
+                        <div class="mt-4 text-center">
+                            <span class="badge bg-light text-secondary border mb-1" style="font-size: 10px;">SPONSORLU</span>
+                            <div class="ad-placeholder" style="width: 100%; height: 90px;">
+                                <span>İÇERİK ALTI YATAY REKLAM</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    var map = L.map('map-container').setView([41.1828, 41.8183], 9);
+
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles © Esri'
+    }).addTo(map);
+
+    fetch('https://raw.githubusercontent.com/fatiherikli/turkey-geojson-cities/master/cities.json')
+        .then(response => response.json())
+        .then(data => {
+            const artvinFeature = data.features.find(f => f.properties.name === "Artvin");
+            if(artvinFeature) {
+                L.geoJSON(artvinFeature, {
+                    style: {
+                        color: "#ffb703",
+                        weight: 3,
+                        dashArray: '10, 10',
+                        fillColor: 'transparent'
+                    }
+                }).addTo(map);
+            }
+        });
+
+    var allMarkers = [];
+    var markerMap = {};
+
+    const districtCoords = {
+        "Merkez": [41.1828, 41.8183],
+        "Arhavi": [41.3478, 41.3066],
+        "Borçka": [41.3606, 41.6781],
+        "Hopa": [41.4061, 41.4225],
+        "Şavşat": [41.2444, 42.4222],
+        "Yusufeli": [40.8222, 41.5472],
+        "Ardanuç": [41.1250, 42.0472],
+        "Murgul": [41.2650, 41.5606],
+        "Kemalpaşa": [41.4800, 41.5100]
+    };
+
+    {% for yer in yerler %}
+    (function(){
+        var lat = "{{ yer.enlem|default:'' }}";
+        var lng = "{{ yer.boylam|default:'' }}";
+        var id = "{{ yer.id }}";
+        var ilce = "{{ yer.ilce|default:'Merkez' }}"; 
+        
+        if(lat && lng) {
+            var iconUrl = document.querySelector('#data-' + id + ' .data-icon').innerText;
+
+            var customIcon = L.divIcon({
+                className: 'custom-pin',
+                html: `<div style="width: 50px; height: 50px; background:white; border-radius:50%; border:2px solid #ffb703; display:flex; justify-content:center; align-items:center; overflow:hidden; box-shadow:0 5px 10px rgba(0,0,0,0.5);">
+                        <img src="${iconUrl}" style="width:100%; height:100%; object-fit:cover;"> 
+                       </div>
+                       <div style="width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:8px solid #ffb703; margin: -2px auto 0 auto;"></div>`,
+                iconSize: [50, 60],
+                iconAnchor: [25, 60],
+                popupAnchor: [0, -60]
+            });
+
+            var marker = L.marker([lat, lng], {icon: customIcon});
+            marker.placeId = id;
+            marker.district = ilce;
+
+            marker.on('click', function() {
+                focusOnMap(id);
+            });
+
+            marker.addTo(map);
+            allMarkers.push(marker);
+            markerMap[id] = marker;
+        }
+    })();
+    {% endfor %}
+
+    function filterMap() {
+        var selectedDistrict = document.getElementById('district-select').value;
+        var listItems = document.querySelectorAll('.place-item');
+
+        allMarkers.forEach(function(marker) {
+            if (selectedDistrict === "Tümü" || marker.district === selectedDistrict) {
+                if(!map.hasLayer(marker)) map.addLayer(marker);
+            } else {
+                if(map.hasLayer(marker)) map.removeLayer(marker);
+            }
+        });
+
+        listItems.forEach(function(item) {
+            var itemDistrict = item.getAttribute('data-district');
+            if (selectedDistrict === "Tümü" || itemDistrict === selectedDistrict) {
+                item.style.display = "flex";
+            } else {
+                item.style.display = "none";
+            }
+        });
+
+        if (selectedDistrict === "Tümü") {
+            map.flyTo([41.1828, 41.8183], 9);
+        } else if (districtCoords[selectedDistrict]) {
+            map.flyTo(districtCoords[selectedDistrict], 11);
+        }
+    }
+
+    function focusOnMap(id) {
+        var dataDiv = document.getElementById('data-' + id);
+        if(!dataDiv) return;
+
+        var title = dataDiv.querySelector('.data-title').innerText;
+        var content = dataDiv.querySelector('.data-content').innerHTML;
+        var imgSrc = dataDiv.querySelector('.data-img').innerText;
+        var lat = dataDiv.querySelector('.data-lat').innerText;
+        var lng = dataDiv.querySelector('.data-lng').innerText;
+
+        if(lat && lng) {
+            map.flyTo([lat, lng], 14, {duration: 1.5});
+        }
+
+        document.getElementById('detail-title').innerText = title;
+        document.getElementById('detail-content').innerHTML = content;
+        
+        var imgEl = document.getElementById('detail-img');
+        if(imgSrc && imgSrc.trim() !== "") {
+            imgEl.src = imgSrc;
+            imgEl.style.display = 'block';
+        } else {
+            imgEl.style.display = 'none';
+        }
+
+        var section = document.getElementById('detail-section');
+        section.style.display = 'block';
+        
+        setTimeout(() => {
+            section.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+        }, 500);
+    }
+
+    function closeDetail() {
+        document.getElementById('detail-section').style.display = 'none';
+    }
+</script>
+{% endblock %}

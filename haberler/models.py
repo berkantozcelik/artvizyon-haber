@@ -6,40 +6,35 @@ from django.utils.text import slugify
 import textwrap
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont, ImageOps
-import re  # <-- YENİ EKLENDİ
-
-# --- DÜZELTME: Doğru Kütüphane Eklendi ---
+import re 
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from imagekit.models import ProcessedImageField
-from imagekit.processors import ResizeToFit
+from imagekit.processors import ResizeToFit, ResizeToFill
 
 # --- YARDIMCI FONKSİYON: YOUTUBE EMBED ÇEVİRİCİ ---
-# --- GÜNCELLENMİŞ YARDIMCI FONKSİYON ---
 def get_youtube_embed(url):
     """
     Normal videoları ve SHORTS videolarını embed koduna çevirir.
     """
     if not url: return None
     
-    # 1. Eğer zaten embed linki ise dokunma
     if "embed" in url: return url
 
-    # 2. Eğer SHORTS videosu ise (YENİ EKLENEN KISIM)
     if "shorts/" in url:
         try:
-            # youtube.com/shorts/VIDEO_ID?feature=share gibi gelebilir
             video_id = url.split("shorts/")[1].split("?")[0]
             return f"https://www.youtube.com/embed/{video_id}"
         except:
             return url
 
-    # 3. Eğer kısaltılmış link ise (youtu.be)
     if "youtu.be" in url:
         try:
             video_id = url.split("/")[-1].split("?")[0]
             return f"https://www.youtube.com/embed/{video_id}"
         except: return url
         
-    # 4. Eğer normal link ise (watch?v=)
     if "watch?v=" in url:
         try:
             video_id = url.split("watch?v=")[1].split("&")[0]
@@ -121,7 +116,7 @@ class KoseYazisi(models.Model):
     def embed_video_url(self): return get_youtube_embed(self.video_link)
 
 # ==========================================
-# 📰 HABER MODELİ (GÜNCELLENDİ)
+# 📰 HABER MODELİ
 # ==========================================
 
 class Haber(models.Model):
@@ -138,9 +133,13 @@ class Haber(models.Model):
         blank=True
     )
 
-    # 1. Alan zaten buradaydı, koruyoruz:
     video_link = models.URLField(blank=True, null=True, verbose_name="Video Linki (YouTube)")
     
+    # --- YENİ EKLENEN ALANLAR ---
+    foto_kaynak = models.CharField(max_length=100, blank=True, verbose_name="Fotoğraf Kaynağı (Örn: AA, İHA)", help_text="Boş bırakırsan 'Artvizyon Haber' yazar.")
+    roportaj_mi = models.BooleanField(default=False, verbose_name="Bu Bir Röportaj mı?")
+    # ----------------------------
+
     son_dakika = models.BooleanField(default=False, verbose_name="Son Dakika Haberi mi?")
     ulusal_mi = models.BooleanField(default=False, verbose_name="Ulusal Haber mi?")
     manset_mi = models.BooleanField(default=False, verbose_name="Manşette Göster")
@@ -153,22 +152,22 @@ class Haber(models.Model):
     def __str__(self): return self.baslik
     class Meta: verbose_name_plural = "Haberler"; ordering = ['-yayin_tarihi']
 
-    # 2. Template'de kullanacağımız SİHİRLİ DÖNÜŞTÜRÜCÜ (Yeni ekledim)
     @property
     def youtube_embed_url(self):
         if self.video_link:
-            # YouTube linkinden ID'yi çeken basit mantık
             video_id = None
             if "youtube.com" in self.video_link and "v=" in self.video_link:
                 try:
                     video_id = self.video_link.split("v=")[1].split("&")[0]
-                except:
-                    return None
+                except: return None
             elif "youtu.be" in self.video_link:
                 try:
                     video_id = self.video_link.split("/")[-1].split("?")[0]
-                except:
-                    return None
+                except: return None
+            elif "shorts/" in self.video_link:
+                try:
+                    video_id = self.video_link.split("shorts/")[1].split("?")[0]
+                except: return None
             
             if video_id:
                 return f"https://www.youtube.com/embed/{video_id}"
@@ -375,3 +374,106 @@ class Destekci(models.Model):
     aktif_mi = models.BooleanField(default=False)
     def __str__(self): return self.isim
     class Meta: verbose_name_plural = "Aboneler ve Destekçiler"
+
+# ==========================================
+# 🏛️ TARİHİ VE TURİSTİK YERLER (GÜNCELLENDİ)
+# ==========================================
+class TarihiYer(models.Model):
+    # --- YENİ EKLENEN İLÇE SEÇENEKLERİ ---
+    ILCE_SECENEKLERI = (
+        ('Merkez', 'Merkez'),
+        ('Arhavi', 'Arhavi'),
+        ('Borçka', 'Borçka'),
+        ('Hopa', 'Hopa'),
+        ('Şavşat', 'Şavşat'),
+        ('Yusufeli', 'Yusufeli'),
+        ('Ardanuç', 'Ardanuç'),
+        ('Murgul', 'Murgul'),
+        ('Kemalpaşa', 'Kemalpaşa'),
+    )
+    
+    baslik = models.CharField(max_length=200, verbose_name="Yer Adı (Örn: Artvin Kalesi)")
+    slug = models.SlugField(unique=True, verbose_name="Link Uzantısı", null=True, blank=True)
+    
+    # --- YENİ EKLENEN ALAN ---
+    ilce = models.CharField(
+        max_length=50, 
+        choices=ILCE_SECENEKLERI, 
+        default='Merkez', 
+        verbose_name="Bulunduğu İlçe"
+    )
+    # -------------------------
+
+    ozet = models.TextField(verbose_name="Kısa Tanıtım (Listede görünür)", blank=True)
+    icerik = RichTextUploadingField(verbose_name="Detaylı Bilgi")
+    enlem = models.CharField(max_length=50, verbose_name="Enlem (Latitude)", blank=True, null=True, help_text="Örn: 41.1828")
+    boylam = models.CharField(max_length=50, verbose_name="Boylam (Longitude)", blank=True, null=True, help_text="Örn: 41.8183")
+    
+    harita_ikonu = ProcessedImageField(
+        upload_to='harita_ikonlari/',
+        processors=[ResizeToFit(200, 200)], 
+        format='PNG', 
+        options={'quality': 90},
+        blank=True, null=True,
+        verbose_name="Harita İkonu (3D Görünümlü PNG)",
+        help_text="Arka planı şeffaf, izometrik/3D görünümlü bir PNG yükleyin."
+    )
+    
+    resim = ProcessedImageField(
+        upload_to='tarihi_yerler/',
+        processors=[ResizeToFit(1000, 800)],
+        format='JPEG',
+        options={'quality': 70},
+        verbose_name="Kapak Fotoğrafı"
+    )
+    
+    harita_konumu = models.CharField(max_length=500, blank=True, verbose_name="Google Maps Embed Linki (İsteğe Bağlı)")
+    sira = models.PositiveIntegerField(default=0, verbose_name="Sıralama (Önce çıkması için)")
+    aktif_mi = models.BooleanField(default=True)
+
+    def __str__(self): return f"{self.baslik} ({self.ilce})"
+    class Meta: verbose_name_plural = "Tarihi ve Turistik Yerler"; ordering = ['sira']
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.baslik)
+        super().save(*args, **kwargs)
+
+        # ==========================================
+# 👤 KULLANICI PROFİL MODELİ (Eksik Olan Bu)
+# ==========================================
+class Profil(models.Model):
+    # Her kullanıcının sadece BİR profili olsun (OneToOne)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profil', verbose_name="Kullanıcı")
+    
+    # Profil Resmi (Otomatik kırpılır)
+    resim = ProcessedImageField(
+        upload_to='profil_resimleri/',
+        processors=[ResizeToFill(300, 300)], # 300x300 kare yapar
+        format='JPEG',
+        options={'quality': 80},
+        blank=True, null=True,
+        verbose_name="Profil Resmi"
+    )
+    
+    telefon = models.CharField(max_length=15, blank=True, verbose_name="Telefon Numarası")
+    biyografi = models.TextField(blank=True, max_length=500, verbose_name="Kısa Biyografi")
+
+    def __str__(self):
+        return f"{self.user.username} Profili"
+
+    class Meta:
+        verbose_name = "Kullanıcı Profili"
+        verbose_name_plural = "Kullanıcı Profilleri"
+
+# --- OTOMATİK PROFİL OLUŞTURMA SİNYALİ ---
+# Yeni bir üye kaydolduğunda, sistem otomatik olarak ona boş bir profil oluşturur.
+@receiver(post_save, sender=User)
+def profil_olustur(sender, instance, created, **kwargs):
+    if created:
+        Profil.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def profil_kaydet(sender, instance, **kwargs):
+    instance.profil.save()
+        

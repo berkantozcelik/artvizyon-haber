@@ -1,9 +1,6 @@
 from django.contrib import admin
 from django.http import HttpResponse
-from django.conf import settings
 from django.utils.html import format_html
-from django.utils import timezone
-import os
 import textwrap
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageOps 
 
@@ -12,11 +9,11 @@ from .models import (
     Haber, Kategori, Ilce, KoseYazari, KoseYazisi, 
     Galeri, GaleriResim, HaftaninFotografi, Siir, 
     EczaneLinki, Yorum, Destekci,
-    OzelGun, TebrikMesaji 
+    OzelGun, TebrikMesaji, TarihiYer 
 )
 
 # =========================================================
-# 📸 1. HABERLER İÇİN INSTAGRAM POST OLUŞTURUCU (ACTION)
+# 📸 1. INSTAGRAM POST OLUŞTURUCU FONKSİYONLAR
 # =========================================================
 
 def draw_text_left_aligned(draw, text, x_pos, y_pos, font, max_width, fill):
@@ -51,9 +48,10 @@ def generate_instagram_post(modeladmin, request, queryset):
         bg_img = Image.new('RGBA', canvas_size, color=bg_color)
     img = bg_img
     draw = ImageDraw.Draw(img)
-    text_color = (255, 255, 255)
+    
+    # Yazı Ayarları
     try:
-        # Font yolları (Linux sunucu uyumlu)
+        # Font yolları (Linux sunucu uyumlu - gerekirse kendi font yolunu yaz)
         font_baslik = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 75)
         font_ozet = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 40)
         font_handle = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 30)
@@ -62,17 +60,18 @@ def generate_instagram_post(modeladmin, request, queryset):
         font_ozet = ImageFont.load_default()
         font_handle = ImageFont.load_default()
         
-    left_margin = 60
-    current_y = 60
-    
     text_x = 100
     text_y = 450
     text_width = 880
-    next_y = draw_text_left_aligned(draw, haber.baslik.upper(), text_x, text_y, font_baslik, text_width, text_color)
+    
+    # Başlık ve Özet Yazdır
+    next_y = draw_text_left_aligned(draw, haber.baslik.upper(), text_x, text_y, font_baslik, text_width, (255, 255, 255))
     if haber.ozet:
         ozet_metni = (haber.ozet[:130] + '...') if len(haber.ozet) > 130 else haber.ozet
         draw_text_left_aligned(draw, ozet_metni, text_x, next_y + 40, font_ozet, text_width, (220, 220, 220))
+    
     draw.text((100, 980), "Detaylar ve haberin devamı için link biyografide ->", font=font_handle, fill=(255, 215, 0))
+    
     img = img.convert("RGB")
     response = HttpResponse(content_type="image/jpeg")
     response['Content-Disposition'] = f'attachment; filename=insta-post-{haber.pk}.jpg'
@@ -80,7 +79,7 @@ def generate_instagram_post(modeladmin, request, queryset):
     return response
 
 # =========================================================
-# 📝 2. MODEL KAYITLARI
+# 📝 2. MODEL KAYITLARI (ADMİN PANELİ AYARLARI)
 # =========================================================
 
 # --- HABER YÖNETİMİ ---
@@ -164,12 +163,10 @@ class EczaneLinkiAdmin(admin.ModelAdmin):
 class TebrikMesajiInline(admin.TabularInline):
     model = TebrikMesaji
     extra = 1
-    # 'instagram_indir' alanını listeye ekliyoruz, yoksa görünmez!
     fields = ('sira', 'ad_soyad', 'unvan', 'mesaj_metni', 'resim', 'video_link', 'instagram_indir')
     readonly_fields = ('instagram_indir',) 
 
     def instagram_indir(self, obj):
-        # Eğer resim oluşturulmuşsa butonu göster
         if obj.instagram_gorseli:
             return format_html(
                 '''<a href="{}" target="_blank" 
@@ -188,7 +185,11 @@ class OzelGunAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('baslik',)} 
     inlines = [TebrikMesajiInline]
 
-# --- BASİT KAYITLAR ---
+# --- TARİHİ VE TURİSTİK YERLER (İŞTE BURASI!) ---
+# Yeni test kodu
+admin.site.register(TarihiYer)
+
+# --- DİĞER BASİT KAYITLAR ---
 admin.site.register(Kategori)
 admin.site.register(Ilce)
 admin.site.register(HaftaninFotografi)

@@ -50,6 +50,10 @@ urlpatterns = [
 
     # Özel Gün Detay Sayfası
     path('ozel-gun/<slug:slug>/', views.ozel_gun_detay, name='ozel_gun_detay'),
+        # Tarihi ve Turistik Yerler
+        # Tarihi yerler linkleri
+    path('tarihi-yerler/', views.tarihi_yerler_listesi, name='tarihi_yerler_listesi'),
+    path('tarihi-yerler/<slug:slug>/', views.tarihi_yer_detay, name='tarihi_yer_detay'),
 
     path('ckeditor/', include('ckeditor_uploader.urls')),
     # Senin diğer url'lerin burada duruyor, dokunma...

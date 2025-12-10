@@ -138,14 +138,25 @@ JAZZMIN_SETTINGS = {
         {"name": "🔥 Siteyi Görüntüle", "url": "anasayfa", "permissions": ["auth.view_user"]},
         {"name": "📞 Teknik Destek", "url": "https://wa.me/905320000000", "new_window": True},
     ],
+    
+    # SADECE BU LİSTEDEKİLER GÖRÜNÜR (TarihiYer Eklendi!)
     "order_with_respect_to": [
         "haberler.Haber", 
         "haberler.Kategori", 
         "haberler.Ilce", 
         "haberler.Galeri", 
         "haberler.HaftaninFotografi",
-        "haberler.EczaneLinki"
+        "haberler.EczaneLinki",
+        "haberler.TarihiYer",   # <--- İŞTE KRAL BURADA!
+        "haberler.OzelGun",
+        "haberler.Siir",
+        "haberler.KoseYazari",
+        "haberler.KoseYazisi",
+        "haberler.Yorum",
+        "haberler.Destekci"
     ],
+    
+    # İKONLAR (TarihiYer Eklendi!)
     "icons": {
         "auth": "fas fa-users-cog",
         "auth.user": "fas fa-user",
@@ -158,11 +169,18 @@ JAZZMIN_SETTINGS = {
         "haberler.HaftaninFotografi": "fas fa-camera-retro",
         "haberler.EczaneLinki": "fas fa-clinic-medical",
         "haberler.Yorum": "fas fa-comments",       
-        "haberler.Destekci": "fas fa-hand-holding-heart", 
+        "haberler.Destekci": "fas fa-hand-holding-heart",
+        "haberler.TarihiYer": "fas fa-landmark", # <--- İKONU DA BURADA
+        "haberler.OzelGun": "fas fa-calendar-day",
+        "haberler.Siir": "fas fa-feather-alt",
+        "haberler.KoseYazari": "fas fa-user-edit",
+        "haberler.KoseYazisi": "fas fa-pen-nib",
     },
     "default_icon_parents": "fas fa-chevron-circle-right",
     "default_icon_children": "fas fa-circle",
-    "show_ui_builder": True, 
+    
+    # !!! KRİTİK AYAR: Bunu False yapıyoruz ki senin kodlarını okusun !!!
+    "show_ui_builder": False, 
 }
 
 # --- RENK VE TEMA AYARLARI ---
