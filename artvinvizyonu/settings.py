@@ -28,18 +28,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    # ------------------------------------------------
-    # --- SOCIAL LOGIN (ALLAUTH) İÇİN GEREKLİLER ---
-    # ------------------------------------------------
     'django.contrib.sites', 
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.facebook',
-    # ------------------------------------------------
-    
+    'reversion',
     'imagekit', 
     'haberler', 
     'ckeditor',
@@ -214,13 +209,13 @@ SITE_ID = 1
 
 # Allauth ayarları
 ACCOUNT_AUTHENTICATION_METHOD = "username_email"
-ACCOUNT_EMAIL_REQUIRED = False
+ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = False
 ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_UNIQUE_EMAIL = True
 SOCIALACCOUNT_EMAIL_VERIFICATION = "none"
-SOCIALACCOUNT_EMAIL_REQUIRED = True
+SOCIALACCOUNT_EMAIL_REQUIRED = False
 SOCIALACCOUNT_AUTO_SIGNUP = True
 ACCOUNT_SIGNUP_NO_FIELDS = True
 

@@ -11,6 +11,8 @@ from .models import (
     EczaneLinki, Yorum, Destekci,
     OzelGun, TebrikMesaji, TarihiYer 
 )
+# Geri alma (Undo) özelliği için gerekli kütüphane
+from reversion.admin import VersionAdmin
 
 # =========================================================
 # 📸 1. INSTAGRAM POST OLUŞTURUCU FONKSİYONLAR
@@ -51,7 +53,7 @@ def generate_instagram_post(modeladmin, request, queryset):
     
     # Yazı Ayarları
     try:
-        # Font yolları (Linux sunucu uyumlu - gerekirse kendi font yolunu yaz)
+        # Font yolları (Linux sunucu uyumlu)
         font_baslik = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 75)
         font_ozet = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 40)
         font_handle = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 30)
@@ -82,9 +84,9 @@ def generate_instagram_post(modeladmin, request, queryset):
 # 📝 2. MODEL KAYITLARI (ADMİN PANELİ AYARLARI)
 # =========================================================
 
-# --- HABER YÖNETİMİ ---
+# --- HABER YÖNETİMİ (GERİ ALMA EKLENDİ) ---
 @admin.register(Haber)
-class HaberAdmin(admin.ModelAdmin):
+class HaberAdmin(VersionAdmin): # VersionAdmin kullanıldı
     list_display = ('baslik', 'kategori', 'yayin_tarihi', 'aktif_mi', 'manset_mi', 'son_dakika')
     list_editable = ('aktif_mi', 'manset_mi', 'son_dakika') 
     list_filter = ('aktif_mi', 'manset_mi', 'son_dakika', 'kategori')
@@ -92,31 +94,31 @@ class HaberAdmin(admin.ModelAdmin):
     date_hierarchy = 'yayin_tarihi'
     actions = [generate_instagram_post]
 
-# --- GALERİ YÖNETİMİ ---
+# --- GALERİ YÖNETİMİ (GERİ ALMA EKLENDİ) ---
 class GaleriResimInline(admin.TabularInline):
     model = GaleriResim
     extra = 3
 
 @admin.register(Galeri)
-class GaleriAdmin(admin.ModelAdmin):
+class GaleriAdmin(VersionAdmin): # VersionAdmin kullanıldı
     inlines = [GaleriResimInline]
     list_display = ('baslik', 'yayin_tarihi')
 
-# --- YAZARLAR VE YAZILARI ---
+# --- YAZARLAR VE YAZILARI (GERİ ALMA EKLENDİ) ---
 @admin.register(KoseYazari)
-class KoseYazariAdmin(admin.ModelAdmin):
+class KoseYazariAdmin(VersionAdmin): # VersionAdmin kullanıldı
     list_display = ('ad_soyad', 'basyazar_mi', 'aktif_mi')
     list_editable = ('basyazar_mi', 'aktif_mi')
 
 @admin.register(KoseYazisi)
-class KoseYazisiAdmin(admin.ModelAdmin):
+class KoseYazisiAdmin(VersionAdmin): # VersionAdmin kullanıldı
     list_display = ('baslik', 'yazar', 'yayin_tarihi', 'aktif_mi')
     list_filter = ('yazar', 'aktif_mi')
     search_fields = ('baslik',)
 
-# --- YORUM YÖNETİMİ ---
+# --- YORUM YÖNETİMİ (GERİ ALMA EKLENDİ) ---
 @admin.register(Yorum)
-class YorumAdmin(admin.ModelAdmin):
+class YorumAdmin(VersionAdmin): # VersionAdmin kullanıldı
     list_display = ('isim', 'govde_kisalt', 'icerik_kaynagi', 'olusturulma_tarihi', 'durum_ikonu')
     list_filter = ('aktif', 'olusturulma_tarihi')
     search_fields = ('isim', 'email', 'govde')
@@ -139,27 +141,27 @@ class YorumAdmin(admin.ModelAdmin):
         return format_html('<span style="color:green;">✔ Yayında</span>') if obj.aktif else format_html('<span style="color:red;">⏳ Onay Bekliyor</span>')
     durum_ikonu.short_description = "Durum"
 
-# --- DESTEKÇİLER ---
+# --- DESTEKÇİLER (GERİ ALMA EKLENDİ) ---
 @admin.register(Destekci)
-class DestekciAdmin(admin.ModelAdmin):
+class DestekciAdmin(VersionAdmin): # VersionAdmin kullanıldı
     list_display = ('isim', 'paket', 'bitis_tarihi', 'aktif_mi')
     list_filter = ('paket', 'aktif_mi')
     search_fields = ('isim', 'email')
 
-# --- ŞİİR KÖŞESİ ---
+# --- ŞİİR KÖŞESİ (GERİ ALMA EKLENDİ) ---
 @admin.register(Siir)
-class SiirAdmin(admin.ModelAdmin):
+class SiirAdmin(VersionAdmin): # VersionAdmin kullanıldı
     list_display = ('baslik', 'sair', 'yayin_tarihi', 'aktif_mi')
     search_fields = ('baslik', 'sair')
     list_filter = ('aktif_mi',)
 
-# --- ECZANE LİNKLERİ ---
+# --- ECZANE LİNKLERİ (GERİ ALMA EKLENDİ) ---
 @admin.register(EczaneLinki)
-class EczaneLinkiAdmin(admin.ModelAdmin):
+class EczaneLinkiAdmin(VersionAdmin): # VersionAdmin kullanıldı
     list_display = ('ilce_adi', 'url', 'sira')
     list_editable = ('url', 'sira')
 
-# --- ÖZEL GÜN VE INSTAGRAM İNDİRME BUTONU ---
+# --- ÖZEL GÜN VE INSTAGRAM İNDİRME BUTONU (GERİ ALMA EKLENDİ) ---
 class TebrikMesajiInline(admin.TabularInline):
     model = TebrikMesaji
     extra = 1
@@ -179,17 +181,28 @@ class TebrikMesajiInline(admin.TabularInline):
     instagram_indir.short_description = "Sosyal Medya"
 
 @admin.register(OzelGun)
-class OzelGunAdmin(admin.ModelAdmin):
+class OzelGunAdmin(VersionAdmin): # VersionAdmin kullanıldı
     list_display = ('baslik', 'aktif_mi', 'anasayfada_goster')
     list_editable = ('aktif_mi', 'anasayfada_goster')
     prepopulated_fields = {'slug': ('baslik',)} 
     inlines = [TebrikMesajiInline]
 
-# --- TARİHİ VE TURİSTİK YERLER (İŞTE BURASI!) ---
-# Yeni test kodu
-admin.site.register(TarihiYer)
+# --- BASİT KAYITLAR (GERİ ALMA ÖZELLİĞİ İÇİN SINIF HALİNE GETİRİLDİ) ---
 
-# --- DİĞER BASİT KAYITLAR ---
-admin.site.register(Kategori)
-admin.site.register(Ilce)
-admin.site.register(HaftaninFotografi)
+@admin.register(TarihiYer)
+class TarihiYerAdmin(VersionAdmin):
+    list_display = ('baslik',)
+
+@admin.register(Kategori)
+class KategoriAdmin(VersionAdmin):
+    list_display = ('isim', 'slug')
+    prepopulated_fields = {'slug': ('isim',)}
+
+@admin.register(Ilce)
+class IlceAdmin(VersionAdmin):
+    list_display = ('isim',)
+
+@admin.register(HaftaninFotografi)
+class HaftaninFotografiAdmin(VersionAdmin):
+    list_display = ('baslik', 'aktif_mi')
+    list_editable = ('aktif_mi',)
