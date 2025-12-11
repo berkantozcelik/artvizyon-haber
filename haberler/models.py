@@ -466,36 +466,22 @@ class Profil(models.Model):
         verbose_name = "Kullanıcı Profili"
         verbose_name_plural = "Kullanıcı Profilleri"
 
-# --- OTOMATİK PROFİL OLUŞTURMA SİNYALİ ---
-# Yeni bir üye kaydolduğunda, sistem otomatik olarak ona boş bir profil oluşturur.
-@receiver(post_save, sender=User)
-def profil_olustur(sender, instance, created, **kwargs):
-    if created:
-        Profil.objects.create(user=instance)
-
-@receiver(post_save, sender=User)
-def profil_kaydet(sender, instance, **kwargs):
-    instance.profil.save()
-        
-# haberler/models.py dosyasının EN ALTINA yapıştır:
+# haberler/models.py dosyasının EN ALTINA yapıştır (Eskisini silip bunu koy):
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
+from .models import Profil  # Profil modelini import ettiğinden emin ol
 
-# Bu fonksiyon, bir User kaydedildiğinde çalışır
 @receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
+def create_or_update_user_profile(sender, instance, created, **kwargs):
     if created:
-        # Eğer yeni bir kullanıcı oluşturulmuşsa, ona hemen bir Profil bağla
-        Profil.objects.create(user=instance)
-
-# Bu fonksiyon, User kaydedildiğinde Profili de kaydeder
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    # Profil oluşturulurken hata vermemesi için try-except bloğu
-    try:
-        instance.profil.save()
-    except Profil.DoesNotExist:
-        # Eğer profil yoksa oluştur (Yedek güvenlik önlemi)
-        Profil.objects.create(user=instance)
+        # get_or_create: Varsa getirir, yoksa oluşturur. Hata vermez.
+        Profil.objects.get_or_create(user=instance)
+    else:
+        # Kullanıcı güncelleniyorsa, profilin var olduğundan emin ol ve kaydet
+        if hasattr(instance, 'profil'):
+            instance.profil.save()
+        else:
+            # Nadir durum: Kullanıcı var ama profili silinmişse oluştur.
+            Profil.objects.get_or_create(user=instance)
