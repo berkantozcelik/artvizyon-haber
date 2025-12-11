@@ -54,6 +54,13 @@
         margin-bottom: 15px;
         color: #333;
     }
+   /* Detay.html içindeki <style> bloğunun sonuna yapıştırın */
+    /* Fotoğraf Kaynağı etiketi için özel stil */
+    .kaynak-etiketi {
+        font-size: 0.75rem; /* Daha küçük font */
+        line-height: 1;
+        transition: opacity 0.3s;
+    }
 </style>
 
 <div class="container mt-4">
@@ -75,9 +82,16 @@
             {% endif %}
 
             {% if haber.resim %}
-            <div class="mb-4">
+            <div class="mb-4 position-relative"> 
                 <img src="{{ haber.resim.url }}" class="img-fluid rounded w-100 shadow-sm" alt="{{ haber.baslik }}">
+                
+                {% if haber.foto_kaynak %}
+                <div class="kaynak-etiketi position-absolute bottom-0 end-0 bg-dark bg-opacity-75 text-white small p-1 px-2 rounded-top-start">
+                    Fotoğraf: {{ haber.foto_kaynak }}
+                </div>
+                {% else %}
                 <div class="text-end text-muted small mt-1 fst-italic">Fotoğraf: Artvizyon Haber</div>
+                {% endif %}
             </div>
             {% endif %}
 

@@ -32,6 +32,14 @@
     .video-container iframe {
         position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;
     }
+
+    /* yazi_detay.html içindeki <style> bloğunun sonuna yapıştırın */
+    /* Fotoğraf Kaynağı etiketi için özel stil */
+    .kaynak-etiketi {
+        font-size: 0.75rem; /* Daha küçük font */
+        line-height: 1;
+        transition: opacity 0.3s;
+    }
 </style>
 
 <div class="container mt-3 mb-4">
@@ -71,6 +79,20 @@
                     </iframe>
                 </div>
                 {% endif %}
+
+                {% if yazi.manset_resmi %}
+<div class="mb-4 position-relative"> 
+    <img src="{{ yazi.manset_resmi.url }}" class="img-fluid rounded w-100 shadow-sm" alt="{{ yazi.baslik }}">
+    
+    {% if yazi.foto_kaynak %}
+    <div class="kaynak-etiketi position-absolute bottom-0 end-0 bg-dark bg-opacity-75 text-white small p-1 px-2 rounded-top-start">
+        Fotoğraf: {{ yazi.foto_kaynak }}
+    </div>
+    {% else %}
+    <div class="text-end text-muted small mt-1 fst-italic">Fotoğraf: Artvizyon Haber</div>
+    {% endif %}
+</div>
+{% endif %}
                 
                 <article class="yazi-icerik">
                     {{ yazi.icerik|youtube_gom|safe }}
