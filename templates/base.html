@@ -208,10 +208,10 @@
                             </div>
                         {% else %}
                             <div class="btn-group" role="group">
-                                <a href="{% url 'login' %}" class="btn-ozel-artvin" style="border-radius: 50px 0 0 50px; border-right: 1px solid #4e342e;">
+                                <a href="{% url 'account_login' %}" class="btn-ozel-artvin" style="border-radius: 50px 0 0 50px; border-right: 1px solid #4e342e;">
                                     <i class="fas fa-sign-in-alt me-2"></i> GİRİŞ
                                 </a>
-                                <a href="{% url 'register' %}" class="btn-ozel-artvin" style="border-radius: 0 50px 50px 0;">
+                                <a href="{% url 'account_signup' %}" class="btn-ozel-artvin" style="border-radius: 0 50px 50px 0;">
                                     KAYIT <i class="fas fa-user-plus ms-2"></i>
                                 </a>
                             </div>
@@ -259,7 +259,7 @@
                 </div>
                 
                 <div class="d-lg-none text-end ms-auto">
-                    <a href="{% if user.is_authenticated %}{% url 'profil' %}{% else %}{% url 'login' %}{% endif %}" class="text-white text-decoration-none">
+                    <a href="{% if user.is_authenticated %}{% url 'profil' %}{% else %}{% url 'account_login' %}{% endif %}" class="text-white text-decoration-none">
                         <i class="fas fa-user-circle fa-lg"></i>
                     </a>
                 </div>
@@ -325,8 +325,8 @@
                             <li class="mb-2 text-success">Hoşgeldin, {{ user.username }}</li>
                             <li class="mb-2"><a href="{% url 'logout' %}" class="text-white-50 text-decoration-none">Çıkış Yap</a></li>
                         {% else %}
-                            <li class="mb-2"><a href="{% url 'login' %}" class="text-white-50 text-decoration-none">Giriş Yap</a></li>
-                            <li class="mb-2"><a href="{% url 'register' %}" class="text-white-50 text-decoration-none">Kayıt Ol</a></li>
+                            <li class="mb-2"><a href="{% url 'account_login' %}" class="text-white-50 text-decoration-none">Giriş Yap</a></li>
+                            <li class="mb-2"><a href="{% url 'account_signup' %}" class="text-white-50 text-decoration-none">Kayıt Ol</a></li>
                         {% endif %}
                         <li class="mb-2"><a href="{% url 'destek' %}" class="text-white-50 text-decoration-none">Abonelik Paketleri</a></li>
                     </ul>
