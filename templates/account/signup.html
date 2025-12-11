@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
-{% load socialaccount %} {% block title %}Kayıt Ol - Artvizyon Haber{% endblock %}
+{% load socialaccount %} 
+{% block title %}Kayıt Ol - Artvizyon Haber{% endblock %}
 
 {% block content %}
 <div class="container py-5 d-flex justify-content-center">
@@ -9,15 +10,21 @@
         </div>
         <div class="card-body p-4">
             
-            <a href="{% provider_login_url 'google' process='signup' %}" class="btn btn-light border w-100 mb-2 d-flex align-items-center justify-content-center gap-2 shadow-sm">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" style="width: 20px;">
-                <span class="fw-bold text-secondary">Google ile Kayıt Ol</span>
-            </a>
+            <form action="{% provider_login_url 'google' process='signup' %}" method="post" class="mb-2">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-light border w-100 d-flex align-items-center justify-content-center gap-2 shadow-sm">
+                    <i class="fab fa-google text-danger fs-5"></i>
+                    <span class="fw-bold text-secondary">Google ile Kayıt Ol</span>
+                </button>
+            </form>
             
-            <a href="{% provider_login_url 'facebook' process='signup' %}" class="btn btn-primary w-100 mb-3 d-flex align-items-center justify-content-center gap-2 shadow-sm">
-                <i class="fab fa-facebook-f me-2"></i>
-                <span class="fw-bold">Facebook ile Kayıt Ol</span>
-            </a>
+            <form action="{% provider_login_url 'facebook' process='signup' %}" method="post" class="mb-3">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 shadow-sm">
+                    <i class="fab fa-facebook-f fs-5"></i>
+                    <span class="fw-bold">Facebook ile Kayıt Ol</span>
+                </button>
+            </form>
 
             <div class="text-center text-muted mb-3 small border-top pt-3">- VEYA STANDART KAYIT -</div>
 
@@ -49,7 +56,6 @@
 </div>
 
 <script>
-    // Giriş alanlarına Bootstrap form-control class'ı ekler
     var inputs = document.querySelectorAll('input');
     inputs.forEach(function(input) {
         input.classList.add('form-control');
