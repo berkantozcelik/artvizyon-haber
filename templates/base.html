@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -200,7 +201,7 @@
                                     <li><a class="dropdown-item text-white" href="{% url 'destek' %}">Aboneliklerim</a></li>
                                     <li><hr class="dropdown-divider bg-secondary"></li>
                                     <li>
-                                        <form action="{% url 'logout' %}" method="post">{% csrf_token %}
+                                        <form action="{% url 'account_logout' %}" method="post">{% csrf_token %}
                                             <button type="submit" class="dropdown-item text-danger fw-bold">Çıkış Yap</button>
                                         </form>
                                     </li>
@@ -265,7 +266,9 @@
                 </div>
             </div>
         </nav>
-    </div> <div class="offcanvas offcanvas-start offcanvas-custom" tabindex="-1" id="sidebarMenu">
+    </div> 
+    
+    <div class="offcanvas offcanvas-start offcanvas-custom" tabindex="-1" id="sidebarMenu">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title fw-bold" style="color: var(--altin-detay);">ARTVİZYON HABER</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Kapat"></button>
@@ -323,7 +326,7 @@
                     <ul class="list-unstyled small">
                         {% if user.is_authenticated %}
                             <li class="mb-2 text-success">Hoşgeldin, {{ user.username }}</li>
-                            <li class="mb-2"><a href="{% url 'logout' %}" class="text-white-50 text-decoration-none">Çıkış Yap</a></li>
+                            <li class="mb-2"><a href="{% url 'account_logout' %}" class="text-white-50 text-decoration-none">Çıkış Yap</a></li>
                         {% else %}
                             <li class="mb-2"><a href="{% url 'account_login' %}" class="text-white-50 text-decoration-none">Giriş Yap</a></li>
                             <li class="mb-2"><a href="{% url 'account_signup' %}" class="text-white-50 text-decoration-none">Kayıt Ol</a></li>

@@ -9,16 +9,11 @@ urlpatterns = [
     path('artvizyon-sami/', admin.site.urls),
     
     # ==========================================
-    # 👤 ÜYELİK VE HESAP İŞLEMLERİ (ALLAUTH DEVREDE!)
+    # 👤 ÜYELİK VE HESAP İŞLEMLERİ (SADECE ALLAUTH VE PROFİL KALDI)
     # ==========================================
     
     # Tüm Giriş/Çıkış/Kayıt/Şifre Sıfırlama işleri artık Allauth'tan gelir.
     path('accounts/', include('allauth.urls')), 
-    
-    # Eski URL'lerimizi buraya yönlendiriyoruz, böylece linkler bozulmaz:
-    path('giris-yap/', include('allauth.urls')), 
-    path('cikis-yap/', include('allauth.urls')),
-    path('kayit-ol/', include('allauth.urls')),
     path('hesabim/', views.profil, name='profil'), 
 
     # ==========================================
@@ -54,12 +49,15 @@ urlpatterns = [
 
     # Özel Gün Detay Sayfası
     path('ozel-gun/<slug:slug>/', views.ozel_gun_detay, name='ozel_gun_detay'),
-        # Tarihi ve Turistik Yerler
-        # Tarihi yerler linkleri
+        
+    # Tarihi ve Turistik Yerler
     path('tarihi-yerler/', views.tarihi_yerler_listesi, name='tarihi_yerler_listesi'),
     path('tarihi-yerler/<slug:slug>/', views.tarihi_yer_detay, name='tarihi_yer_detay'),
 
     path('ckeditor/', include('ckeditor_uploader.urls')),
+    
+    # Haberler uygulaması için ek URL'ler
+    path('', include('haberler.urls')),
 ]
     
 if settings.DEBUG:
