@@ -477,3 +477,25 @@ def profil_olustur(sender, instance, created, **kwargs):
 def profil_kaydet(sender, instance, **kwargs):
     instance.profil.save()
         
+# haberler/models.py dosyasının EN ALTINA yapıştır:
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.contrib.auth.models import User
+
+# Bu fonksiyon, bir User kaydedildiğinde çalışır
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        # Eğer yeni bir kullanıcı oluşturulmuşsa, ona hemen bir Profil bağla
+        Profil.objects.create(user=instance)
+
+# Bu fonksiyon, User kaydedildiğinde Profili de kaydeder
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    # Profil oluşturulurken hata vermemesi için try-except bloğu
+    try:
+        instance.profil.save()
+    except Profil.DoesNotExist:
+        # Eğer profil yoksa oluştur (Yedek güvenlik önlemi)
+        Profil.objects.create(user=instance)
