@@ -175,17 +175,6 @@ def galeri_detay(request, pk):
     galeri = get_object_or_404(Galeri, pk=pk)
     return render(request, 'galeri_detay.html', {'galeri': galeri})
 
-# --- KULLANICI İŞLEMLERİ ---
-def kayit_ol(request):
-    if request.method == 'POST':
-        form = KayitFormu(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, "Başarıyla kayıt oldunuz.")
-            return redirect('anasayfa')
-    else: form = KayitFormu()
-    return render(request, 'registration/register.html', {'form': form})
 
 # --- PROFİL YÖNETİMİ (TEK VE DOĞRU OLAN) ---
 @login_required
