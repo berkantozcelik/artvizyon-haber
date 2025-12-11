@@ -215,9 +215,11 @@ SITE_ID = 1
 # Allauth ayarları
 ACCOUNT_AUTHENTICATION_METHOD = "username_email" # Kullanıcı adı veya e-posta ile giriş
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = True
-ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = True # Kayıtta e-postayı iki kere iste
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = False # Kayıtta e-postayı iki kere iste
 ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_UNIQUE_EMAIL = True
 SOCIALACCOUNT_EMAIL_VERIFICATION = "none" # Sosyal girişlerde doğrulamayı kapat
 SOCIALACCOUNT_EMAIL_REQUIRED = True
+SOCIALACCOUNT_AUTO_SIGNUP = True
+ACCOUNT_SIGNUP_NO_FIELDS = True
