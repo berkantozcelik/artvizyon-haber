@@ -111,21 +111,54 @@
                 <div class="alert alert-warning text-center border-0 shadow-sm py-3 mb-4">Yorum yapmak için <a href="{% url 'account_login' %}" class="fw-bold text-dark">giriş yapmalısınız.</a></div>
                 {% endif %}
 
-                <div class="list-group list-group-flush">
-                    {% for yorum in yorumlar %}
-                    <div class="list-group-item bg-transparent border-bottom py-3">
-                        <div class="d-flex justify-content-between mb-1">
-                            <h6 class="fw-bold mb-0">{{ yorum.isim }}</h6>
-                            <small class="text-muted">{{ yorum.olusturulma_tarihi|date:"d M Y" }}</small>
+                <div class="mt-4">
+    <h4 class="mb-3 border-bottom pb-2">Yorumlar ({{ yorumlar.count }})</h4>
+    
+    {% for yorum in yorumlar %}
+    <div class="card mb-3 border-0 shadow-sm" style="background-color: #f8f9fa;">
+        <div class="card-body">
+            <div class="d-flex flex-start">
+                
+                <div class="me-3">
+                    {% if yorum.yazar.profil.resim %}
+                        <img class="rounded-circle shadow-sm" 
+                             src="{{ yorum.yazar.profil.resim.url }}" 
+                             alt="avatar" 
+                             width="50" height="50" 
+                             style="object-fit: cover;">
+                    {% else %}
+                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white shadow-sm" 
+                             style="width: 50px; height: 50px;">
+                            <i class="fas fa-user fa-lg"></i>
                         </div>
-                        <p class="mb-0 text-secondary small">{{ yorum.govde }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="w-100">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        
+                        <h6 class="fw-bold text-primary mb-0">
+                            {{ yorum.yazar.username }} 
+                            </h6>
+                        
+                        <small class="text-muted">
+                            <i class="far fa-clock me-1"></i> {{ yorum.olusturulma_tarihi|date:"d M Y, H:i" }}
+                        </small>
                     </div>
-                    {% empty %}
-                    <div class="alert alert-light border text-center py-3 text-muted fst-italic">Henüz yorum yapılmamış.</div>
-                    {% endfor %}
+                    
+                    <p class="mb-0 text-dark" style="font-size: 0.95rem; line-height: 1.6;">
+                        {{ yorum.icerik }}
+                    </p>
                 </div>
             </div>
         </div>
+    </div>
+    {% empty %}
+        <div class="alert alert-light text-center border">
+            Henüz yorum yapılmamış. İlk yorumu sen yap!
+        </div>
+    {% endfor %}
+</div>
 
         <div class="col-lg-4 ps-lg-4">
             
