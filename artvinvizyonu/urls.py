@@ -3,6 +3,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from haberler import views # Senin uygulamanın adı 'haberler'
+from django.views.generic import TemplateView
 
 urlpatterns = [
     # --- GÜVENLİK: ÖZEL ADMİN YOLU ---
@@ -58,6 +59,8 @@ urlpatterns = [
     
     # Haberler uygulaması için ek URL'ler
     path('', include('haberler.urls')),
+    path('gizlilik-politikasi/', TemplateView.as_view(template_name='gizlilik.html'), name='gizlilik_politikasi'),
+    path('hizmet-sartlari/', TemplateView.as_view(template_name='hizmet_sartlari.html'), name='hizmet_sartlari'),
 ]
     
 if settings.DEBUG:
