@@ -32,6 +32,7 @@ urlpatterns = [
     path('galeri/<int:pk>/', views.galeri_detay, name='galeri_detay'),
     path('siir-kosesi/', views.siir_listesi, name='siir_listesi'),
     path('siir/<int:pk>/', views.siir_detay, name='siir_detay'),
+    path('roportaj/', views.roportaj_listesi, name='roportaj_listesi'),
 
     # Köşe Yazıları
     path('yazi/<int:pk>/', views.yazi_detay, name='yazi_detay'),

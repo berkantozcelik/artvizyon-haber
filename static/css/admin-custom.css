@@ -1,0 +1,92 @@
+:root {
+    --av-brown: #3E2723;
+    --av-green: #2E4A38;
+    --av-gold: #D4AF37;
+    --av-cream: #f7f3ec;
+}
+
+.content-wrapper {
+    background-color: var(--av-cream);
+}
+
+.main-header .navbar,
+.main-header .navbar .nav > li > a {
+    background: linear-gradient(90deg, var(--av-brown), var(--av-green));
+    color: #fff !important;
+}
+.main-header .navbar .nav > li > a:hover {
+    color: var(--av-gold) !important;
+}
+
+.main-sidebar {
+    background: var(--av-brown);
+}
+.brand-link {
+    background: var(--av-brown);
+    color: #fff !important;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.sidebar .nav-link,
+.sidebar .nav-treeview > .nav-item > .nav-link {
+    color: #f4ede2 !important;
+}
+.sidebar .nav-link.active,
+.sidebar .nav-link:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--av-gold) !important;
+}
+
+.card,
+.small-box {
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.04);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.btn-primary,
+.btn-success,
+.btn-info {
+    background-color: var(--av-green);
+    border-color: var(--av-green);
+    padding: 10px 16px;
+    font-size: 1rem;
+}
+.btn-primary:hover,
+.btn-success:hover,
+.btn-info:hover {
+    background-color: #234030;
+    border-color: #234030;
+}
+
+/* Reversion recover link -> button look */
+.object-tools .recoverlink,
+.object-tools .recoverlink:link,
+.object-tools .recoverlink:visited {
+    background: var(--av-green);
+    border-radius: 6px;
+    padding: 8px 14px;
+    color: #fff !important;
+    border: 1px solid var(--av-green);
+    font-weight: 700;
+}
+.object-tools .recoverlink:hover {
+    background: #234030;
+    border-color: #234030;
+    color: #ffd166 !important;
+}
+
+.table th {
+    background: #f0e9dc;
+    color: #2e2a25;
+}
+
+/* Quick links area */
+.content-header .breadcrumb a {
+    color: var(--av-green);
+}
+
+/* Form help text */
+.help-block,
+.form-text {
+    color: #6c5c50;
+}

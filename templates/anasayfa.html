@@ -6,13 +6,13 @@
 <style>
     /* --- KAPLAYICI --- */
     .ozel-gun-wrapper {
-        background-image: url('{% if aktif_ozel_gun.kapak_resmi %}{{ aktif_ozel_gun.kapak_resmi.url }}{% endif %}');
+        background-image: linear-gradient(135deg, rgba(62,39,35,0.7), rgba(46,74,56,0.7)), url('{% if aktif_ozel_gun.kapak_resmi %}{{ aktif_ozel_gun.kapak_resmi.url }}{% endif %}');
         background-size: cover; background-position: center; position: relative; overflow: hidden;
-        padding: 30px 0;
+        padding: 26px 0;
         border-top: 5px solid; border-image: linear-gradient(to right, #3E2723 50%, #2E4A38 50%) 1;
         border-bottom: 5px solid; border-image: linear-gradient(to right, #2E4A38 50%, #3E2723 50%) 1;
     }
-    /* KARARTMA YOK - AYDINLIK GÖRÜNÜM */
+    /* KARARTMA KISMEN DEVREDE */
     .ozel-gun-wrapper::before { display: none; }
 
     /* --- KAR EFEKTİ (FIRTINA) --- */
@@ -36,8 +36,8 @@
 
     /* --- DÜZEN --- */
     .container-ozel { position: relative; z-index: 20; }
-    .ozel-gun-layout { display: flex; align-items: stretch; gap: 20px; position: relative; height: 460px; }
-    .fixed-left-side { flex: 0 0 280px; z-index: 30; height: 100%; }
+    .ozel-gun-layout { display: flex; align-items: stretch; gap: 20px; position: relative; height: 380px; }
+    .fixed-left-side { flex: 0 0 260px; z-index: 30; height: 100%; }
     .scrolling-right-side { flex-grow: 1; position: relative; overflow: hidden; display: flex; align-items: center; height: 100%; }
     
     .ozel-gun-scroll {
@@ -52,20 +52,20 @@
     /* 1. ARTVİZYON KARTI (SABİT) */
     .lead-kart {
         width: 100%; height: 100%;
-        border: 4px solid #cc0000; background-color: rgba(255, 255, 255, 0.95);
+        border: 3px solid #D4AF37; background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(247,243,236,0.95));
         display: flex; flex-direction: column; justify-content: center;
-        border-radius: 12px; box-shadow: 0 0 25px rgba(204, 0, 0, 0.5);
+        border-radius: 14px; box-shadow: 0 6px 24px rgba(0,0,0,0.25);
     }
 
     /* 2. KİŞİ KARTLARI (KAYAN) */
     .scroll-kart {
-        flex: 0 0 260px; /* GENİŞLİK */
-        background: #fff; border-radius: 10px; overflow: hidden;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.5); transition: 0.3s; border: 2px solid #D4AF37;
+        flex: 0 0 240px; /* GENİŞLİK */
+        background: #fff; border-radius: 12px; overflow: hidden;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.25); transition: 0.3s; border: 2px solid #D4AF37;
         display: flex; flex-direction: column; height: 100%;
         position: relative;
     }
-    .scroll-kart:hover { transform: translateY(-5px); border-color: #fff; }
+    .scroll-kart:hover { transform: translateY(-5px); border-color: #fdf1cc; box-shadow: 0 8px 22px rgba(0,0,0,0.28); }
 
     /* 3. WHATSAPP KARTI (ASİL TEMA) */
     .whatsapp-kart {
@@ -79,7 +79,7 @@
 
     /* --- RESİM AYARI (KÜÇÜK YUVARLAK) --- */
     .tebrik-img { 
-        width: 110px !important; height: 110px !important; /* SABİT KÜÇÜK BOYUT */
+        width: 95px !important; height: 95px !important; /* SABİT KÜÇÜK BOYUT */
         object-fit: cover; 
         border-radius: 50%; /* YUVARLAK */
         margin: 20px auto 10px auto; /* ORTALA */
@@ -612,20 +612,20 @@
         <div class="row mt-4">
             <div class="col-12 d-flex justify-content-center">
                 <nav>
-                    <ul class="pagination">
+                    <ul class="pagination pagination-sm news-pagination">
                         {% if haberler.has_previous %}
-                        <li class="page-item"><a class="page-link text-dark" href="?page={{ haberler.previous_page_number }}">&laquo; Önceki</a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ haberler.previous_page_number }}">&laquo; Önceki</a></li>
                         {% endif %}
-                        <li class="page-item disabled"><span class="page-link bg-dark text-white border-dark">{{ haberler.number }}</span></li>
+                        <li class="page-item active"><span class="page-link">{{ haberler.number }}</span></li>
                         {% if haberler.has_next %}
-                        <li class="page-item"><a class="page-link text-dark" href="?page={{ haberler.next_page_number }}">Sonraki &raquo;</a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ haberler.next_page_number }}">Sonraki &raquo;</a></li>
                         {% endif %}
                     </ul>
                 </nav>
             </div>
         </div>
 
-    </div> <div class="col-lg-4 ps-lg-4 mt-4 mt-lg-0">
+    </div> <div class="col-lg-4 ps-lg-4 mt-4 mt-lg-0 order-3 order-lg-2">
         
         <div class="card mb-4 border-0 shadow-sm">
             <div class="card-header text-white fw-bold text-center" style="background-color: #3E2723;">
@@ -712,13 +712,63 @@
             </div>
         </div>
 
-         <div class="text-center mb-4">
+        {% with rehber_ogeleri|first as rehber_one %}
+        {% if rehber_one %}
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-header text-white fw-bold text-center" style="background: linear-gradient(135deg, #3E2723, #2E4A38);">
+                <i class="fas fa-map-marked-alt me-2"></i> Artvin Rehberi
+            </div>
+            <a href="{% url 'tarihi_yerler_listesi' %}" class="text-decoration-none">
+                <div class="cta-side" style="background-image: url('{% if rehber_one.resim %}{{ rehber_one.resim.url }}{% endif %}');">
+                    <div class="cta-overlay">
+                        <h6 class="fw-bold text-white mb-1">Haritadan Keşfet</h6>
+                        <p class="mb-2 small text-white-50">İlçeler, tarihi yerler ve rotalara tek tıkla bakın.</p>
+                        <span class="btn btn-sm btn-light rounded-pill text-dark fw-bold">Rehbere Git</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% with son_galeriler|first as galeri_one %}
+        {% if galeri_one %}
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-header text-white fw-bold text-center" style="background: linear-gradient(135deg, #2E4A38, #3E2723);">
+                <i class="fas fa-images me-2"></i> Foto Galeri
+            </div>
+            <a href="{% url 'galeri_listesi' %}" class="text-decoration-none">
+                <div class="cta-side" style="background-image: url('{% if galeri_one.kapak_resmi %}{{ galeri_one.kapak_resmi.url }}{% endif %}');">
+                    <div class="cta-overlay">
+                        <h6 class="fw-bold text-white mb-1">Son Albümler</h6>
+                        <p class="mb-2 small text-white-50">Etkinlikler ve şehir kareleri için albümlere göz atın.</p>
+                        <span class="btn btn-sm btn-light rounded-pill text-dark fw-bold">Albümlere Git</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <div class="text-center mb-4">
              <div style="background-color: #eee; height: 300px; display: flex; align-items: center; justify-content: center; border: 1px dashed #999;">
                 <div><h5 class="text-muted">REKLAM</h5><small>300x300</small></div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .news-pagination .page-link { border-radius: 50px !important; border: 1px solid #d9cbb7; color: #3E2723; padding: 6px 12px; }
+    .news-pagination .page-item.active .page-link { background: linear-gradient(135deg, #3E2723, #2E4A38); border-color: #3E2723; color: #fff; }
+    .news-pagination .page-link:hover { background-color: #f3e8d9; }
+    .cta-side { position: relative; height: 180px; background-size: cover; background-position: center; }
+    .cta-overlay { position: absolute; inset: 0; padding: 14px; background: linear-gradient(135deg, rgba(62,39,35,0.75), rgba(46,74,56,0.65)); color: #f7f3ec; display: flex; flex-direction: column; justify-content: flex-end; }
+    @media (max-width: 767px) {
+        .haber-card img { height: 180px !important; }
+        .news-pagination { gap: 6px; }
+    }
+</style>
 
 <script>
     function scrollYazar(direction) {

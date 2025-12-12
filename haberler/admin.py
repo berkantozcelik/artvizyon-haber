@@ -7,7 +7,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageOps
 # Modellerin hepsini içeri alıyoruz
 from .models import (
     Haber, Kategori, Ilce, KoseYazari, KoseYazisi, 
-    Galeri, GaleriResim, HaftaninFotografi, Siir, 
+    Galeri, GaleriResim, Siir, 
     EczaneLinki, Yorum, Destekci,
     OzelGun, TebrikMesaji, TarihiYer 
 )
@@ -93,11 +93,35 @@ class HaberAdmin(VersionAdmin): # VersionAdmin kullanıldı
     search_fields = ('baslik', 'ozet')
     date_hierarchy = 'yayin_tarihi'
     actions = [generate_instagram_post]
+    save_on_top = True
+    fieldsets = (
+        ('Temel Bilgiler (Gerekli)', {
+            'fields': ('baslik', 'kategori', 'ilce', 'ozet', 'icerik'),
+            'description': 'Başlık, kategori ve kısa özet yeterli. Metinde kullandığınız görsellere kaynak eklemek için img etiketine data-kaynak="AA" yazabilirsiniz.'
+        }),
+        ('Medya', {
+            'fields': ('resim', 'foto_kaynak', 'video_link'),
+            'description': 'Manşet görseli ve varsa YouTube linki.'
+        }),
+        ('Yayın Ayarları', {
+            'fields': ('aktif_mi', 'yayin_tarihi', 'son_dakika', 'manset_mi', 'ulusal_mi', 'roportaj_mi'),
+            'description': 'Sadece gerekli kutuları işaretleyin. Geri almak için sağ üstteki “Geçmiş” bağlantısını kullanabilirsiniz.'
+        }),
+    )
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
+        if db_field.name == 'icerik':
+            formfield.help_text = 'İçerikteki görsellere kaynak etiketi eklemek için img etiketine data-kaynak="AA" yazın (örn: data-kaynak="AA").'
+        return formfield
 
 # --- GALERİ YÖNETİMİ (GERİ ALMA EKLENDİ) ---
 class GaleriResimInline(admin.TabularInline):
     model = GaleriResim
+    fields = ('resim', 'aciklama', 'haftanin_fotografi_mi')
     extra = 3
+    verbose_name = "Fotoğraf"
+    verbose_name_plural = "Fotoğraflar"
 
 @admin.register(Galeri)
 class GaleriAdmin(VersionAdmin): # VersionAdmin kullanıldı
@@ -115,6 +139,26 @@ class KoseYazisiAdmin(VersionAdmin): # VersionAdmin kullanıldı
     list_display = ('baslik', 'yazar', 'yayin_tarihi', 'aktif_mi')
     list_filter = ('yazar', 'aktif_mi')
     search_fields = ('baslik',)
+    save_on_top = True
+    fieldsets = (
+        ('Temel Bilgiler (Gerekli)', {
+            'fields': ('baslik', 'yazar', 'icerik'),
+            'description': 'Başlık ve içerik alanlarını doldurun. Metindeki görsellere kaynak vermek için img etiketine data-kaynak="AA" yazabilirsiniz.'
+        }),
+        ('Medya', {
+            'fields': ('manset_resmi', 'foto_kaynak', 'video_link'),
+        }),
+        ('Yayın Ayarları', {
+            'fields': ('aktif_mi', 'yayin_tarihi', 'manset_mi'),
+            'description': 'Sadece gerekli kutuları işaretleyin. Geri almak için sağ üstteki “Geçmiş” bağlantısını kullanabilirsiniz.'
+        }),
+    )
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
+        if db_field.name == 'icerik':
+            formfield.help_text = 'Metin içi görsellere kaynak eklemek için img etiketine data-kaynak="AA" yazın.'
+        return formfield
 
 # --- YORUM YÖNETİMİ (GERİ ALMA EKLENDİ) ---
 @admin.register(Yorum)
@@ -156,11 +200,6 @@ class SiirAdmin(VersionAdmin): # VersionAdmin kullanıldı
     list_filter = ('aktif_mi',)
 
 # --- ECZANE LİNKLERİ (GERİ ALMA EKLENDİ) ---
-@admin.register(EczaneLinki)
-class EczaneLinkiAdmin(VersionAdmin): # VersionAdmin kullanıldı
-    list_display = ('ilce_adi', 'url', 'sira')
-    list_editable = ('url', 'sira')
-
 # --- ÖZEL GÜN VE INSTAGRAM İNDİRME BUTONU (GERİ ALMA EKLENDİ) ---
 class TebrikMesajiInline(admin.TabularInline):
     model = TebrikMesaji
@@ -198,11 +237,13 @@ class KategoriAdmin(VersionAdmin):
     list_display = ('isim', 'slug')
     prepopulated_fields = {'slug': ('isim',)}
 
+# İstenmeyen bölümleri panelden kaldır (örn. Nöbetçi Eczane)
+for model in (EczaneLinki,):
+    try:
+        admin.site.unregister(model)
+    except admin.sites.NotRegistered:
+        pass
+
 @admin.register(Ilce)
 class IlceAdmin(VersionAdmin):
     list_display = ('isim',)
-
-@admin.register(HaftaninFotografi)
-class HaftaninFotografiAdmin(VersionAdmin):
-    list_display = ('baslik', 'aktif_mi')
-    list_editable = ('aktif_mi',)

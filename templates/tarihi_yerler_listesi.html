@@ -354,5 +354,13 @@
     function closeDetail() {
         document.getElementById('detail-section').style.display = 'none';
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const selected = "{{ selected_yer.id|default:'' }}";
+        if (selected) {
+            focusOnMap(selected);
+            document.getElementById('detail-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
 </script>
 {% endblock %}

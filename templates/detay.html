@@ -57,10 +57,19 @@
    /* Detay.html içindeki <style> bloğunun sonuna yapıştırın */
     /* Fotoğraf Kaynağı etiketi için özel stil */
     .kaynak-etiketi {
-        font-size: 0.75rem; /* Daha küçük font */
-        line-height: 1;
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+        font-size: 0.7rem;
+        line-height: 1.2;
+        background: rgba(0,0,0,0.65);
+        color: #f8f9fa;
+        padding: 6px 10px;
+        border-radius: 6px 0 0 0;
         transition: opacity 0.3s;
     }
+    .inline-img-wrap { position: relative; display: inline-block; }
+    .inline-img-wrap > img { display: block; }
 </style>
 
 <div class="container mt-4">
@@ -84,14 +93,9 @@
             {% if haber.resim %}
             <div class="mb-4 position-relative"> 
                 <img src="{{ haber.resim.url }}" class="img-fluid rounded w-100 shadow-sm" alt="{{ haber.baslik }}">
-                
-                {% if haber.foto_kaynak %}
-                <div class="kaynak-etiketi position-absolute bottom-0 end-0 bg-dark bg-opacity-75 text-white small p-1 px-2 rounded-top-start">
-                    Fotoğraf: {{ haber.foto_kaynak }}
+                <div class="kaynak-etiketi">
+                    Fotoğraf: {{ haber.foto_kaynak|default:"Artvizyon Haber" }}
                 </div>
-                {% else %}
-                <div class="text-end text-muted small mt-1 fst-italic">Fotoğraf: Artvizyon Haber</div>
-                {% endif %}
             </div>
             {% endif %}
 
@@ -108,6 +112,9 @@
             <article class="haber-icerik">
                 {{ haber.icerik|youtube_gom|safe }}
             </article>
+            {% if user.is_staff %}
+            <p class="text-muted small mt-2 mb-0">* Metin içine eklediğiniz görsellere kaynak etiketi eklemek için img etiketine <code>data-kaynak="Örn: AA"</code> yazın.</p>
+            {% endif %}
 
             <div class="card bg-light border-0 mb-5 mt-4">
                 <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
@@ -156,54 +163,49 @@
                 <div class="alert alert-warning py-2 small">Yorum yapmak için <a href="{% url 'account_login' %}" class="fw-bold">giriş yapmalısınız.</a></div>
                 {% endif %}
                 
-               <div class="mt-4">
-    <h4 class="mb-3 border-bottom pb-2">Yorumlar ({{ yorumlar.count }})</h4>
-    
-    {% for yorum in yorumlar %}
-    <div class="card mb-3 border-0 shadow-sm" style="background-color: #f8f9fa;">
-        <div class="card-body">
-            <div class="d-flex flex-start">
-                
-                <div class="me-3">
-                    {% if yorum.yazar.profil.resim %}
-                        <img class="rounded-circle shadow-sm" 
-                             src="{{ yorum.yazar.profil.resim.url }}" 
-                             alt="avatar" 
-                             width="50" height="50" 
-                             style="object-fit: cover;">
-                    {% else %}
-                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white shadow-sm" 
-                             style="width: 50px; height: 50px;">
-                            <i class="fas fa-user fa-lg"></i>
-                        </div>
-                    {% endif %}
-                </div>
+                <div class="mt-4">
+                    {% for yorum in yorumlar %}
+                    <div class="card mb-3 border-0 shadow-sm" style="background-color: #f8f9fa;">
+                        <div class="card-body">
+                            <div class="d-flex flex-start">
+                                
+                                <div class="me-3">
+                                    {% with yorum.isim|default:"Okur"|first as harf %}
+                                    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white shadow-sm fw-bold" 
+                                         style="width: 50px; height: 50px;">
+                                        {{ harf|upper }}
+                                    </div>
+                                    {% endwith %}
+                                </div>
 
-                <div class="w-100">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        
-                        <h6 class="fw-bold text-primary mb-0">
-                            {{ yorum.yazar.username }} 
-                            </h6>
-                        
-                        <small class="text-muted">
-                            <i class="far fa-clock me-1"></i> {{ yorum.olusturulma_tarihi|date:"d M Y, H:i" }}
-                        </small>
+                                <div class="w-100">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        
+                                        <h6 class="fw-bold text-primary mb-0">
+                                            {{ yorum.isim|default:"Okur" }} 
+                                        </h6>
+                                        
+                                        <small class="text-muted">
+                                            <i class="far fa-clock me-1"></i> {{ yorum.olusturulma_tarihi|date:"d M Y, H:i" }}
+                                        </small>
+                                    </div>
+                                    
+                                    <p class="mb-0 text-dark" style="font-size: 0.95rem; line-height: 1.6;">
+                                        {{ yorum.govde }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    
-                    <p class="mb-0 text-dark" style="font-size: 0.95rem; line-height: 1.6;">
-                        {{ yorum.icerik }}
-                    </p>
+                    {% empty %}
+                        <div class="alert alert-light text-center border">
+                            Henüz yorum yapılmamış. İlk yorumu sen yap!
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
-        </div>
-    </div>
-    {% empty %}
-        <div class="alert alert-light text-center border">
-            Henüz yorum yapılmamış. İlk yorumu sen yap!
-        </div>
-    {% endfor %}
-</div>
+
+        </div> <!-- /col-lg-8 -->
 
         <div class="col-lg-4">
             
@@ -238,9 +240,10 @@
                 </div>
             </div>
 
-        </div>
-    </div>
-</div>
+        </div> <!-- /col-lg-4 -->
+
+    </div> <!-- /row -->
+</div> <!-- /container -->
 <script>
     function linkiKopyala() {
         var copyText = "{{ request.build_absolute_uri }}";
@@ -252,5 +255,22 @@
             console.error('Kopyalama hatası: ', err);
         });
     }
+
+    // CKEditor içi görsellerde data-kaynak etiketi varsa sağ alt köşe etiketi ekle
+    (function() {
+        const imgs = document.querySelectorAll('.haber-icerik img[data-kaynak]');
+        imgs.forEach(function(img) {
+            if (img.closest('.inline-img-wrap')) return;
+            const wrap = document.createElement('span');
+            wrap.className = 'inline-img-wrap';
+            img.parentNode.insertBefore(wrap, img);
+            wrap.appendChild(img);
+
+            const badge = document.createElement('span');
+            badge.className = 'kaynak-etiketi';
+            badge.textContent = 'Fotoğraf: ' + img.dataset.kaynak;
+            wrap.appendChild(badge);
+        });
+    })();
 </script>
 {% endblock %}

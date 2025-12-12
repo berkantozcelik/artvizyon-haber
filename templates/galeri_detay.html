@@ -15,14 +15,17 @@
             <div id="galeriSlider" class="carousel slide shadow-lg mb-5" data-bs-ride="carousel">
                 
                 <div class="carousel-inner bg-dark rounded">
-                    {% for resim in galeri.resimler.all %}
+                    {% for resim in resimler %}
                     <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                        <div class="d-flex justify-content-center align-items-center" style="height: 600px; background-color: #000;">
+                        <div class="d-flex justify-content-center align-items-center position-relative" style="height: 560px; background: radial-gradient(circle at center, #1a1a1a 0%, #000 60%);">
                             <img src="{{ resim.resim.url }}" class="d-block" style="max-height: 100%; max-width: 100%; object-fit: contain;" alt="{{ galeri.baslik }}">
+                            {% if resim.haftanin_fotografi_mi %}
+                            <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-3 px-3 py-2 shadow">Haftanın Fotoğrafı</span>
+                            {% endif %}
                         </div>
-                        {% if resim.alt_yazi %}
+                        {% if resim.aciklama %}
                         <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-75 py-2">
-                            <p class="mb-0 fs-5">{{ resim.alt_yazi }}</p>
+                            <p class="mb-0 fs-5">{{ resim.aciklama }}</p>
                         </div>
                         {% endif %}
                     </div>
@@ -35,20 +38,29 @@
                     {% endfor %}
                 </div>
 
-                <button class="carousel-control-prev" type="button" data-bs-target="#galeriSlider" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <button class="carousel-control-prev custom-control" type="button" data-bs-target="#galeriSlider" data-bs-slide="prev">
+                    <span class="control-circle"><i class="fas fa-chevron-left"></i></span>
                 </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#galeriSlider" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <button class="carousel-control-next custom-control" type="button" data-bs-target="#galeriSlider" data-bs-slide="next">
+                    <span class="control-circle"><i class="fas fa-chevron-right"></i></span>
                 </button>
 
             </div>
+
+            <div class="reklam-bant text-center mb-4">
+                <div class="reklam-icerik">REKLAM ALANI • 728 x 90</div>
+            </div>
             
             <div class="row g-2">
-                {% for resim in galeri.resimler.all %}
+                {% for resim in resimler %}
                 <div class="col-2">
-                    <button type="button" data-bs-target="#galeriSlider" data-bs-slide-to="{{ forloop.counter0 }}" class="btn p-0 border-0 w-100">
-                        <img src="{{ resim.resim.url }}" class="img-fluid rounded opacity-75 hover-opacity-100" style="height: 60px; width: 100%; object-fit: cover;">
+                    <button type="button" data-bs-target="#galeriSlider" data-bs-slide-to="{{ forloop.counter0 }}" class="btn p-0 border-0 w-100 thumb-btn">
+                        <div class="position-relative thumb-wrap">
+                            <img src="{{ resim.resim.url }}" class="img-fluid rounded" style="height: 70px; width: 100%; object-fit: cover;">
+                            {% if resim.haftanin_fotografi_mi %}
+                            <span class="badge bg-warning text-dark position-absolute top-0 start-0 px-2 py-1" style="font-size: 0.65rem;">Hafta</span>
+                            {% endif %}
+                        </div>
                     </button>
                 </div>
                 {% endfor %}
@@ -57,4 +69,25 @@
         </div>
     </div>
 </div>
+
+<style>
+    .custom-control { width: 12%; }
+    .control-circle {
+        width: 46px; height: 46px;
+        display: inline-flex; align-items: center; justify-content: center;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #3E2723, #2E4A38);
+        color: #f7f3ec;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .custom-control:hover .control-circle { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.35); }
+    .thumb-btn { transition: transform 0.15s ease; }
+    .thumb-btn:hover { transform: translateY(-3px); }
+    .thumb-wrap img { border: 2px solid transparent; transition: border-color 0.2s ease; }
+    .thumb-btn:hover img,
+    .thumb-btn:focus img { border-color: #2E4A38; }
+    .reklam-bant { background: linear-gradient(135deg, #fdfbf7, #f3e8d9); border: 1px dashed #c4b9a6; border-radius: 14px; padding: 18px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+    .reklam-icerik { color: #6c5c50; font-weight: 700; letter-spacing: 1px; }
+</style>
 {% endblock %}

@@ -15,9 +15,9 @@ from allauth.socialaccount.models import SocialApp
 
 # Modeller
 from .models import (
-    Haber, Kategori, Galeri, HaftaninFotografi, 
+    Haber, Kategori, Galeri, 
     Ilce, EczaneLinki, KoseYazari, KoseYazisi, Destekci, Siir,
-    OzelGun, TebrikMesaji, TarihiYer, Profil, get_youtube_embed
+    OzelGun, TebrikMesaji, TarihiYer, Profil, get_youtube_embed, GaleriResim
 )
 
 # Formlar
@@ -94,16 +94,20 @@ def anasayfa(request):
     mansetler = sorted(chain(manset_haberler, manset_yazilar), key=attrgetter('yayin_tarihi'), reverse=True)[:15]
 
     aktif_ozel_gun = OzelGun.objects.filter(aktif_mi=True, anasayfada_goster=True).first()
-    haftanin_fotosu = HaftaninFotografi.objects.filter(aktif_mi=True).last()
+    haftanin_fotosu = GaleriResim.objects.filter(haftanin_fotografi_mi=True).select_related('galeri').first()
     eczaneler = EczaneLinki.objects.all().order_by('sira')
     yazarlar = KoseYazari.objects.filter(aktif_mi=True).order_by('-basyazar_mi', 'id')
     
     gunun_siiri = Siir.objects.filter(aktif_mi=True, gunun_siiri_mi=True).first() or Siir.objects.filter(aktif_mi=True).last()
+    rehber_ogeleri = TarihiYer.objects.filter(aktif_mi=True).order_by('sira')[:6]
+    son_galeriler = Galeri.objects.all().order_by('-yayin_tarihi')[:6]
 
     return render(request, 'anasayfa.html', {
         'haberler': haberler, 'mansetler': mansetler, 'haftanin_fotosu': haftanin_fotosu,
         'eczaneler': eczaneler, 'yazarlar': yazarlar, 'gunun_siiri': gunun_siiri,
-        'aktif_ozel_gun': aktif_ozel_gun
+        'aktif_ozel_gun': aktif_ozel_gun,
+        'rehber_ogeleri': rehber_ogeleri,
+        'son_galeriler': son_galeriler,
     })
 
 # --- KATEGORİ VE İLÇE ---
@@ -183,18 +187,26 @@ def siir_listesi(request):
     siirler = paginator.get_page(request.GET.get('page'))
     return render(request, 'siir_listesi.html', {'siirler': siirler, 'gunun_siiri': gunun_siiri})
 
+def roportaj_listesi(request):
+    roportajlar = Haber.objects.filter(aktif_mi=True, roportaj_mi=True).order_by('-yayin_tarihi')
+    paginator = Paginator(roportajlar, 9)
+    haberler = paginator.get_page(request.GET.get('page'))
+    return render(request, 'roportaj_listesi.html', {'haberler': haberler})
+
 def siir_detay(request, pk):
     siir = get_object_or_404(Siir, pk=pk)
     onayli_yorumlar = yorumlara_rozet_ekle(siir.yorumlar.filter(aktif=True))
     return render(request, 'siir_detay.html', {'siir': siir, 'yorumlar': onayli_yorumlar, 'yorum_form': YorumForm()})
 
 def galeri_listesi(request):
+    haftanin_fotografi = GaleriResim.objects.filter(haftanin_fotografi_mi=True).select_related('galeri').first()
     galeriler = Galeri.objects.all().order_by('-yayin_tarihi')
-    return render(request, 'galeri_listesi.html', {'galeriler': galeriler})
+    return render(request, 'galeri_listesi.html', {'galeriler': galeriler, 'haftanin_fotografi': haftanin_fotografi})
 
 def galeri_detay(request, pk):
     galeri = get_object_or_404(Galeri, pk=pk)
-    return render(request, 'galeri_detay.html', {'galeri': galeri})
+    resimler = galeri.resimler.all().order_by('-haftanin_fotografi_mi', '-id')
+    return render(request, 'galeri_detay.html', {'galeri': galeri, 'resimler': resimler})
 
 
 # --- PROFİL YÖNETİMİ (TEK VE DOĞRU OLAN) ---
@@ -224,8 +236,9 @@ def tarihi_yerler_listesi(request):
     return render(request, 'tarihi_yerler_listesi.html', {'yerler': yerler})
 
 def tarihi_yer_detay(request, slug):
-    yer = get_object_or_404(TarihiYer, slug=slug)
-    return render(request, 'tarihi_yer_detay.html', {'yer': yer})
+    yerler = TarihiYer.objects.filter(aktif_mi=True).order_by('sira')
+    secili_yer = get_object_or_404(yerler, slug=slug)
+    return render(request, 'tarihi_yerler_listesi.html', {'yerler': yerler, 'selected_yer': secili_yer})
 
 # --- DİĞER ---
 def destek(request): return render(request, 'destek.html')

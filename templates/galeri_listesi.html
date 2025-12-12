@@ -7,27 +7,52 @@
         <p class="text-muted">Artvin'in eşsiz doğasından ve etkinliklerinden kareler.</p>
     </div>
 
-    <div class="row">
-        {% for galeri in galeriler %}
-        <div class="col-md-4 mb-4">
-            <div class="card border-0 shadow-sm h-100 galeri-kart">
-                <a href="{% url 'galeri_detay' galeri.pk %}" class="text-decoration-none">
-                    <div class="position-relative overflow-hidden">
-                        {% if galeri.kapak_resmi %}
-                            <img src="{{ galeri.kapak_resmi.url }}" class="card-img-top" style="height: 250px; object-fit: cover; transition: transform 0.5s;" alt="{{ galeri.baslik }}">
-                        {% else %}
-                            <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 250px;">Resim Yok</div>
-                        {% endif %}
-                        <div class="position-absolute top-0 end-0 bg-dark text-white px-2 py-1 m-2 rounded opacity-75 small">
-                            <i class="fas fa-images me-1"></i> Albümü Gör
-                        </div>
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold text-dark mt-2">{{ galeri.baslik }}</h5>
-                        <p class="text-muted small mb-0">{{ galeri.yayin_tarihi|date:"d M Y" }}</p>
-                    </div>
+    {% if haftanin_fotografi %}
+    <div class="row align-items-center mb-5 g-3 haftanin-foto-kart">
+        <div class="col-lg-7">
+            <div class="position-relative rounded shadow-lg overflow-hidden">
+                <img src="{{ haftanin_fotografi.resim.url }}" class="img-fluid w-100" style="height: 380px; object-fit: cover;" alt="{{ haftanin_fotografi.aciklama|default:'Haftanın Fotoğrafı' }}">
+                <span class="badge bg-dark text-warning position-absolute top-0 start-0 m-3 px-3 py-2">Haftanın Fotoğrafı</span>
+                <a href="{% url 'galeri_detay' haftanin_fotografi.galeri.pk %}" class="position-absolute bottom-0 start-0 end-0 text-white text-decoration-none p-3" style="background: linear-gradient(180deg, transparent, rgba(0,0,0,0.7));">
+                    <div class="fw-bold fs-5">{{ haftanin_fotografi.galeri.baslik }}</div>
+                    {% if haftanin_fotografi.aciklama %}<div class="small text-white-50">{{ haftanin_fotografi.aciklama }}</div>{% endif %}
                 </a>
             </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="p-4 rounded shadow-sm" style="background: linear-gradient(135deg, #2E4A38, #3E2723); color: #f7f3ec;">
+                <p class="text-uppercase small mb-2 letter-space">Bu Haftanın Seçimi</p>
+                <h4 class="fw-bold mb-2">{{ haftanin_fotografi.galeri.baslik }}</h4>
+                <p class="mb-3" style="color: rgba(255,255,255,0.8);">Bu kare, hafta boyunca öne çıkan fotoğrafımız. Aşağıdaki galerilerden diğer tüm fotoğraflara da göz atabilirsiniz.</p>
+                <a href="{% url 'galeri_detay' haftanin_fotografi.galeri.pk %}" class="btn btn-light text-dark fw-bold px-4">
+                    <i class="fas fa-images me-2"></i> Galeriye Git
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="reklam-bant text-center my-4">
+        <div class="reklam-icerik">REKLAM ALANI • 970 x 250</div>
+    </div>
+
+    <div class="row g-4">
+        {% for galeri in galeriler %}
+        <div class="col-md-4">
+            <a href="{% url 'galeri_detay' galeri.pk %}" class="text-decoration-none galeri-kart h-100 d-flex flex-column">
+                <div class="galeri-img-wrap position-relative rounded-top">
+                    {% if galeri.kapak_resmi %}
+                        <img src="{{ galeri.kapak_resmi.url }}" class="w-100" alt="{{ galeri.baslik }}">
+                    {% else %}
+                        <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 220px;">Resim Yok</div>
+                    {% endif %}
+                    <div class="galeri-chip"><i class="fas fa-images me-1"></i> Albümü Gör</div>
+                </div>
+                <div class="galeri-body rounded-bottom flex-grow-1">
+                    <h5 class="fw-bold text-dark mb-1">{{ galeri.baslik }}</h5>
+                    <p class="text-muted small mb-0">{{ galeri.yayin_tarihi|date:"d M Y" }}</p>
+                </div>
+            </a>
         </div>
         {% empty %}
         <div class="col-12 text-center py-5">
@@ -38,8 +63,24 @@
 </div>
 
 <style>
-    .galeri-kart:hover img {
-        transform: scale(1.05); /* Üzerine gelince resim hafif büyüsün */
+    .galeri-kart {
+        border: 1px solid rgba(0,0,0,0.05);
+        border-radius: 14px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
+    .galeri-kart:hover { transform: translateY(-4px); box-shadow: 0 16px 30px rgba(0,0,0,0.12); }
+    .galeri-img-wrap img { height: 220px; object-fit: cover; display: block; transition: transform 0.3s ease; }
+    .galeri-kart:hover img { transform: scale(1.03); }
+    .galeri-chip {
+        position: absolute; bottom: 10px; right: 10px;
+        background: rgba(46,74,56,0.9); color: #f7f3ec; padding: 6px 10px; border-radius: 20px; font-size: 0.8rem;
+    }
+    .galeri-body { padding: 14px 16px; background: #fdfbf7; }
+    .haftanin-foto-kart .letter-space { letter-spacing: 1px; }
+    .reklam-bant { background: #fdfbf7; border: 1px dashed #c4b9a6; border-radius: 12px; padding: 18px; }
+    .reklam-icerik { color: #6c5c50; font-weight: 600; letter-spacing: 1px; }
 </style>
 {% endblock %}

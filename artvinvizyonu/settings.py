@@ -127,6 +127,14 @@ JAZZMIN_SETTINGS = {
         {"name": "Siteyi Gör", "url": "/"},
     ],
     "order_with_respect_to": ["haberler.haber", "haberler.koseyazisi", "haberler.koseyazari", "haberler.kategori", "haberler.ilce", "haberler.galeri"],
+    "custom_links": {
+        "haberler": [
+            {"name": "Yeni Haber", "url": "admin:haberler_haber_add", "icon": "fas fa-plus"},
+            {"name": "Yeni Köşe Yazısı", "url": "admin:haberler_koseyazisi_add", "icon": "fas fa-pen"},
+            {"name": "Yeni Galeri", "url": "admin:haberler_galeri_add", "icon": "fas fa-camera"},
+            {"name": "Silinen Haberleri Geri Getir", "url": "admin:haberler_haber_recoverlist", "icon": "fas fa-undo"},
+        ],
+    },
     "icons": {
         "auth.user": "fas fa-user-circle",
         "auth.Group": "fas fa-users",
@@ -145,10 +153,19 @@ JAZZMIN_SETTINGS = {
     },
     "default_icon_parents": "fas fa-chevron-circle-right",
     "navigation_expanded": True,
-    "hide_apps": [],
-    "hide_models": [],
+    "hide_apps": ["sites", "socialaccount", "account"],
+    "hide_models": [
+        "auth.group",
+        "admin.logentry",
+        "account.emailaddress",
+        "account.emailconfirmation",
+        "socialaccount.socialapp",
+        "socialaccount.socialtoken",
+        "socialaccount.socialaccount",
+    ],
     "theme": "united",
     "dark_mode_theme": None,
+    "custom_css": "css/admin-custom.css",
     "button_classes": {
         "primary": "btn-primary",
         "secondary": "btn-secondary",

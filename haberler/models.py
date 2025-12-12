@@ -306,20 +306,12 @@ class GaleriResim(models.Model):
         options={'quality': 70}
     )
     aciklama = models.CharField(max_length=200, blank=True, verbose_name="Resim Açıklaması (Opsiyonel)")
+    haftanin_fotografi_mi = models.BooleanField(default=False, verbose_name="Haftanın Fotoğrafı")
 
-class HaftaninFotografi(models.Model):
-    resim = ProcessedImageField(
-        upload_to='haftanin_fotografi/',
-        processors=[ResizeToFit(1200, 900)],
-        format='JPEG',
-        options={'quality': 75},
-        verbose_name="Fotoğraf"
-    )
-    baslik = models.CharField(max_length=200, verbose_name="Başlık / Açıklama")
-    ceken = models.CharField(max_length=100, verbose_name="Fotoğrafı Çeken", default='Artvizyon')
-    aktif_mi = models.BooleanField(default=True)
-    def __str__(self): return self.baslik
-    class Meta: verbose_name_plural = "Haftanın Fotoğrafı"
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.haftanin_fotografi_mi:
+            self.__class__.objects.exclude(pk=self.pk).update(haftanin_fotografi_mi=False)
 
 class Siir(FotoKaynakMixin, models.Model): # <-- Buraya Mixin eklendi
     baslik = models.CharField(max_length=200, verbose_name="Şiir Başlığı")
@@ -365,7 +357,9 @@ class Yorum(models.Model):
     olusturulma_tarihi = models.DateTimeField(auto_now_add=True)
     aktif = models.BooleanField(default=False, verbose_name="Yayınlansın mı?")
     def __str__(self): return f"Yorum: {self.isim}"
-    class Meta: ordering = ['-olusturulma_tarihi']
+    class Meta:
+        ordering = ['-olusturulma_tarihi']
+        verbose_name_plural = "Yorumlar"
 
 class Destekci(models.Model):
     PAKETLER = (('okur', 'Okur Destekçisi'), ('gonul', 'Gönül Dostu'), ('sponsor', 'Ana Sponsor'))
