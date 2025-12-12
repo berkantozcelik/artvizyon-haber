@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.utils import timezone
+from django.conf import settings
 from datetime import timedelta
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
@@ -9,6 +10,8 @@ from django.contrib import messages
 from itertools import chain
 from operator import attrgetter
 import re
+
+from allauth.socialaccount.models import SocialApp
 
 # Modeller
 from .models import (
@@ -53,10 +56,18 @@ def yorumlara_rozet_ekle(yorumlar):
 # --- CONTEXT PROCESSOR (HATAYI ÇÖZEN KISIM) ---
 # Bu fonksiyon sitenin her yerinde kategori ve ilçe verilerinin görünmesini sağlar.
 def global_context(request):
+    try:
+        available_social_providers = set(
+            SocialApp.objects.filter(sites=settings.SITE_ID).values_list('provider', flat=True)
+        )
+    except Exception:
+        available_social_providers = set()
+
     return {
         'global_kategoriler': Kategori.objects.all(),
         'global_ilceler': Ilce.objects.all(),
-        'son_dakika': Haber.objects.filter(aktif_mi=True, son_dakika=True, yayin_tarihi__gte=timezone.now()-timedelta(hours=24)).order_by('-yayin_tarihi')
+        'son_dakika': Haber.objects.filter(aktif_mi=True, son_dakika=True, yayin_tarihi__gte=timezone.now()-timedelta(hours=24)).order_by('-yayin_tarihi'),
+        'available_social_providers': available_social_providers,
     }
 
 # =========================================================

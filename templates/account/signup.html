@@ -9,24 +9,29 @@
             <h4 class="mb-0 fw-bold"><i class="fas fa-user-plus me-2"></i> ARAMIZA KATIL</h4>
         </div>
         <div class="card-body p-4">
-            
-            <form action="{% provider_login_url 'google' process='signup' %}" method="post" class="mb-2">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-light border w-100 d-flex align-items-center justify-content-center gap-2 shadow-sm">
-                    <i class="fab fa-google text-danger fs-5"></i>
-                    <span class="fw-bold text-secondary">Google ile Kayıt Ol</span>
-                </button>
-            </form>
-            
-            <form action="{% provider_login_url 'facebook' process='signup' %}" method="post" class="mb-3">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 shadow-sm">
-                    <i class="fab fa-facebook-f fs-5"></i>
-                    <span class="fw-bold">Facebook ile Kayıt Ol</span>
-                </button>
-            </form>
+            {% if available_social_providers %}
+                {% if 'google' in available_social_providers %}
+                <form action="{% provider_login_url 'google' process='signup' %}" method="post" class="mb-2">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-light border w-100 d-flex align-items-center justify-content-center gap-2 shadow-sm">
+                        <i class="fab fa-google text-danger fs-5"></i>
+                        <span class="fw-bold text-secondary">Google ile Kayıt Ol</span>
+                    </button>
+                </form>
+                {% endif %}
+                
+                {% if 'facebook' in available_social_providers %}
+                <form action="{% provider_login_url 'facebook' process='signup' %}" method="post" class="mb-3">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 shadow-sm">
+                        <i class="fab fa-facebook-f fs-5"></i>
+                        <span class="fw-bold">Facebook ile Kayıt Ol</span>
+                    </button>
+                </form>
+                {% endif %}
 
-            <div class="text-center text-muted mb-3 small border-top pt-3">- VEYA STANDART KAYIT -</div>
+                <div class="text-center text-muted mb-3 small border-top pt-3">- VEYA STANDART KAYIT -</div>
+            {% endif %}
 
             <form method="post" action="{% url 'account_signup' %}"> {% csrf_token %}
                 {% for field in form %}

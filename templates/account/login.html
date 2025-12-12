@@ -33,23 +33,29 @@
                         </button>
                     </form>
 
+                    {% if available_social_providers %}
                     <div class="text-center mt-4">
                         <p class="text-muted small border-bottom pb-2">VEYA SOSYAL HESAPLARINLA GİRİŞ YAP</p>
 
+                        {% if 'google' in available_social_providers %}
                         <form action="{% provider_login_url 'google' %}" method="post" class="mb-2">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-danger w-100 py-2 fw-bold shadow-sm">
                                 <i class="fab fa-google me-2"></i> Google ile Giriş Yap
                             </button>
                         </form>
+                        {% endif %}
 
+                        {% if 'facebook' in available_social_providers %}
                         <form action="{% provider_login_url 'facebook' %}" method="post">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">
                                 <i class="fab fa-facebook-f me-2"></i> Facebook ile Giriş Yap
                             </button>
                         </form>
+                        {% endif %}
                     </div>
+                    {% endif %}
                     
                     <div class="text-center mt-3 pt-3 border-top">
                         <a href="{% url 'account_signup' %}" class="text-decoration-none text-success small fw-bold">
