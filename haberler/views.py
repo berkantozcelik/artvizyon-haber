@@ -14,7 +14,7 @@ import re
 from .models import (
     Haber, Kategori, Galeri, HaftaninFotografi, 
     Ilce, EczaneLinki, KoseYazari, KoseYazisi, Destekci, Siir,
-    OzelGun, TebrikMesaji, TarihiYer, Profil
+    OzelGun, TebrikMesaji, TarihiYer, Profil, get_youtube_embed
 )
 
 # Formlar
@@ -28,17 +28,16 @@ def metin_ici_video_duzelt(icerik):
     block_pattern = re.compile(r'\(\s*video\s*:(.*?)\)', re.DOTALL | re.IGNORECASE)
     
     def replacement(match):
-        content = match.group(1)
-        id_pattern = re.compile(r'(?:v=|/|embed/|shorts/)([a-zA-Z0-9_-]{11})')
-        found = id_pattern.search(content)
-        if found:
-            video_id = found.group(1)
-            return f'''
-            <div class="ratio ratio-16x9 my-4 shadow rounded border" style="width: 100%; display: block;">
-                <iframe src="https://www.youtube.com/embed/{video_id}?rel=0" title="Video" allowfullscreen style="border:0;"></iframe>
-            </div>
-            '''
-        return "" 
+        embed_url = get_youtube_embed(match.group(1))
+        if not embed_url:
+            return ""
+        return f'''
+        <div class="ratio ratio-16x9 my-4 shadow rounded border" style="width: 100%; display: block;">
+            <iframe src="{embed_url}" title="Video" loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="border:0;"></iframe>
+        </div>
+        '''
     return block_pattern.sub(replacement, icerik)
 
 def yorumlara_rozet_ekle(yorumlar):

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load video_tags %}
 
 {% block meta_tags %}
     <meta property="og:title" content="{{ siir.baslik }} - {{ siir.sair }}" />
@@ -57,7 +58,7 @@
                     
                     <hr class="w-25 mx-auto mb-5 border-danger opacity-50">
                     
-                    <div class="lh-lg fs-5 text-dark mb-5" style="font-family: 'Georgia', serif; white-space: pre-wrap; color: #2c3e50;">{{ siir.siir_metni|safe }}</div>
+                    <div class="lh-lg fs-5 text-dark mb-5" style="font-family: 'Georgia', serif; white-space: pre-wrap; color: #2c3e50;">{{ siir.siir_metni|youtube_gom|safe }}</div>
 
                     <div class="d-flex justify-content-center align-items-center gap-2 flex-wrap border-top pt-4">
                         <span class="fw-bold text-muted small me-2">PAYLAŞ:</span>

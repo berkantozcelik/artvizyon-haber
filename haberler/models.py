@@ -12,36 +12,47 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFit, ResizeToFill
+from urllib.parse import urlparse, parse_qs, urlencode
 
 # --- YARDIMCI FONKSİYON: YOUTUBE EMBED ÇEVİRİCİ ---
+YOUTUBE_ID_REGEX = re.compile(r'(?:youtu\.be/|youtube\.com/(?:watch\?v=|shorts/|live/|embed/)|v=)([A-Za-z0-9_-]{11})')
+
 def get_youtube_embed(url):
     """
-    Normal videoları ve SHORTS videolarını embed koduna çevirir.
+    YouTube linklerini (watch, shorts, live, youtu.be) embed formatına çevirir.
+    Geçerli bir video ID bulunamazsa None döner.
     """
-    if not url: return None
-    
-    if "embed" in url: return url
+    if not url:
+        return None
 
-    if "shorts/" in url:
-        try:
-            video_id = url.split("shorts/")[1].split("?")[0]
-            return f"https://www.youtube.com/embed/{video_id}"
-        except:
-            return url
+    match = YOUTUBE_ID_REGEX.search(url)
+    if not match:
+        return None
 
-    if "youtu.be" in url:
-        try:
-            video_id = url.split("/")[-1].split("?")[0]
-            return f"https://www.youtube.com/embed/{video_id}"
-        except: return url
-        
-    if "watch?v=" in url:
-        try:
-            video_id = url.split("watch?v=")[1].split("&")[0]
-            return f"https://www.youtube.com/embed/{video_id}"
-        except: return url
-        
-    return url
+    video_id = match.group(1)
+
+    # Başlangıç parametresi varsa koru
+    parsed = urlparse(url)
+    query = parse_qs(parsed.query)
+    start = None
+    if 'start' in query:
+        try: start = int(query['start'][0])
+        except (ValueError, TypeError): pass
+    elif 't' in query:
+        raw_t = query['t'][0]
+        try: start = int(str(raw_t).rstrip('s'))
+        except (ValueError, TypeError): pass
+
+    params = {
+        'rel': '0',
+        'modestbranding': '1',
+        'playsinline': '1',
+    }
+    if start is not None:
+        params['start'] = str(start)
+
+    query_string = urlencode(params)
+    return f"https://www.youtube.com/embed/{video_id}?{query_string}"
 
 class FotoKaynakMixin(models.Model):
     """
@@ -163,8 +174,7 @@ class Haber(FotoKaynakMixin, models.Model): # <-- Buraya Mixin eklendi
 
     @property
     def youtube_embed_url(self):
-        # ... (fonksiyon içeriği aynı kalacak)
-        pass
+        return get_youtube_embed(self.video_link)
 
 # ==========================================
 # 🎄 ÖZEL GÜN VE TEBRİK MESAJLARI
