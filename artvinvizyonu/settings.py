@@ -252,3 +252,23 @@ SOCIALACCOUNT_PROVIDERS = {
         'VERSION': 'v13.0',
     }
 }
+
+# Opsiyonel: SocialApp modeline eklemeden Google/Facebook OAuth bilgilerini
+# ortam değişkenlerinden tanımlayabilmek için destekle.
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
+if GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET:
+    SOCIALACCOUNT_PROVIDERS['google']['APP'] = {
+        'client_id': GOOGLE_CLIENT_ID,
+        'secret': GOOGLE_CLIENT_SECRET,
+        'key': os.getenv('GOOGLE_CLIENT_KEY', ''),
+    }
+
+FACEBOOK_CLIENT_ID = os.getenv('FACEBOOK_CLIENT_ID') or os.getenv('FACEBOOK_APP_ID')
+FACEBOOK_CLIENT_SECRET = os.getenv('FACEBOOK_CLIENT_SECRET') or os.getenv('FACEBOOK_APP_SECRET')
+if FACEBOOK_CLIENT_ID and FACEBOOK_CLIENT_SECRET:
+    SOCIALACCOUNT_PROVIDERS['facebook']['APP'] = {
+        'client_id': FACEBOOK_CLIENT_ID,
+        'secret': FACEBOOK_CLIENT_SECRET,
+        'key': os.getenv('FACEBOOK_CLIENT_KEY', ''),
+    }

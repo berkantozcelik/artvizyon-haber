@@ -63,6 +63,17 @@ def global_context(request):
     except Exception:
         available_social_providers = set()
 
+    provider_configs = getattr(settings, 'SOCIALACCOUNT_PROVIDERS', {})
+    for provider, cfg in provider_configs.items():
+        app_configs = cfg.get('APPS')
+        if app_configs is None:
+            single = cfg.get('APP')
+            app_configs = [single] if single else []
+        for app_cfg in app_configs:
+            if app_cfg.get('client_id') and app_cfg.get('secret'):
+                available_social_providers.add(provider)
+                break
+
     return {
         'global_kategoriler': Kategori.objects.all(),
         'global_ilceler': Ilce.objects.all(),
