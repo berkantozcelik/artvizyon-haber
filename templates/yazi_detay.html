@@ -90,8 +90,8 @@
                 {% endif %}
 
                 {% if yazi.manset_resmi %}
-<div class="mb-4 position-relative"> 
-    <img src="{{ yazi.manset_resmi.url }}" class="img-fluid rounded w-100 shadow-sm" alt="{{ yazi.baslik }}" style="max-height: 520px; object-fit: cover; width: 100%;">
+<div class="mb-4 position-relative text-center"> 
+    <img src="{{ yazi.manset_resmi.url }}" class="img-fluid rounded shadow-sm" alt="{{ yazi.baslik }}" style="width: 100%; height: auto;">
     <div class="kaynak-etiketi">
         Fotoğraf: {{ yazi.foto_kaynak|default:"Artvizyon Haber" }}
     </div>
@@ -101,9 +101,6 @@
                 <article class="yazi-icerik">
                     {{ yazi.icerik|youtube_gom|safe }}
                 </article>
-                {% if user.is_staff %}
-                <p class="text-muted small mt-2 mb-0">* Metin içi görsellere kaynak vermek için img etiketine <code>data-kaynak="Örn: AA"</code> ekleyin; sağ alt etiket otomatik çıkar.</p>
-                {% endif %}
 
                 <div class="my-5 bg-light border border-secondary p-3 text-center" style="border-style: dashed;">
                     <small class="text-muted d-block mb-1">REKLAM</small>

@@ -226,6 +226,12 @@ class OzelGunAdmin(VersionAdmin): # VersionAdmin kullanıldı
     prepopulated_fields = {'slug': ('baslik',)} 
     inlines = [TebrikMesajiInline]
 
+@admin.register(TebrikMesaji)
+class TebrikMesajiAdmin(VersionAdmin):
+    list_display = ('ad_soyad', 'ozel_gun', 'sira')
+    list_filter = ('ozel_gun',)
+    search_fields = ('ad_soyad', 'ozel_gun__baslik')
+
 # --- BASİT KAYITLAR (GERİ ALMA ÖZELLİĞİ İÇİN SINIF HALİNE GETİRİLDİ) ---
 
 @admin.register(TarihiYer)
