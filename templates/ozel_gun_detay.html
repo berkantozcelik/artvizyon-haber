@@ -55,7 +55,15 @@
 
                     {% if mesaj.embed_video_url %}
                     <div class="mt-4 ratio ratio-16x9 rounded overflow-hidden shadow-sm">
-                        <iframe src="{{ mesaj.embed_video_url }}" allowfullscreen></iframe>
+                        <iframe src="{{ mesaj.embed_video_url }}"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                referrerpolicy="strict-origin-when-cross-origin"
+                                allowfullscreen></iframe>
+                    </div>
+                    <div class="text-center mt-2 small">
+                        <a href="{{ mesaj.video_link }}" target="_blank" rel="noopener" class="text-decoration-none">
+                            Videoyu YouTube'da aç
+                        </a>
                     </div>
                     {% endif %}
                 </div>
