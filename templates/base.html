@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Artvizyon Haber - Gzt. Sami Özçelik{% endblock %}</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2E4A38">
     
     {% block meta_tags %}{% endblock %}
     
@@ -210,6 +212,14 @@
             .cookie-banner { flex-direction: column; align-items: flex-start; }
             .navbar-toggler-icon { filter: invert(1); }
         }
+
+        .pwa-banner {
+            position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%);
+            background: rgba(46,74,56,0.96); color: #f7f3ec; padding: 12px 14px;
+            border-radius: 14px; display: none; align-items: center; justify-content: space-between; gap: 12px;
+            z-index: 2500; min-width: 280px; max-width: 92vw; box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+        }
+        .pwa-banner.show { display: flex; }
     </style>
 </head>
 <body>
@@ -410,6 +420,21 @@
     </div>
 </footer>
 
+    <!-- PWA Install Banner (mobile) -->
+    <div id="pwa-install" class="pwa-banner shadow-lg">
+        <div class="d-flex align-items-center gap-2">
+            <img src="/static/icons/icon-192.png" alt="Artvizyon" width="40" height="40" class="rounded">
+            <div>
+                <div class="fw-bold">Artvizyon Haber</div>
+                <small class="text-white-50">Anasayfanıza ekleyin, tek dokunuşla açın.</small>
+            </div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <button id="pwa-install-btn" class="btn btn-sm btn-light text-dark fw-bold rounded-pill">Ekle</button>
+            <button id="pwa-install-close" class="btn btn-sm btn-outline-light rounded-pill">Kapat</button>
+        </div>
+    </div>
+
     <!-- Çerez Uyarısı -->
     <div id="cookie-banner" class="cookie-banner shadow-lg">
         <div class="cookie-text">
@@ -422,6 +447,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/pwa.js' %}"></script>
     
     <script>
         document.addEventListener("DOMContentLoaded", function() {

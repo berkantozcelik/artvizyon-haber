@@ -1,0 +1,28 @@
+{
+  "name": "Artvizyon Haber",
+  "short_name": "Artvizyon",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#3E2723",
+  "theme_color": "#2E4A38",
+  "description": "Artvin'in güncel haberleri, köşe yazıları ve foto galerileri.",
+  "icons": [
+    {
+      "src": "/static/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/icons/icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
