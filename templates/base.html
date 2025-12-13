@@ -68,13 +68,13 @@
 
         /* 3. Logo */
         .site-logo { 
-            max-height: 110px; /* Başlangıç boyutu */
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 140px; /* Başlangıç boyutu */
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         /* Kaydırılınca Logo Stili */
         #sticky-wrapper.is-scrolled .site-logo {
-            max-height: 50px; /* Logo küçülsün */
+            max-height: 70px; /* Logo küçülsün */
         }
 
         /* 4. Butonlar (Giriş/Abone Ol) */
@@ -194,22 +194,23 @@
         .social-icon:hover { background: var(--artvin-yesil); color: #fff; transform: translateY(-3px); }
         .cookie-banner {
             position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(46, 74, 56, 0.97); color: #f7f3ec;
-            padding: 12px 16px; z-index: 3000;
-            display: none; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: space-between;
-            box-shadow: 0 -6px 20px rgba(0,0,0,0.2); border-top: 2px solid rgba(212,175,55,0.4);
+            background: rgba(46, 74, 56, 0.9); color: #f7f3ec;
+            padding: 6px 10px; z-index: 3000;
+            display: none; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: space-between;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.15); border-top: 2px solid rgba(212,175,55,0.25);
+            max-height: 110px; overflow: hidden;
         }
         .cookie-banner.show { display: flex; }
-        .cookie-text { font-size: 0.9rem; flex: 1 1 320px; }
+        .cookie-text { font-size: 0.8rem; flex: 1 1 220px; line-height: 1.35; }
 
         /* Mobil düzenlemeler */
         @media (max-width: 991px) {
-            .header-wrapper { padding: 8px 0; }
-            .site-logo { max-height: 70px !important; }
+            .header-wrapper { padding: 10px 0; }
+            .site-logo { max-height: 120px !important; }
             .navbar-main { padding: 6px 0; }
             .nav-link-custom { padding: 10px 12px !important; font-size: 0.85rem; }
-            .mobile-auth-btns .btn { padding: 6px 10px; font-size: 0.8rem; }
-            .cookie-banner { flex-direction: column; align-items: flex-start; }
+            .cookie-banner { flex-direction: column; align-items: flex-start; padding: 6px 10px; max-height: 130px; }
+            .cookie-text { font-size: 0.75rem; }
             .navbar-toggler-icon { filter: invert(1); }
         }
 
