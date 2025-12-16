@@ -194,14 +194,14 @@
         .social-icon:hover { background: var(--artvin-yesil); color: #fff; transform: translateY(-3px); }
         .cookie-banner {
             position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(46, 74, 56, 0.9); color: #f7f3ec;
-            padding: 6px 10px; z-index: 3000;
-            display: none; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: space-between;
-            box-shadow: 0 -4px 12px rgba(0,0,0,0.15); border-top: 2px solid rgba(212,175,55,0.25);
-            max-height: 110px; overflow: hidden;
+            background: rgba(46, 74, 56, 0.88); color: #f7f3ec;
+            padding: 4px 8px; z-index: 3000;
+            display: none; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: space-between;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.12); border-top: 1px solid rgba(212,175,55,0.2);
+            max-height: 80px; overflow: hidden;
         }
         .cookie-banner.show { display: flex; }
-        .cookie-text { font-size: 0.8rem; flex: 1 1 220px; line-height: 1.35; }
+        .cookie-text { font-size: 0.75rem; flex: 1 1 200px; line-height: 1.3; }
 
         /* Mobil düzenlemeler */
         @media (max-width: 991px) {
@@ -209,8 +209,8 @@
             .site-logo { max-height: 120px !important; }
             .navbar-main { padding: 6px 0; }
             .nav-link-custom { padding: 10px 12px !important; font-size: 0.85rem; }
-            .cookie-banner { flex-direction: column; align-items: flex-start; padding: 6px 10px; max-height: 130px; }
-            .cookie-text { font-size: 0.75rem; }
+            .cookie-banner { flex-direction: column; align-items: flex-start; padding: 4px 8px; max-height: 110px; }
+            .cookie-text { font-size: 0.72rem; }
             .navbar-toggler-icon { filter: invert(1); }
         }
 
@@ -225,13 +225,17 @@
         /* Mobil auth/logo/abone bar */
         .mobile-topbar { background: #2E4A38; color: #fff; }
         .mobile-topbar .btn { font-weight: 700; }
+
+        /* Mobil hızlı menü */
+        .mobile-quick { background: #0f161c; }
+        .mobile-quick a { white-space: nowrap; }
     </style>
 </head>
 <body>
 
     <div id="sticky-wrapper">
         
-        <header class="header-wrapper">
+        <header class="header-wrapper d-none d-lg-block">
             <div class="container">
                 <div class="row align-items-center">
                     
@@ -326,8 +330,20 @@
             <a href="{% url 'kategori_haberleri' kategori.pk %}" class="btn btn-sm btn-outline-light rounded-pill">{{ kategori.isim }}</a>
             {% endfor %}
         </div>
+    </div> 
+
+    <!-- Mobil için yatay hızlı menü -->
+    <div class="d-lg-none mobile-quick text-white py-2 px-2">
+        <div class="d-flex overflow-auto gap-2" style="scrollbar-width: none;">
+            <a href="{% url 'kimdir' %}" class="btn btn-sm btn-outline-light rounded-pill">Editörden</a>
+            <a href="{% url 'galeri_listesi' %}" class="btn btn-sm btn-outline-light rounded-pill">Medya & Kültür</a>
+            <a href="{% url 'tarihi_yerler_listesi' %}" class="btn btn-sm btn-outline-light rounded-pill">Artvin Rehberi</a>
+            {% for kategori in global_kategoriler|slice:":6" %}
+            <a href="{% url 'kategori_haberleri' kategori.pk %}" class="btn btn-sm btn-outline-light rounded-pill">{{ kategori.isim }}</a>
+            {% endfor %}
+        </div>
     </div>
-    
+
     <!-- Mobil üst bar: giriş/kayıt sol, logo ortada, abone sağ -->
     <div class="d-lg-none mobile-topbar px-3 py-2 d-flex align-items-center justify-content-between">
         <div class="d-flex gap-2 align-items-center">
