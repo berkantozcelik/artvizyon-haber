@@ -53,7 +53,7 @@
         .header-wrapper {
             background-color: var(--ahsap-koyu);
             border-bottom: 4px solid var(--artvin-yesil);
-            padding: 15px 0; /* Başlangıç yüksekliği */
+            padding: 10px 0; /* Başlangıç yüksekliği */
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative; /* Dropdown için gerekli */
             z-index: 1055; /* Navbar'dan yukarıda */
@@ -68,13 +68,13 @@
 
         /* 3. Logo */
         .site-logo { 
-            max-height: 140px; /* Başlangıç boyutu */
+            max-height: 120px; /* Başlangıç boyutu */
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         /* Kaydırılınca Logo Stili */
         #sticky-wrapper.is-scrolled .site-logo {
-            max-height: 70px; /* Logo küçülsün */
+            max-height: 65px; /* Logo küçülsün */
         }
 
         /* 4. Butonlar (Giriş/Abone Ol) */
@@ -84,20 +84,21 @@
             border: 1px solid rgba(255,255,255,0.2);
             font-weight: bold;
             text-transform: uppercase;
-            padding: 10px 20px; /* Başlangıç boyutu */
+            padding: 8px 16px; /* Başlangıç boyutu */
             border-radius: 50px;
             text-decoration: none;
             transition: all 0.3s;
-            font-size: 0.85rem;
-            min-width: 140px;
+            font-size: 0.8rem;
+            min-width: 110px;
             display: inline-flex; justify-content: center; align-items: center;
         }
+        .btn-compact { padding: 6px 12px; font-size: 0.78rem; min-width: 100px; }
 
         /* Kaydırılınca Buton Stili */
         #sticky-wrapper.is-scrolled .btn-ozel-artvin {
-            padding: 5px 15px; /* Buton küçülsün */
-            font-size: 0.75rem; /* Yazı küçülsün */
-            min-width: 110px;
+            padding: 4px 12px; /* Buton küçülsün */
+            font-size: 0.72rem; /* Yazı küçülsün */
+            min-width: 95px;
         }
 
         .btn-ozel-artvin:hover { background-color: #1e3326; color: #fff; border-color: var(--altin-detay); }
@@ -205,8 +206,8 @@
 
         /* Mobil düzenlemeler */
         @media (max-width: 991px) {
-            .header-wrapper { padding: 10px 0; }
-            .site-logo { max-height: 120px !important; }
+            .header-wrapper { padding: 8px 0; }
+            .site-logo { max-height: 110px !important; }
             .navbar-main { padding: 6px 0; }
             .nav-link-custom { padding: 10px 12px !important; font-size: 0.85rem; }
             .cookie-banner { flex-direction: column; align-items: flex-start; padding: 4px 8px; max-height: 110px; }
@@ -225,21 +226,17 @@
         /* Mobil auth/logo/abone bar */
         .mobile-topbar { background: #2E4A38; color: #fff; }
         .mobile-topbar .btn { font-weight: 700; }
-
-        /* Mobil hızlı menü */
-        .mobile-quick { background: #0f161c; }
-        .mobile-quick a { white-space: nowrap; }
     </style>
 </head>
 <body>
 
     <div id="sticky-wrapper">
         
-        <header class="header-wrapper d-none d-lg-block">
+        <header class="header-wrapper">
             <div class="container">
                 <div class="row align-items-center">
                     
-                    <div class="col-4 text-start d-none d-lg-block">
+                    <div class="col-4 text-start">
                         {% if user.is_authenticated %}
                             <div class="dropdown">
                                 <button class="btn-ozel-artvin dropdown-toggle" type="button" data-bs-toggle="dropdown">
@@ -280,8 +277,8 @@
                         </a>
                     </div>
 
-                    <div class="col-4 text-end d-none d-lg-block">
-                        <a href="{% url 'destek' %}" class="btn-ozel-artvin">
+                    <div class="col-4 text-end">
+                        <a href="{% url 'destek' %}" class="btn-ozel-artvin btn-compact">
                             <i class="fas fa-newspaper me-2"></i> ABONE OL
                         </a>
                     </div>
@@ -289,18 +286,14 @@
             </div>
         </header>
 
-        <nav class="navbar navbar-expand-lg navbar-main">
+        <nav class="navbar navbar-main">
             <div class="container">
-                <button class="btn text-white d-lg-none me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
+                <button class="btn text-white me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
                     <i class="fas fa-bars fa-lg"></i>
                 </button>
 
-                <button class="btn btn-outline-light border-0 me-3 d-none d-lg-inline-flex align-items-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
-                    <i class="fas fa-bars me-2"></i> <span style="font-weight: bold; letter-spacing: 1px;">MENÜ</span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="mainNavbar">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-lg-center">
+                <div class="d-flex align-items-center w-100 flex-wrap">
+                    <ul class="navbar-nav flex-row flex-wrap me-auto mb-2 mb-lg-0 align-items-lg-center">
                         <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'anasayfa' %}">Anasayfa</a></li>
                         <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'roportaj_listesi' %}">Röportaj</a></li>
                         <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'galeri_listesi' %}">Foto Galeri</a></li>
@@ -308,7 +301,7 @@
                         <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'kimdir' %}">Editörden</a></li>
                         <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'iletisim' %}">İletişim</a></li>
                     </ul>
-                    <form action="{% url 'arama' %}" method="get" class="d-flex ms-lg-3">
+                    <form action="{% url 'arama' %}" method="get" class="d-flex ms-lg-3 flex-grow-1 flex-lg-grow-0">
                         <div class="input-group input-group-sm">
                             <span class="input-group-text bg-transparent border-secondary text-white"><i class="fas fa-search"></i></span>
                             <input class="form-control bg-dark text-white border-secondary" type="search" name="q" placeholder="Haber ara...">
@@ -319,50 +312,6 @@
             </div>
         </nav>
     </div> 
-
-    <!-- Mobil için yatay hızlı menü -->
-    <div class="d-lg-none bg-dark text-white py-2 px-2">
-        <div class="d-flex overflow-auto gap-2" style="scrollbar-width: none;">
-            <a href="{% url 'kimdir' %}" class="btn btn-sm btn-outline-light rounded-pill">Editörden</a>
-            <a href="{% url 'galeri_listesi' %}" class="btn btn-sm btn-outline-light rounded-pill">Medya & Kültür</a>
-            <a href="{% url 'tarihi_yerler_listesi' %}" class="btn btn-sm btn-outline-light rounded-pill">Artvin Rehberi</a>
-            {% for kategori in global_kategoriler|slice:":6" %}
-            <a href="{% url 'kategori_haberleri' kategori.pk %}" class="btn btn-sm btn-outline-light rounded-pill">{{ kategori.isim }}</a>
-            {% endfor %}
-        </div>
-    </div> 
-
-    <!-- Mobil için yatay hızlı menü -->
-    <div class="d-lg-none mobile-quick text-white py-2 px-2">
-        <div class="d-flex overflow-auto gap-2" style="scrollbar-width: none;">
-            <a href="{% url 'kimdir' %}" class="btn btn-sm btn-outline-light rounded-pill">Editörden</a>
-            <a href="{% url 'galeri_listesi' %}" class="btn btn-sm btn-outline-light rounded-pill">Medya & Kültür</a>
-            <a href="{% url 'tarihi_yerler_listesi' %}" class="btn btn-sm btn-outline-light rounded-pill">Artvin Rehberi</a>
-            {% for kategori in global_kategoriler|slice:":6" %}
-            <a href="{% url 'kategori_haberleri' kategori.pk %}" class="btn btn-sm btn-outline-light rounded-pill">{{ kategori.isim }}</a>
-            {% endfor %}
-        </div>
-    </div>
-
-    <!-- Mobil üst bar: giriş/kayıt sol, logo ortada, abone sağ -->
-    <div class="d-lg-none mobile-topbar px-3 py-2 d-flex align-items-center justify-content-between">
-        <div class="d-flex gap-2 align-items-center">
-            {% if user.is_authenticated %}
-                <a href="{% url 'profil' %}" class="btn btn-sm btn-outline-light rounded-pill">Profil</a>
-            {% else %}
-                <a href="{% url 'account_login' %}" class="btn btn-sm btn-outline-light rounded-pill">Giriş</a>
-                <a href="{% url 'account_signup' %}" class="btn btn-sm btn-success rounded-pill">Kayıt</a>
-            {% endif %}
-        </div>
-        <div class="flex-grow-1 text-center">
-            <a href="{% url 'anasayfa' %}">
-                <img src="/media/site-logo.webp" alt="Artvizyon Haber" class="site-logo" style="max-height: 90px;">
-            </a>
-        </div>
-        <div class="ms-2">
-            <a href="{% url 'destek' %}" class="btn btn-sm btn-warning rounded-pill text-dark fw-bold">Abone Ol</a>
-        </div>
-    </div>
 
     <div class="offcanvas offcanvas-start offcanvas-custom" tabindex="-1" id="sidebarMenu">
         <div class="offcanvas-header">
