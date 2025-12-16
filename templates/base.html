@@ -123,6 +123,7 @@
             font-size: 0.85rem; 
             letter-spacing: 0.5px;
             transition: color 0.2s ease;
+            white-space: nowrap;
         }
         .nav-link-custom::after {
             content: "";
@@ -287,28 +288,31 @@
         </header>
 
         <nav class="navbar navbar-main">
-            <div class="container">
-                <button class="btn text-white me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
-                    <i class="fas fa-bars fa-lg"></i>
-                </button>
+            <div class="container-fluid px-lg-4">
+                <div class="d-flex align-items-center w-100 gap-3">
+                    <button class="btn text-white flex-shrink-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
+                        <i class="fas fa-bars fa-lg"></i>
+                    </button>
 
-                <div class="d-flex align-items-center w-100 flex-wrap">
-                    <ul class="navbar-nav flex-row flex-wrap me-auto mb-2 mb-lg-0 align-items-lg-center">
-                        <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'anasayfa' %}">Anasayfa</a></li>
-                        <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'roportaj_listesi' %}">Röportaj</a></li>
-                        <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'galeri_listesi' %}">Foto Galeri</a></li>
-                        <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'tarihi_yerler_listesi' %}">Artvin Rehberi</a></li>
-                        <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'kimdir' %}">Editörden</a></li>
-                        <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'iletisim' %}">İletişim</a></li>
-                    </ul>
-                    <form action="{% url 'arama' %}" method="get" class="d-flex ms-lg-3 flex-grow-1 flex-lg-grow-0">
+                    <!-- Kaydırılabilir menü (mobilde yatay scroll) -->
+                    <div class="flex-grow-1 overflow-auto" style="scrollbar-width: none;">
+                        <ul class="navbar-nav flex-row flex-nowrap align-items-center mb-0 gap-1">
+                            <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'anasayfa' %}">Anasayfa</a></li>
+                            <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'roportaj_listesi' %}">Röportaj</a></li>
+                            <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'galeri_listesi' %}">Foto Galeri</a></li>
+                            <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'tarihi_yerler_listesi' %}">Artvin Rehberi</a></li>
+                            <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'kimdir' %}">Editörden</a></li>
+                            <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'iletisim' %}">İletişim</a></li>
+                        </ul>
+                    </div>
+
+                    <form action="{% url 'arama' %}" method="get" class="d-none d-lg-flex ms-lg-3">
                         <div class="input-group input-group-sm">
                             <span class="input-group-text bg-transparent border-secondary text-white"><i class="fas fa-search"></i></span>
                             <input class="form-control bg-dark text-white border-secondary" type="search" name="q" placeholder="Haber ara...">
                         </div>
                     </form>
                 </div>
-                
             </div>
         </nav>
     </div> 

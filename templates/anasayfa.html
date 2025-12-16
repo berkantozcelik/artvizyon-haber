@@ -343,25 +343,26 @@
 
     /* SOL SÜTUN */
     .yazarlar-sutun {
-        background-color: #fff; border: 1px solid #e0e0e0; height: 780px; 
+        background-color: #fff; border: 1px solid #e0e0e0; height: 720px; 
         display: flex; flex-direction: column; position: relative;
     }
     .yazar-listesi-wrapper { flex-grow: 1; overflow-y: hidden; position: relative; scroll-behavior: smooth; }
     .yazar-item {
-        display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #f0f0f0;
-        transition: 0.2s; height: 85px; 
+        display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #f0f0f0;
+        transition: 0.2s; height: 78px; 
     }
-    .yazarlar-sutun .basyazar-img { width: 80px; height: 80px; object-fit: cover; border: 3px solid #cc0000; }
-    .yazarlar-sutun .basyazar-baslik { font-size: 1rem; }
-    .yazarlar-sutun .basyazar-alinti { font-size: 0.82rem; }
+    .yazarlar-sutun .basyazar-img { width: 70px; height: 70px; object-fit: cover; border: 2px solid #cc0000; }
+    .yazarlar-sutun .basyazar-baslik { font-size: 0.95rem; }
+    .yazarlar-sutun .basyazar-alinti { font-size: 0.78rem; }
     .yazar-listesi-wrapper::before {
-        content: "Kaydırmak için sürükleyin";
+        content: "Kaydırmak için sürükleyin →";
         display: block;
         text-align: center;
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         color: #666;
-        padding: 6px 0;
+        padding: 5px 0;
         border-bottom: 1px dashed #e0e0e0;
+        letter-spacing: 0.2px;
     }
     .yazar-item:hover { background-color: #f9fdfa; border-left: 4px solid #2E4A38; }
     .yazar-img-small {
@@ -385,7 +386,7 @@
     @media (max-width: 992px) {
         .manset-resim { height: 250px !important; }
         .manset-caption-container { height: auto !important; min-height: 140px; padding-bottom: 15px !important; }
-        .yazarlar-sutun { height: auto; max-height: 450px; margin-bottom: 20px; }
+        .yazarlar-sutun { height: auto; max-height: 430px; margin-bottom: 20px; }
         .sag-ust-reklam { display: none; }
         .yazar-scroll-btn { display: none; }
         .yazar-listesi-wrapper { overflow-y: auto; }
