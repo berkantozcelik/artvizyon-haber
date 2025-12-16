@@ -351,6 +351,18 @@
         display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #f0f0f0;
         transition: 0.2s; height: 85px; 
     }
+    .yazarlar-sutun .basyazar-img { width: 80px; height: 80px; object-fit: cover; border: 3px solid #cc0000; }
+    .yazarlar-sutun .basyazar-baslik { font-size: 1rem; }
+    .yazarlar-sutun .basyazar-alinti { font-size: 0.82rem; }
+    .yazar-listesi-wrapper::before {
+        content: "Kaydırmak için sürükleyin";
+        display: block;
+        text-align: center;
+        font-size: 0.75rem;
+        color: #666;
+        padding: 6px 0;
+        border-bottom: 1px dashed #e0e0e0;
+    }
     .yazar-item:hover { background-color: #f9fdfa; border-left: 4px solid #2E4A38; }
     .yazar-img-small {
         width: 55px; height: 55px; border-radius: 50%; object-fit: cover; 
@@ -394,10 +406,10 @@
                     <div class="text-center p-3">
                         <a href="{% url 'yazi_detay' yazar.son_yazisi.pk %}" class="text-decoration-none">
                             <div class="position-relative d-inline-block mb-2">
-                                <img src="{{ yazar.resim.url }}" class="rounded-circle shadow" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #cc0000;">
+                                <img src="{{ yazar.resim.url }}" class="rounded-circle shadow basyazar-img">
                             </div>
-                            <h5 class="fw-bold text-dark mt-1 mb-1" style="font-size: 1.1rem;">{{ yazar.ad_soyad }}</h5>
-                            <p class="text-muted fst-italic fw-bold small mb-0 px-2" style="font-family: 'Georgia', serif; font-size: 0.85rem; line-height: 1.2;">
+                            <h5 class="fw-bold text-dark mt-1 mb-1 basyazar-baslik">{{ yazar.ad_soyad }}</h5>
+                            <p class="text-muted fst-italic fw-bold small mb-0 px-2 basyazar-alinti" style="font-family: 'Georgia', serif; line-height: 1.2;">
                                 "{{ yazar.son_yazisi.baslik|truncatechars:60 }}"
                             </p>
                         </a>

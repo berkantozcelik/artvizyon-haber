@@ -221,6 +221,10 @@
             z-index: 2500; min-width: 280px; max-width: 92vw; box-shadow: 0 12px 30px rgba(0,0,0,0.25);
         }
         .pwa-banner.show { display: flex; }
+
+        /* Mobil auth/logo/abone bar */
+        .mobile-topbar { background: #2E4A38; color: #fff; }
+        .mobile-topbar .btn { font-weight: 700; }
     </style>
 </head>
 <body>
@@ -291,20 +295,6 @@
                     <i class="fas fa-bars me-2"></i> <span style="font-weight: bold; letter-spacing: 1px;">MENÜ</span>
                 </button>
 
-                <button class="navbar-toggler text-white border-0 d-lg-none me-2" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Menüyü Aç">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="d-lg-none d-flex align-items-center ms-auto mobile-auth-btns">
-                    {% if user.is_authenticated %}
-                        <a href="{% url 'profil' %}" class="btn btn-sm btn-outline-light me-2 rounded-pill"><i class="fas fa-user"></i></a>
-                        <a href="{% url 'destek' %}" class="btn btn-sm btn-success rounded-pill">Abone Ol</a>
-                    {% else %}
-                        <a href="{% url 'account_login' %}" class="btn btn-sm btn-outline-light me-2 rounded-pill">Giriş</a>
-                        <a href="{% url 'account_signup' %}" class="btn btn-sm btn-success rounded-pill">Kayıt</a>
-                    {% endif %}
-                </div>
-
                 <div class="collapse navbar-collapse" id="mainNavbar">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-lg-center">
                         <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'anasayfa' %}">Anasayfa</a></li>
@@ -322,15 +312,42 @@
                     </form>
                 </div>
                 
-                <div class="d-lg-none text-end ms-auto">
-                    <a href="{% if user.is_authenticated %}{% url 'profil' %}{% else %}{% url 'account_login' %}{% endif %}" class="text-white text-decoration-none">
-                        <i class="fas fa-user-circle fa-lg"></i>
-                    </a>
-                </div>
             </div>
         </nav>
     </div> 
+
+    <!-- Mobil için yatay hızlı menü -->
+    <div class="d-lg-none bg-dark text-white py-2 px-2">
+        <div class="d-flex overflow-auto gap-2" style="scrollbar-width: none;">
+            <a href="{% url 'kimdir' %}" class="btn btn-sm btn-outline-light rounded-pill">Editörden</a>
+            <a href="{% url 'galeri_listesi' %}" class="btn btn-sm btn-outline-light rounded-pill">Medya & Kültür</a>
+            <a href="{% url 'tarihi_yerler_listesi' %}" class="btn btn-sm btn-outline-light rounded-pill">Artvin Rehberi</a>
+            {% for kategori in global_kategoriler|slice:":6" %}
+            <a href="{% url 'kategori_haberleri' kategori.pk %}" class="btn btn-sm btn-outline-light rounded-pill">{{ kategori.isim }}</a>
+            {% endfor %}
+        </div>
+    </div>
     
+    <!-- Mobil üst bar: giriş/kayıt sol, logo ortada, abone sağ -->
+    <div class="d-lg-none mobile-topbar px-3 py-2 d-flex align-items-center justify-content-between">
+        <div class="d-flex gap-2 align-items-center">
+            {% if user.is_authenticated %}
+                <a href="{% url 'profil' %}" class="btn btn-sm btn-outline-light rounded-pill">Profil</a>
+            {% else %}
+                <a href="{% url 'account_login' %}" class="btn btn-sm btn-outline-light rounded-pill">Giriş</a>
+                <a href="{% url 'account_signup' %}" class="btn btn-sm btn-success rounded-pill">Kayıt</a>
+            {% endif %}
+        </div>
+        <div class="flex-grow-1 text-center">
+            <a href="{% url 'anasayfa' %}">
+                <img src="/media/site-logo.webp" alt="Artvizyon Haber" class="site-logo" style="max-height: 90px;">
+            </a>
+        </div>
+        <div class="ms-2">
+            <a href="{% url 'destek' %}" class="btn btn-sm btn-warning rounded-pill text-dark fw-bold">Abone Ol</a>
+        </div>
+    </div>
+
     <div class="offcanvas offcanvas-start offcanvas-custom" tabindex="-1" id="sidebarMenu">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title fw-bold" style="color: var(--altin-detay);">ARTVİZYON HABER</h5>
@@ -411,9 +428,9 @@
             <div class="col-md-3 mb-4">
                 <h5 class="border-bottom pb-2 mb-3 border-secondary text-warning">TAKİP EDİN</h5>
                 <div class="d-flex gap-2 mb-3">
-                    <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                    <a href="https://facebook.com" target="_blank" rel="noopener" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://instagram.com" target="_blank" rel="noopener" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    <a href="https://youtube.com" target="_blank" rel="noopener" class="social-icon"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
         </div>

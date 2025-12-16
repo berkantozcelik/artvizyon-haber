@@ -22,6 +22,9 @@
                             {% if resim.haftanin_fotografi_mi %}
                             <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-3 px-3 py-2 shadow">Haftanın Fotoğrafı</span>
                             {% endif %}
+                            <div class="position-absolute bottom-0 start-0 end-0 bg-dark bg-opacity-50 text-white p-2 small text-center">
+                                {{ resim.aciklama|default:"" }}
+                            </div>
                         </div>
                         {% if resim.aciklama %}
                         <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-75 py-2">
