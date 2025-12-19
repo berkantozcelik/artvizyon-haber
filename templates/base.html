@@ -337,6 +337,26 @@
                     <div class="flex-grow-1 overflow-auto" style="scrollbar-width: none;">
                         <ul class="navbar-nav flex-row flex-nowrap align-items-center mb-0 gap-1">
                             <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'anasayfa' %}">Anasayfa</a></li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link nav-link-custom dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Kategoriler
+                                </a>
+                                <ul class="dropdown-menu">
+                                    {% for kategori in global_kategoriler %}
+                                    <li><a class="dropdown-item text-white" href="{% url 'kategori_haberleri' kategori.pk %}">{{ kategori.isim }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link nav-link-custom dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    İlçeler
+                                </a>
+                                <ul class="dropdown-menu">
+                                    {% for ilce in global_ilceler %}
+                                    <li><a class="dropdown-item text-white" href="{% url 'ilce_haberleri' ilce.pk %}">{{ ilce.isim }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
                             <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'roportaj_listesi' %}">Röportaj</a></li>
                             <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'galeri_listesi' %}">Foto Galeri</a></li>
                             <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'tarihi_yerler_listesi' %}">Artvin Rehberi</a></li>
