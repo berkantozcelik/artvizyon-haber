@@ -113,10 +113,6 @@
             <article class="haber-icerik">
                 {{ haber.icerik|youtube_gom|safe }}
             </article>
-            {% if user.is_staff %}
-            <p class="text-muted small mt-2 mb-0">* Metin içine eklediğiniz görsellere kaynak etiketi eklemek için img etiketine <code>data-kaynak="Örn: AA"</code> yazın.</p>
-            {% endif %}
-
             <div class="card bg-light border-0 mb-5 mt-4">
                 <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <span class="fw-bold text-muted small">HABERİ PAYLAŞ:</span>
