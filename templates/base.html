@@ -199,7 +199,10 @@
         .kayan-yazi a { color: #fff; text-decoration: none; margin-right: 60px; font-weight: 500; font-size: 0.9rem; }
         @keyframes kayanYazi { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
 
-        .haber-icerik img { max-width: 100%; height: auto !important; border-radius: 8px; margin-bottom: 15px; }
+        .haber-icerik img { max-width: 100%; height: auto !important; border-radius: 8px; margin: 0 auto 15px; display: block; }
+        @media (min-width: 992px) {
+            .haber-icerik img { max-width: 80%; }
+        }
         .haber-icerik p { font-size: 1.1rem; line-height: 1.7; font-family: 'Georgia', serif; color: #333; }
         .haber-icerik > p:first-of-type::first-letter { font-size: 3.5rem; float: left; line-height: 0.8; margin-right: 10px; color: #cc0000; font-weight: bold; }
         .social-icon { width: 35px; height: 35px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255,255,255,0.1); color: #fff; text-decoration: none; transition: 0.3s; }
