@@ -146,7 +146,24 @@
             transition: background 0.2s ease;
         }
         .nav-link-custom:hover, .nav-link-custom:focus { color: #ffd166 !important; }
-        .nav-link-custom:hover::after, .nav-link-custom:focus::after { background: #ffd166; }
+        .nav-link-custom:not(.dropdown-toggle):hover::after,
+        .nav-link-custom:not(.dropdown-toggle):focus::after { background: #ffd166; }
+
+        .nav-link-custom.dropdown-toggle::after {
+            position: static;
+            width: 0;
+            height: 0;
+            margin-left: 6px;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 5px solid #f7f7f7;
+            background: none;
+            vertical-align: middle;
+        }
+        .nav-link-custom.dropdown-toggle:hover::after,
+        .nav-link-custom.dropdown-toggle:focus::after {
+            border-top-color: #ffd166;
+        }
 
         /* Kaydırılınca Navbar Linkleri (Biraz daralsın) */
         #sticky-wrapper.is-scrolled .nav-link-custom {
