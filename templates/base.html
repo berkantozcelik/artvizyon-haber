@@ -153,6 +153,16 @@
             padding: 10px 12px !important;
             font-size: 0.8rem;
         }
+
+        .nav-scroll { overflow-x: auto; overflow-y: visible; scrollbar-width: none; }
+        .nav-scroll::-webkit-scrollbar { display: none; }
+
+        .navbar-main .navbar-nav .dropdown-menu { position: static; margin-top: 0; }
+        @media (min-width: 992px) {
+            .nav-scroll { overflow: visible; }
+            .navbar-main .navbar-nav .dropdown { position: relative; }
+            .navbar-main .navbar-nav .dropdown-menu { position: absolute; top: 100%; left: 0; }
+        }
         
         /* DROPDOWN DÜZELTMESİ */
         .dropdown-menu {
@@ -334,7 +344,7 @@
                     </button>
 
                     <!-- Kaydırılabilir menü (mobilde yatay scroll) -->
-                    <div class="flex-grow-1 overflow-auto" style="scrollbar-width: none;">
+                    <div class="nav-scroll flex-grow-1">
                         <ul class="navbar-nav flex-row flex-nowrap align-items-center mb-0 gap-1">
                             <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'anasayfa' %}">Anasayfa</a></li>
                             <li class="nav-item dropdown">
