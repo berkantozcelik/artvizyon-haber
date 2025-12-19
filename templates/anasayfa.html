@@ -153,131 +153,6 @@
         line-height: 1;
         transition: opacity 0.3s;
     }
-</style>
-
-<div class="ozel-gun-wrapper mb-4">
-    <div class="kar-tanesi kar-xl"></div><div class="kar-tanesi kar-xl" style="left:20%"></div><div class="kar-tanesi kar-xl" style="left:80%"></div>
-    <div class="kar-tanesi kar-lg"></div><div class="kar-tanesi kar-lg" style="left:40%"></div><div class="kar-tanesi kar-lg" style="left:90%"></div>
-    <div class="kar-tanesi kar-md"></div><div class="kar-tanesi kar-md" style="left:10%"></div><div class="kar-tanesi kar-md" style="left:70%"></div>
-    <div class="kar-tanesi kar-sm"></div><div class="kar-tanesi kar-sm" style="left:5%"></div><div class="kar-tanesi kar-sm" style="left:50%"></div>
-
-    <div class="container container-ozel">
-        
-        <div class="d-flex justify-content-between align-items-center mb-3 ps-2 pe-2">
-            <h4 class="m-0 fw-bold text-white" style="font-family: 'Playfair Display', serif; letter-spacing: 1px; text-shadow: 0 0 10px rgba(255,255,255,0.6), 2px 2px 4px rgba(0,0,0,0.9);">
-                <i class="fas fa-tree me-2 text-success" style="filter: drop-shadow(0 0 3px #fff);"></i> 
-                {{ aktif_ozel_gun.baslik }}
-            </h4>
-            <a href="{% url 'ozel_gun_detay' aktif_ozel_gun.slug %}" class="btn btn-sm bg-white text-dark rounded-pill py-2 px-4 fw-bold shadow-lg" style="border: 2px solid #D4AF37;">
-                Tüm Mesajlar <i class="fas fa-arrow-right ms-1 text-warning"></i>
-            </a>
-        </div>
-
-        <div class="ozel-gun-layout">
-            
-            <div class="fixed-left-side">
-                <div class="tebrik-kart lead-kart" onclick="window.location='{% url 'ozel_gun_detay' aktif_ozel_gun.slug %}'" style="cursor: pointer;">
-                    <div class="card-body-ozel justify-content-center p-4">
-                        <h4 class="fw-bold mb-3 text-danger text-uppercase" style="letter-spacing: 1px;">
-                            <i class="fas fa-bullhorn me-2"></i>ARTVİZYON
-                        </h4>
-                        <div class="mesaj-scroll-area" style="border: none; max-height: 350px;">
-                            <p class="text-dark fst-italic mb-0 fw-bold fs-5" style="font-family: 'Georgia', serif; line-height: 1.5;">
-                                "{{ aktif_ozel_gun.aciklama }}"
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="scrolling-right-side" id="scrollWrapper" onmouseenter="dur()" onmouseleave="devamEt()">
-                
-                <div class="scroll-arrow scroll-left" onclick="manuelKaydir('left')"><i class="fas fa-chevron-left"></i></div>
-                
-                <div class="ozel-gun-scroll" id="ozelGunSlider">
-                    {% for i in "123" %} 
-                        {% for mesaj in aktif_ozel_gun.mesajlar.all %}
-                        <div class="tebrik-kart scroll-kart" onclick="window.location='{% url 'ozel_gun_detay' aktif_ozel_gun.slug %}'" style="cursor: pointer;">
-                            
-                            {% if mesaj.resim %}
-                                <img src="{{ mesaj.resim.url }}" class="tebrik-img">
-                            {% else %}
-                                <div class="tebrik-img d-flex align-items-center justify-content-center bg-light" style="color: #ccc;"><i class="fas fa-user fa-3x"></i></div>
-                            {% endif %}
-                            
-                            <div class="card-body-ozel">
-                                <h6 class="fw-bold mb-1 text-dark w-100" style="font-size: 1rem; line-height: 1.2;">{{ mesaj.ad_soyad }}</h6>
-                                
-                                <small class="text-muted d-block w-100 mb-2" style="font-size: 0.75rem; font-weight: bold; white-space: normal; line-height: 1.2;">
-                                    {{ mesaj.unvan|default:"" }}
-                                </small>
-                                
-                                <div class="mesaj-scroll-area">
-                                    <p class="mb-0 text-secondary fst-italic" style="font-size: 0.85rem; line-height: 1.4; white-space: normal;">
-                                        "{{ mesaj.mesaj_metni }}"
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-
-                        <div class="tebrik-kart scroll-kart whatsapp-kart" onclick="window.open('https://wa.me/905458088408?text=Merhaba,%20özel%20gün%20mesajı%20yayınlamak%20istiyorum.', '_blank')" style="cursor: pointer;">
-                            <div class="tebrik-img d-flex align-items-center justify-content-center" style="background-color: #3E2723; border-color: #3E2723;">
-                                <i class="fab fa-whatsapp text-warning" style="font-size: 4rem;"></i>
-                            </div>
-                            <div class="card-body-ozel" style="background-color: transparent;">
-                                <h6 class="fw-bold mb-2 text-dark text-uppercase mt-2">SİZ DE YER ALIN!</h6>
-                                <p class="small text-muted mb-3" style="line-height: 1.3;">
-                                    Artvin'in en prestijli tebrik köşesinde mesajınız yayınlansın.
-                                </p>
-                                <div class="mt-auto w-100 pb-3">
-                                    <span class="btn btn-sm btn-outline-dark w-100 rounded-pill fw-bold" style="border-width: 2px;">
-                                        <i class="fas fa-paper-plane me-1"></i> Bize Ulaşın
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-
-                <div class="scroll-arrow scroll-right" onclick="manuelKaydir('right')"><i class="fas fa-chevron-right"></i></div>
-            </div>
-
-        </div>
-    </div>
-</div>
-
-<script>
-    const slider = document.getElementById('ozelGunSlider');
-    let isPaused = false;
-
-    function sonsuzDonguKontrol() {
-        if (slider.scrollLeft >= (slider.scrollWidth / 2)) {
-            slider.scrollLeft = 0; 
-        }
-    }
-
-    function otomatikKaydir() {
-        if (!isPaused && slider) {
-            slider.scrollLeft += 1; 
-            sonsuzDonguKontrol();
-        }
-    }
-
-    function dur() { isPaused = true; }
-    function devamEt() { isPaused = false; }
-
-    function manuelKaydir(direction) {
-        const amount = 260;
-        if (direction === 'left') {
-            slider.scrollBy({ left: -amount, behavior: 'smooth' });
-        } else {
-            slider.scrollBy({ left: amount, behavior: 'smooth' });
-        }
-    }
-
-    setInterval(otomatikKaydir, 40);
-</script>
 {% endif %}
 
 <style>
@@ -517,6 +392,132 @@
         </div>
     </div>
 </div>
+
+{% if aktif_ozel_gun %}
+<div class="ozel-gun-wrapper mb-4">
+    <div class="kar-tanesi kar-xl"></div><div class="kar-tanesi kar-xl" style="left:20%"></div><div class="kar-tanesi kar-xl" style="left:80%"></div>
+    <div class="kar-tanesi kar-lg"></div><div class="kar-tanesi kar-lg" style="left:40%"></div><div class="kar-tanesi kar-lg" style="left:90%"></div>
+    <div class="kar-tanesi kar-md"></div><div class="kar-tanesi kar-md" style="left:10%"></div><div class="kar-tanesi kar-md" style="left:70%"></div>
+    <div class="kar-tanesi kar-sm"></div><div class="kar-tanesi kar-sm" style="left:5%"></div><div class="kar-tanesi kar-sm" style="left:50%"></div>
+
+    <div class="container container-ozel">
+        
+        <div class="d-flex justify-content-between align-items-center mb-3 ps-2 pe-2">
+            <h4 class="m-0 fw-bold text-white" style="font-family: 'Playfair Display', serif; letter-spacing: 1px; text-shadow: 0 0 10px rgba(255,255,255,0.6), 2px 2px 4px rgba(0,0,0,0.9);">
+                <i class="fas fa-tree me-2 text-success" style="filter: drop-shadow(0 0 3px #fff);"></i> 
+                {{ aktif_ozel_gun.baslik }}
+            </h4>
+            <a href="{% url 'ozel_gun_detay' aktif_ozel_gun.slug %}" class="btn btn-sm bg-white text-dark rounded-pill py-2 px-4 fw-bold shadow-lg" style="border: 2px solid #D4AF37;">
+                Tüm Mesajlar <i class="fas fa-arrow-right ms-1 text-warning"></i>
+            </a>
+        </div>
+
+        <div class="ozel-gun-layout">
+            
+            <div class="fixed-left-side">
+                <div class="tebrik-kart lead-kart" onclick="window.location='{% url 'ozel_gun_detay' aktif_ozel_gun.slug %}'" style="cursor: pointer;">
+                    <div class="card-body-ozel justify-content-center p-4">
+                        <h4 class="fw-bold mb-3 text-danger text-uppercase" style="letter-spacing: 1px;">
+                            <i class="fas fa-bullhorn me-2"></i>ARTVİZYON
+                        </h4>
+                        <div class="mesaj-scroll-area" style="border: none; max-height: 350px;">
+                            <p class="text-dark fst-italic mb-0 fw-bold fs-5" style="font-family: 'Georgia', serif; line-height: 1.5;">
+                                "{{ aktif_ozel_gun.aciklama }}"
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="scrolling-right-side" id="scrollWrapper" onmouseenter="dur()" onmouseleave="devamEt()">
+                
+                <div class="scroll-arrow scroll-left" onclick="manuelKaydir('left')"><i class="fas fa-chevron-left"></i></div>
+                
+                <div class="ozel-gun-scroll" id="ozelGunSlider">
+                    {% for i in "123" %} 
+                        {% for mesaj in aktif_ozel_gun.mesajlar.all %}
+                        <div class="tebrik-kart scroll-kart" onclick="window.location='{% url 'ozel_gun_detay' aktif_ozel_gun.slug %}'" style="cursor: pointer;">
+                            
+                            {% if mesaj.resim %}
+                                <img src="{{ mesaj.resim.url }}" class="tebrik-img">
+                            {% else %}
+                                <div class="tebrik-img d-flex align-items-center justify-content-center bg-light" style="color: #ccc;"><i class="fas fa-user fa-3x"></i></div>
+                            {% endif %}
+                            
+                            <div class="card-body-ozel">
+                                <h6 class="fw-bold mb-1 text-dark w-100" style="font-size: 1rem; line-height: 1.2;">{{ mesaj.ad_soyad }}</h6>
+                                
+                                <small class="text-muted d-block w-100 mb-2" style="font-size: 0.75rem; font-weight: bold; white-space: normal; line-height: 1.2;">
+                                    {{ mesaj.unvan|default:"" }}
+                                </small>
+                                
+                                <div class="mesaj-scroll-area">
+                                    <p class="mb-0 text-secondary fst-italic" style="font-size: 0.85rem; line-height: 1.4; white-space: normal;">
+                                        "{{ mesaj.mesaj_metni }}"
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        <div class="tebrik-kart scroll-kart whatsapp-kart" onclick="window.open('https://wa.me/905458088408?text=Merhaba,%20özel%20gün%20mesajı%20yayınlamak%20istiyorum.', '_blank')" style="cursor: pointer;">
+                            <div class="tebrik-img d-flex align-items-center justify-content-center" style="background-color: #3E2723; border-color: #3E2723;">
+                                <i class="fab fa-whatsapp text-warning" style="font-size: 4rem;"></i>
+                            </div>
+                            <div class="card-body-ozel" style="background-color: transparent;">
+                                <h6 class="fw-bold mb-2 text-dark text-uppercase mt-2">SİZ DE YER ALIN!</h6>
+                                <p class="small text-muted mb-3" style="line-height: 1.3;">
+                                    Artvin'in en prestijli tebrik köşesinde mesajınız yayınlansın.
+                                </p>
+                                <div class="mt-auto w-100 pb-3">
+                                    <span class="btn btn-sm btn-outline-dark w-100 rounded-pill fw-bold" style="border-width: 2px;">
+                                        <i class="fas fa-paper-plane me-1"></i> Bize Ulaşın
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="scroll-arrow scroll-right" onclick="manuelKaydir('right')"><i class="fas fa-chevron-right"></i></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    const slider = document.getElementById('ozelGunSlider');
+    let isPaused = false;
+
+    function sonsuzDonguKontrol() {
+        if (slider.scrollLeft >= (slider.scrollWidth / 2)) {
+            slider.scrollLeft = 0; 
+        }
+    }
+
+    function otomatikKaydir() {
+        if (!isPaused && slider) {
+            slider.scrollLeft += 1; 
+            sonsuzDonguKontrol();
+        }
+    }
+
+    function dur() { isPaused = true; }
+    function devamEt() { isPaused = false; }
+
+    function manuelKaydir(direction) {
+        const amount = 260;
+        if (direction === 'left') {
+            slider.scrollBy({ left: -amount, behavior: 'smooth' });
+        } else {
+            slider.scrollBy({ left: amount, behavior: 'smooth' });
+        }
+    }
+
+    setInterval(otomatikKaydir, 40);
+</script>
+{% endif %}
 
 <div class="row">
     
