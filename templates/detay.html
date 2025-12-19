@@ -1,6 +1,26 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load video_tags %}  {% block content %}
+{% load video_tags %}
+
+{% block meta_tags %}
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="{{ haber.baslik }}" />
+    {% if haber.ozet %}
+    <meta property="og:description" content="{{ haber.ozet|striptags|truncatechars:160 }}" />
+    {% else %}
+    <meta property="og:description" content="{{ haber.icerik|striptags|truncatechars:160 }}" />
+    {% endif %}
+    {% if haber.resim %}
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ haber.resim.url }}" />
+    {% else %}
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo-kare.png' %}" />
+    {% endif %}
+    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+    <meta property="og:site_name" content="Artvizyon Haber" />
+    <meta name="twitter:card" content="summary_large_image" />
+{% endblock %}
+
+{% block content %}
 
 <style>
     /* Ana Metin: Daha tok ve okunaklı (New York Times stili) */
