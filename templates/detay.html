@@ -70,6 +70,7 @@
     }
     .inline-img-wrap { position: relative; display: inline-block; }
     .inline-img-wrap > img { display: block; }
+    .haber-main-image { width: 100%; height: auto !important; object-fit: contain; display: block; }
 </style>
 
 <div class="container mt-4">
@@ -92,7 +93,7 @@
 
             {% if haber.resim %}
             <div class="mb-4 position-relative"> 
-                <img src="{{ haber.resim.url }}" class="img-fluid rounded w-100 shadow-sm" alt="{{ haber.baslik }}">
+                <img src="{{ haber.resim.url }}" class="img-fluid rounded w-100 shadow-sm haber-main-image" alt="{{ haber.baslik }}">
                 <div class="kaynak-etiketi">
                     Fotoğraf: {{ haber.foto_kaynak|default:"Artvizyon Haber" }}
                 </div>
