@@ -1,11 +1,24 @@
 from django.contrib import admin
 from django.urls import path, include
+from django.http import FileResponse, Http404
+import os
 from django.conf import settings
 from django.conf.urls.static import static
 from haberler import views # Senin uygulamanın adı 'haberler'
 from django.views.generic import TemplateView
 
+def ads_txt(request):
+    candidates = [
+        os.path.join(settings.STATIC_ROOT, 'ads.txt'),
+        os.path.join(settings.BASE_DIR, 'static', 'ads.txt'),
+    ]
+    for path in candidates:
+        if path and os.path.exists(path):
+            return FileResponse(open(path, 'rb'), content_type='text/plain')
+    raise Http404
+
 urlpatterns = [
+    path('ads.txt', ads_txt, name='ads_txt'),
     # --- GÜVENLİK: ÖZEL ADMİN YOLU ---
     path('artvizyon-sami/', admin.site.urls),
     
