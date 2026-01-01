@@ -8,7 +8,7 @@
     .ozel-gun-wrapper {
         background-image: linear-gradient(135deg, rgba(62,39,35,0.7), rgba(46,74,56,0.7)), url('{% if aktif_ozel_gun.kapak_resmi %}{{ aktif_ozel_gun.kapak_resmi.url }}{% endif %}');
         background-size: cover; background-position: center; position: relative; overflow: hidden;
-        padding: 26px 0;
+        padding: 18px 0;
         border-top: 5px solid; border-image: linear-gradient(to right, #3E2723 50%, #2E4A38 50%) 1;
         border-bottom: 5px solid; border-image: linear-gradient(to right, #2E4A38 50%, #3E2723 50%) 1;
     }
@@ -36,13 +36,13 @@
 
     /* --- DÜZEN --- */
     .container-ozel { position: relative; z-index: 20; }
-    .ozel-gun-layout { display: flex; align-items: stretch; gap: 20px; position: relative; height: 380px; }
-    .fixed-left-side { flex: 0 0 260px; z-index: 30; height: 100%; }
+    .ozel-gun-layout { display: flex; align-items: stretch; gap: 16px; position: relative; height: 320px; }
+    .fixed-left-side { flex: 0 0 220px; z-index: 30; height: 100%; }
     .scrolling-right-side { flex-grow: 1; position: relative; overflow: hidden; display: flex; align-items: center; height: 100%; }
     
     .ozel-gun-scroll {
-        display: flex; gap: 20px; overflow-x: auto; 
-        padding: 5px 10px; height: 100%; align-items: stretch;
+        display: flex; gap: 16px; overflow-x: auto; 
+        padding: 5px 8px; height: 100%; align-items: stretch;
         scroll-behavior: auto; scrollbar-width: none;
     }
     .ozel-gun-scroll::-webkit-scrollbar { display: none; }
@@ -52,16 +52,19 @@
     /* 1. ARTVİZYON KARTI (SABİT) */
     .lead-kart {
         width: 100%; height: 100%;
-        border: 3px solid #D4AF37; background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(247,243,236,0.95));
+        border: 2px solid #2E4A38;
+        background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(243,246,242,0.96));
         display: flex; flex-direction: column; justify-content: center;
-        border-radius: 14px; box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+        border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
     }
+    .lead-kart h4 { color: #2E4A38; font-size: 1rem; letter-spacing: 1px; }
+    .lead-kart p { font-size: 0.95rem; }
 
     /* 2. KİŞİ KARTLARI (KAYAN) */
     .scroll-kart {
-        flex: 0 0 240px; /* GENİŞLİK */
+        flex: 0 0 210px; /* GENİŞLİK */
         background: #fff; border-radius: 12px; overflow: hidden;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.25); transition: 0.3s; border: 2px solid #D4AF37;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.22); transition: 0.3s; border: 2px solid #D4AF37;
         display: flex; flex-direction: column; height: 100%;
         position: relative;
     }
@@ -79,17 +82,17 @@
 
     /* --- RESİM AYARI (KÜÇÜK YUVARLAK) --- */
     .tebrik-img { 
-        width: 95px !important; height: 95px !important; /* SABİT KÜÇÜK BOYUT */
+        width: 80px !important; height: 80px !important; /* SABİT KÜÇÜK BOYUT */
         object-fit: cover; 
         border-radius: 50%; /* YUVARLAK */
-        margin: 20px auto 10px auto; /* ORTALA */
+        margin: 16px auto 8px auto; /* ORTALA */
         border: 3px solid #D4AF37; 
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         display: block; flex-shrink: 0;
     }
     
     .card-body-ozel { 
-        padding: 0 15px 15px 15px; text-align: center; flex-grow: 1; 
+        padding: 0 12px 12px 12px; text-align: center; flex-grow: 1; 
         display: flex; flex-direction: column; 
         background: transparent;
         overflow: hidden;
@@ -106,7 +109,7 @@
     /* OKLAR */
     .scroll-arrow {
         position: absolute; top: 50%; transform: translateY(-50%);
-        width: 45px; height: 45px; background: #fff; color: #3E2723;
+        width: 38px; height: 38px; background: #fff; color: #3E2723;
         border-radius: 50%; display: flex; align-items: center; justify-content: center;
         cursor: pointer; z-index: 50; transition: 0.2s; border: 2px solid #D4AF37;
         box-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
@@ -116,8 +119,8 @@
 
     @media (max-width: 768px) {
         .ozel-gun-layout { flex-direction: column; height: auto; }
-        .fixed-left-side { flex: 0 0 auto; width: 100%; margin-bottom: 15px; height: 300px; }
-        .scrolling-right-side { height: 450px; }
+        .fixed-left-side { flex: 0 0 auto; width: 100%; margin-bottom: 12px; height: 260px; }
+        .scrolling-right-side { height: 380px; }
         .scroll-arrow { display: none; }
     }
     /* HABER KARTLARI DÜZENİ */

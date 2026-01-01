@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h1 class="display-4">{{ yer.baslik }}</h1>
+            <hr>
+            
+            {% if yer.resim %}
+            <img src="{{ yer.resim.url }}" class="img-fluid rounded mb-4 w-100" alt="{{ yer.baslik }}">
+            {% endif %}
+            
+            <div class="content">
+                {{ yer.icerik|safe }}
+            </div>
+
+            {% if yer.harita_konumu %}
+            <div class="mt-5">
+                <h3>Harita Konumu</h3>
+                <div class="ratio ratio-16x9">
+                    {{ yer.harita_konumu|safe }}
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="mt-4">
+                <a href="{% url 'tarihi_yerler_listesi' %}" class="btn btn-secondary">← Listeye Dön</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
