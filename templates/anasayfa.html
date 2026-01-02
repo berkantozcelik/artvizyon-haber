@@ -253,19 +253,10 @@
         display: flex; align-items: center; justify-content: center;
     }
     .yazar-scroll-btn:hover { background-color: #2E4A38; color: white; }
-    .sag-ust-reklam {
-        width: 100%; height: 90px; background-color: #eee; border: 1px dashed #999; 
-        display: flex; align-items: center; justify-content: center; margin-bottom: 20px;
-    }
-    .manset-alti-reklam {
-        background-color: #f8f9fa; border: 1px dashed #ccc;
-        height: 110px; display: flex; align-items: center; justify-content: center; margin-top: 20px;
-    }
     @media (max-width: 992px) {
         .manset-resim { height: 250px !important; }
         .manset-caption-container { height: auto !important; min-height: 140px; padding-bottom: 15px !important; }
         .yazarlar-sutun { height: auto; max-height: 430px; margin-bottom: 20px; }
-        .sag-ust-reklam { display: none; }
         .yazar-scroll-btn { display: none; }
         .yazar-listesi-wrapper { overflow-y: auto; }
         .carousel-indicators { display: none; }
@@ -323,13 +314,6 @@
     </div>
 
     <div class="col-lg-9">
-        <div class="sag-ust-reklam">
-            <div class="text-center">
-                <span class="d-block text-muted small">ÜST REKLAM ALANI</span>
-                <h6 class="text-secondary">728x90 Leaderboard</h6>
-            </div>
-        </div>
-
         {% if mansetler and not secilen_kategori and not haberler.has_previous %}
         <div id="mansetSlider" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
             <div class="carousel-indicators">
@@ -386,13 +370,6 @@
         </div>
         {% endif %}
 
-        <div class="manset-alti-reklam shadow-sm">
-            <div class="text-center">
-                <span class="d-block text-muted small mb-1">REKLAM ALANI</span>
-                <h6 class="text-secondary">Esnek Boyut (Örn: 728x90)</h6>
-                <small class="text-primary"><a href="{% url 'iletisim' %}">Reklam Ver</a></small>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -653,12 +630,6 @@
             </div>
         </div>
 
-        <div class="mb-4 text-center">
-            <div style="background-color: #eee; height: 300px; display: flex; align-items: center; justify-content: center; border: 1px dashed #999;">
-                <div><h5 class="text-muted">ARA REKLAM</h5><small>300x300</small><br><a href="{% url 'iletisim' %}">Reklam Ver</a></div>
-            </div>
-        </div>
-
         <div class="card mb-4 border-0 shadow-sm">
             <div class="card-header text-white fw-bold text-center" style="background-color: #3E2723;">
                 <i class="fas fa-cloud-sun-rain me-2"></i> HAVA DURUMU
@@ -679,16 +650,6 @@
                             <div class="d-flex justify-content-center"><iframe src="https://api.wo-cloud.com/content/widget/?geoObjectKey=17010852&language=tr&region=TR&timeFormat=HH:mm&windUnit=kmh&systemOfMeasurement=metric&temperatureUnit=celsius" name="CW2" scrolling="no" width="290" height="318" frameborder="0" style="border: 1px solid #3E2723; border-radius: 8px"></iframe></div>
                         </div>
                         <div class="carousel-item">
-                            <h6 class="text-center fw-bold mt-2 mb-2 text-muted">REKLAM ALANI</h6>
-                            <div class="d-flex justify-content-center align-items-center" style="height: 320px; background-color: #fffaf0; border: 2px dashed #D4AF37; border-radius: 8px; margin: 0 10px;">
-                                <div class="text-center">
-                                    <i class="fas fa-ad fa-3x text-warning mb-3"></i>
-                                    <h5 class="fw-bold" style="color: #3E2723;">Buraya Reklam Verin</h5>
-                                    <a href="{% url 'iletisim' %}" class="btn btn-sm btn-outline-dark rounded-pill">Bize Ulaşın</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="carousel-item">
                             <h6 class="text-center fw-bold mt-2 mb-2" style="color: #3E2723;">BORÇKA</h6>
                             <div class="d-flex justify-content-center"><iframe src="https://api.wo-cloud.com/content/widget/?geoObjectKey=12056854&language=tr&region=TR&timeFormat=HH:mm&windUnit=kmh&systemOfMeasurement=metric&temperatureUnit=celsius" name="CW2" scrolling="no" width="290" height="318" frameborder="0" style="border: 1px solid #3E2723; border-radius: 8px"></iframe></div>
                         </div>
@@ -699,16 +660,6 @@
                         <div class="carousel-item">
                             <h6 class="text-center fw-bold mt-2 mb-2" style="color: #3E2723;">MURGUL</h6>
                             <div class="d-flex justify-content-center"><iframe src="https://api.wo-cloud.com/content/widget/?geoObjectKey=18322858&language=tr&region=TR&timeFormat=HH:mm&windUnit=kmh&systemOfMeasurement=metric&temperatureUnit=celsius" name="CW2" scrolling="no" width="290" height="318" frameborder="0" style="border: 1px solid #3E2723; border-radius: 8px"></iframe></div>
-                        </div>
-                        <div class="carousel-item">
-                            <h6 class="text-center fw-bold mt-2 mb-2 text-muted">SPONSORLU İÇERİK</h6>
-                            <div class="d-flex justify-content-center align-items-center" style="height: 320px; background-color: #e8f5e9; border: 2px dashed #2E4A38; border-radius: 8px; margin: 0 10px;">
-                                <div class="text-center">
-                                    <i class="fas fa-bullhorn fa-3x text-success mb-3"></i>
-                                    <h5 class="fw-bold" style="color: #2E4A38;">İşletmenizi Tanıtın</h5>
-                                    <a href="https://wa.me/905458088408" target="_blank" class="btn btn-sm btn-success rounded-pill"><i class="fab fa-whatsapp"></i> WhatsApp'tan Yaz</a>
-                                </div>
-                            </div>
                         </div>
                         <div class="carousel-item">
                             <h6 class="text-center fw-bold mt-2 mb-2" style="color: #3E2723;">ARDANUÇ</h6>
@@ -767,11 +718,6 @@
         {% endif %}
         {% endwith %}
 
-        <div class="text-center mb-4">
-             <div style="background-color: #eee; height: 300px; display: flex; align-items: center; justify-content: center; border: 1px dashed #999;">
-                <div><h5 class="text-muted">REKLAM</h5><small>300x300</small></div>
-            </div>
-        </div>
     </div>
 </div>
 
