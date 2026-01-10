@@ -12,7 +12,7 @@
     
     <meta name="description" content="{% block description %}Artvin'den son dakika haberleri, güncel gelişmeler, ilçe haberleri, köşe yazıları ve Artvin gündemi Artvizyon Haber'de.{% endblock %}">
     <meta name="author" content="Sami Özçelik">
-    <meta property="og:image" content="{% block og_image %}/static/img/logo-kare.png{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}/media/site-logo.png{% endblock %}">
 
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2764358688362585"
      crossorigin="anonymous"></script>
@@ -334,7 +334,7 @@
 
                     <div class="header-center">
                         <a href="{% url 'anasayfa' %}">
-                            <img src="/media/site-logo.webp" alt="Artvizyon Haber" class="site-logo">
+                            <img src="/media/site-logo.png" alt="Artvizyon Haber" class="site-logo">
                         </a>
                     </div>
 

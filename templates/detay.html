@@ -13,7 +13,7 @@
     {% if haber.resim %}
     <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ haber.resim.url }}" />
     {% else %}
-    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo-kare.png' %}" />
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}/media/site-logo.png" />
     {% endif %}
     <meta property="og:url" content="{{ request.build_absolute_uri }}" />
     <meta property="og:site_name" content="Artvizyon Haber" />
