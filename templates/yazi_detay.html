@@ -70,7 +70,10 @@
                 <div>
                     <h5 class="fw-bold mb-1 text-uppercase" style="color: #2E4A38;">{{ yazi.yazar.ad_soyad }}</h5>
                     <span class="badge bg-secondary">Köşe Yazarı</span>
-                    <div class="text-muted small mt-1"><i class="far fa-clock me-1"></i> {{ yazi.yayin_tarihi|date:"d F Y" }}</div>
+                    <div class="text-muted small mt-1">
+                        <i class="far fa-clock me-1"></i> {{ yazi.yayin_tarihi|date:"d F Y" }}
+                        <span class="ms-2"><i class="far fa-eye me-1"></i> {{ yazi.okunma_sayisi }}</span>
+                    </div>
                 </div>
             </div>
 

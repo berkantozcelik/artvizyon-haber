@@ -105,7 +105,9 @@ class KoseYazari(models.Model):
     aktif_mi = models.BooleanField(default=True, verbose_name="Aktif mi?")
     basyazar_mi = models.BooleanField(default=False, verbose_name="Başyazar mı?")
     def __str__(self): return self.ad_soyad
-    class Meta: verbose_name_plural = "Köşe Yazarları"
+    class Meta:
+        verbose_name = "Yazar"
+        verbose_name_plural = "Yazarlar"
     
     @property
     def son_yazisi(self):
@@ -115,6 +117,7 @@ class KoseYazisi(FotoKaynakMixin, models.Model): # <-- Buraya Mixin eklendi
     yazar = models.ForeignKey(KoseYazari, on_delete=models.CASCADE, related_name='yazilar', verbose_name="Yazar")
     baslik = models.CharField(max_length=200, verbose_name="Yazı Başlığı")
     icerik = RichTextUploadingField(verbose_name="Yazı İçeriği")
+    okunma_sayisi = models.PositiveIntegerField(default=0, verbose_name="Okunma Sayısı")
     
     manset_mi = models.BooleanField(default=False, verbose_name="Manşette Gösterilsin mi?")
     
@@ -144,6 +147,7 @@ class Haber(FotoKaynakMixin, models.Model): # <-- Buraya Mixin eklendi
     baslik = models.CharField(max_length=200, verbose_name="Haber Başlığı")
     ozet = models.TextField(verbose_name="Kısa Özet", blank=True)
     icerik = RichTextUploadingField(verbose_name="Haber İçeriği")
+    okunma_sayisi = models.PositiveIntegerField(default=0, verbose_name="Okunma Sayısı")
     
     resim = ProcessedImageField(
         upload_to='haber_resimleri/',
@@ -315,8 +319,15 @@ class GaleriResim(models.Model):
 
 class Siir(FotoKaynakMixin, models.Model): # <-- Buraya Mixin eklendi
     baslik = models.CharField(max_length=200, verbose_name="Şiir Başlığı")
-    sair = models.CharField(max_length=100, verbose_name="Şair")
+    yazar = models.ForeignKey(
+        KoseYazari,
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name="Yazar",
+    )
+    sair = models.CharField(max_length=100, verbose_name="Şair", blank=True)
     siir_metni = RichTextUploadingField(verbose_name="Şiir Metni")
+    okunma_sayisi = models.PositiveIntegerField(default=0, verbose_name="Okunma Sayısı")
     
     resim = ProcessedImageField(
         upload_to='siir_resimleri/',
@@ -332,12 +343,16 @@ class Siir(FotoKaynakMixin, models.Model): # <-- Buraya Mixin eklendi
     yayin_tarihi = models.DateTimeField(default=timezone.now, verbose_name="Eklenme Tarihi")
     aktif_mi = models.BooleanField(default=True, verbose_name="Yayında mı?")
 
-    def __str__(self): return self.baslik
+    def __str__(self):
+        yazar_adi = self.yazar.ad_soyad if self.yazar else self.sair
+        return f"{yazar_adi} - {self.baslik}" if yazar_adi else self.baslik
     class Meta: verbose_name_plural = "Şiir Köşesi"; ordering = ['-yayin_tarihi']
 
     def save(self, *args, **kwargs):
         if self.gunun_siiri_mi:
             Siir.objects.filter(gunun_siiri_mi=True).exclude(id=self.id).update(gunun_siiri_mi=False)
+        if self.yazar and not self.sair:
+            self.sair = self.yazar.ad_soyad
         super().save(*args, **kwargs)
 
 class EczaneLinki(models.Model):

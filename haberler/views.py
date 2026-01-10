@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, F
 from django.utils import timezone
 from django.conf import settings
 from datetime import timedelta
@@ -91,7 +91,7 @@ def anasayfa(request):
 
     manset_haberler = Haber.objects.filter(aktif_mi=True, manset_mi=True)
     manset_yazilar = KoseYazisi.objects.filter(aktif_mi=True, manset_mi=True)
-    mansetler = sorted(chain(manset_haberler, manset_yazilar), key=attrgetter('yayin_tarihi'), reverse=True)[:15]
+    mansetler = sorted(chain(manset_haberler, manset_yazilar), key=attrgetter('yayin_tarihi'), reverse=True)[:10]
 
     aktif_ozel_gun = OzelGun.objects.filter(aktif_mi=True, anasayfada_goster=True).first()
     haftanin_fotosu = GaleriResim.objects.filter(haftanin_fotografi_mi=True).select_related('galeri').first()
@@ -101,7 +101,6 @@ def anasayfa(request):
     gunun_siiri = Siir.objects.filter(aktif_mi=True, gunun_siiri_mi=True).first() or Siir.objects.filter(aktif_mi=True).last()
     rehber_ogeleri = TarihiYer.objects.filter(aktif_mi=True).order_by('sira')[:6]
     son_galeriler = Galeri.objects.all().order_by('-yayin_tarihi')[:6]
-
     return render(request, 'anasayfa.html', {
         'haberler': haberler, 'mansetler': mansetler, 'haftanin_fotosu': haftanin_fotosu,
         'eczaneler': eczaneler, 'yazarlar': yazarlar, 'gunun_siiri': gunun_siiri,
@@ -132,6 +131,9 @@ def ilce_haberleri(request, pk):
 # =========================================================
 def haber_detay(request, pk):
     haber = get_object_or_404(Haber, pk=pk)
+    if request.method == 'GET':
+        Haber.objects.filter(pk=haber.pk).update(okunma_sayisi=F('okunma_sayisi') + 1)
+        haber.refresh_from_db(fields=['okunma_sayisi'])
     haber.icerik = metin_ici_video_duzelt(haber.icerik)
     
     benzer_haberler = Haber.objects.filter(kategori=haber.kategori, aktif_mi=True).exclude(id=haber.id).order_by('-yayin_tarihi')[:5]
@@ -157,6 +159,9 @@ def haber_detay(request, pk):
 
 def yazi_detay(request, pk):
     yazi = get_object_or_404(KoseYazisi, pk=pk)
+    if request.method == 'GET':
+        KoseYazisi.objects.filter(pk=yazi.pk).update(okunma_sayisi=F('okunma_sayisi') + 1)
+        yazi.refresh_from_db(fields=['okunma_sayisi'])
     yazi.icerik = metin_ici_video_duzelt(yazi.icerik)
     onayli_yorumlar = yorumlara_rozet_ekle(yazi.yorumlar.filter(aktif=True))
 
@@ -195,6 +200,9 @@ def roportaj_listesi(request):
 
 def siir_detay(request, pk):
     siir = get_object_or_404(Siir, pk=pk)
+    if request.method == 'GET':
+        Siir.objects.filter(pk=siir.pk).update(okunma_sayisi=F('okunma_sayisi') + 1)
+        siir.refresh_from_db(fields=['okunma_sayisi'])
     onayli_yorumlar = yorumlara_rozet_ekle(siir.yorumlar.filter(aktif=True))
     return render(request, 'siir_detay.html', {'siir': siir, 'yorumlar': onayli_yorumlar, 'yorum_form': YorumForm()})
 

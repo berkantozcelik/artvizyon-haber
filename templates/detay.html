@@ -101,6 +101,7 @@
             <div class="d-flex align-items-center text-muted small mb-2 fw-bold text-uppercase">
                 <span class="text-danger me-2">{{ haber.kategori.isim }}</span>
                 <span class="text-secondary">&bull; {{ haber.yayin_tarihi|date:"d F Y" }}</span>
+                <span class="text-secondary ms-2">&bull; Okunma: {{ haber.okunma_sayisi }}</span>
             </div>
 
             <h1 class="haber-baslik mb-3">{{ haber.baslik }}</h1>

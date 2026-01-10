@@ -34,3 +34,18 @@ def youtube_gom(value):
         '''
 
     return pattern.sub(cevirici, value)
+
+
+@register.filter
+def first_stanza(value):
+    if not value:
+        return ""
+    text = value.strip()
+    match = re.search(r'<p[^>]*>.*?</p>', text, flags=re.IGNORECASE | re.DOTALL)
+    if match:
+        return match.group(0)
+    parts = re.split(r'(?:<br\s*/?>\s*){2,}', text, maxsplit=1, flags=re.IGNORECASE)
+    if parts:
+        return parts[0]
+    parts = re.split(r'\n\s*\n', text, maxsplit=1)
+    return parts[0] if parts else text

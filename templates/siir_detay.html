@@ -2,7 +2,11 @@
 {% load video_tags %}
 
 {% block meta_tags %}
+    {% if siir.yazar %}
+    <meta property="og:title" content="{{ siir.baslik }} - {{ siir.yazar.ad_soyad }}" />
+    {% else %}
     <meta property="og:title" content="{{ siir.baslik }} - {{ siir.sair }}" />
+    {% endif %}
     <meta property="og:description" content="Artvizyon Haber Şiir Köşesi" />
     {% if siir.resim %}
     <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ siir.resim.url }}" />
@@ -45,7 +49,12 @@
                     {% endif %}
 
                     <h1 class="fw-bold mb-2 mt-3" style="font-family: 'Playfair Display', serif; color: #3E2723;">{{ siir.baslik }}</h1>
-                    <p class="text-muted fst-italic mb-4 fs-5" style="font-family: 'Georgia', serif;">- {{ siir.sair }} -</p>
+                    <p class="text-muted fst-italic mb-2 fs-5" style="font-family: 'Georgia', serif;">
+                        {% if siir.yazar %}- {{ siir.yazar.ad_soyad }} -{% else %}- {{ siir.sair }} -{% endif %}
+                    </p>
+                    <div class="text-muted small mb-4">
+                        <i class="far fa-eye me-1"></i> Okunma: {{ siir.okunma_sayisi }}
+                    </div>
                     
                     <hr class="w-25 mx-auto mb-5 border-danger opacity-50">
                     

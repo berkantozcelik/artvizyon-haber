@@ -127,14 +127,6 @@ JAZZMIN_SETTINGS = {
         {"name": "Siteyi Gör", "url": "/"},
     ],
     "order_with_respect_to": ["haberler.haber", "haberler.koseyazisi", "haberler.koseyazari", "haberler.kategori", "haberler.ilce", "haberler.galeri"],
-    "custom_links": {
-        "haberler": [
-            {"name": "Yeni Haber", "url": "admin:haberler_haber_add", "icon": "fas fa-plus"},
-            {"name": "Yeni Köşe Yazısı", "url": "admin:haberler_koseyazisi_add", "icon": "fas fa-pen"},
-            {"name": "Yeni Galeri", "url": "admin:haberler_galeri_add", "icon": "fas fa-camera"},
-            {"name": "Silinen Haberleri Geri Getir", "url": "admin:haberler_haber_recoverlist", "icon": "fas fa-undo"},
-        ],
-    },
     "icons": {
         "auth.user": "fas fa-user-circle",
         "auth.Group": "fas fa-users",
@@ -162,6 +154,7 @@ JAZZMIN_SETTINGS = {
         "socialaccount.socialapp",
         "socialaccount.socialtoken",
         "socialaccount.socialaccount",
+        "haberler.tebrikmesaji",
     ],
     "theme": "united",
     "dark_mode_theme": None,

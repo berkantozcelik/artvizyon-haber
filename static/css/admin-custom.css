@@ -90,3 +90,26 @@
 .form-text {
     color: #6c5c50;
 }
+
+/* Widen rich text editors in admin forms */
+.form-row .django-ckeditor-widget,
+.form-row .ckeditor,
+.form-row textarea,
+.field-icerik .django-ckeditor-widget,
+.field-icerik .cke,
+.field-icerik textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Put the content label above the editor for full-width editing */
+.form-row.field-icerik {
+    display: block;
+}
+.form-row.field-icerik > div,
+.form-row.field-icerik .fieldBox {
+    width: 100% !important;
+}
+.form-row.field-icerik label {
+    width: 100% !important;
+}

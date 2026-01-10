@@ -1,6 +1,9 @@
 from django.contrib import admin
 from django.http import HttpResponse
+from django.urls import reverse
 from django.utils.html import format_html
+from django.contrib.auth import get_user_model
+from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 import textwrap
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageOps 
 
@@ -13,6 +16,34 @@ from .models import (
 )
 # Geri alma (Undo) özelliği için gerekli kütüphane
 from reversion.admin import VersionAdmin
+
+# =========================================================
+# 🧹 0. BASİT SİLME BUTONU (LISTEDE ÇÖP TENEKESİ)
+# =========================================================
+
+class DeleteLinkMixin:
+    actions = None
+
+    def delete_link(self, obj):
+        url = reverse(f"admin:{obj._meta.app_label}_{obj._meta.model_name}_delete", args=[obj.pk])
+        return format_html('<a class="button" href="{}" title="Sil">🗑</a>', url)
+    delete_link.short_description = "Sil"
+
+
+class EditorGuideMixin:
+    editor_guide_text = ""
+
+    def editor_guide(self, obj):
+        if not self.editor_guide_text:
+            return ""
+        return format_html(
+            '<details style="padding-top:4px;">'
+            '<summary style="cursor:pointer;font-weight:700;">Kisa Rehber</summary>'
+            '<div style="margin-top:8px;">{}</div>'
+            '</details>',
+            format_html(self.editor_guide_text),
+        )
+    editor_guide.short_description = "Kullanim"
 
 # =========================================================
 # 📸 1. INSTAGRAM POST OLUŞTURUCU FONKSİYONLAR
@@ -86,27 +117,42 @@ def generate_instagram_post(modeladmin, request, queryset):
 
 # --- HABER YÖNETİMİ (GERİ ALMA EKLENDİ) ---
 @admin.register(Haber)
-class HaberAdmin(VersionAdmin): # VersionAdmin kullanıldı
-    list_display = ('baslik', 'kategori', 'yayin_tarihi', 'aktif_mi', 'manset_mi', 'son_dakika')
+class HaberAdmin(DeleteLinkMixin, EditorGuideMixin, VersionAdmin): # VersionAdmin kullanıldı
+    list_display = ('baslik', 'kategori', 'yayin_tarihi', 'okunma_sayisi', 'aktif_mi', 'manset_mi', 'son_dakika', 'delete_link')
     list_editable = ('aktif_mi', 'manset_mi', 'son_dakika') 
     list_filter = ('aktif_mi', 'manset_mi', 'son_dakika', 'kategori')
     search_fields = ('baslik', 'ozet')
     date_hierarchy = 'yayin_tarihi'
-    actions = [generate_instagram_post]
     save_on_top = True
-    fieldsets = (
-        ('Temel Bilgiler (Gerekli)', {
-            'fields': ('baslik', 'kategori', 'ilce', 'ozet', 'icerik'),
-            'description': 'Başlık, kategori ve kısa özet yeterli. Metinde kullandığınız görsellere kaynak eklemek için img etiketine data-kaynak="AA" yazabilirsiniz.'
-        }),
-        ('Medya', {
-            'fields': ('resim', 'foto_kaynak', 'video_link'),
-            'description': 'Manşet görseli ve varsa YouTube linki.'
-        }),
-        ('Yayın Ayarları', {
-            'fields': ('aktif_mi', 'yayin_tarihi', 'son_dakika', 'manset_mi', 'ulusal_mi', 'roportaj_mi'),
-            'description': 'Sadece gerekli kutuları işaretleyin. Geri almak için sağ üstteki “Geçmiş” bağlantısını kullanabilirsiniz.'
-        }),
+    fields = (
+        'baslik',
+        'resim',
+        'foto_kaynak',
+        'kategori',
+        'ilce',
+        'ozet',
+        'icerik',
+        'editor_guide',
+        'aktif_mi',
+        'yayin_tarihi',
+        'son_dakika',
+        'manset_mi',
+        'ulusal_mi',
+        'roportaj_mi',
+    )
+    readonly_fields = ('editor_guide',)
+    editor_guide_text = (
+        '<ul style="margin:0 0 0 18px;">'
+        '<li>Haber resmini "Haber Resmi" alanindan yukleyin.</li>'
+        '<li>Foto kaynagi: AA, IHA gibi kisa kaynak yazin.</li>'
+        '<li>Video eklemek icin YouTube yukleme sayfasina gidin: '
+        '<a href="https://www.youtube.com/upload" target="_blank" rel="noopener">YouTube Video Yukle</a>.</li>'
+        '<li>Yukledikten sonra video linkini kopyalayin ve icerige su sekilde ekleyin:</li>'
+        '<li><strong>(video: https://www.youtube.com/watch?v=...)</strong></li>'
+        '<li>Icerikteki butonlar: B=kalin, I=italik, zincir=link, resim=icerige gorsel ekler.</li>'
+        '<li>Tam ekran icin editor ustundeki "Buyut" ikonunu kullanin.</li>'
+        '<li>Yayinlamak icin "Yayinda mi" acik olsun; tarih asagida.</li>'
+        '</ul>'
     )
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
@@ -124,34 +170,45 @@ class GaleriResimInline(admin.TabularInline):
     verbose_name_plural = "Fotoğraflar"
 
 @admin.register(Galeri)
-class GaleriAdmin(VersionAdmin): # VersionAdmin kullanıldı
+class GaleriAdmin(DeleteLinkMixin, VersionAdmin): # VersionAdmin kullanıldı
     inlines = [GaleriResimInline]
-    list_display = ('baslik', 'yayin_tarihi')
+    list_display = ('baslik', 'yayin_tarihi', 'delete_link')
 
 # --- YAZARLAR VE YAZILARI (GERİ ALMA EKLENDİ) ---
 @admin.register(KoseYazari)
-class KoseYazariAdmin(VersionAdmin): # VersionAdmin kullanıldı
-    list_display = ('ad_soyad', 'basyazar_mi', 'aktif_mi')
+class KoseYazariAdmin(DeleteLinkMixin, VersionAdmin): # VersionAdmin kullanıldı
+    list_display = ('ad_soyad', 'basyazar_mi', 'aktif_mi', 'delete_link')
     list_editable = ('basyazar_mi', 'aktif_mi')
 
 @admin.register(KoseYazisi)
-class KoseYazisiAdmin(VersionAdmin): # VersionAdmin kullanıldı
-    list_display = ('baslik', 'yazar', 'yayin_tarihi', 'aktif_mi')
+class KoseYazisiAdmin(DeleteLinkMixin, EditorGuideMixin, VersionAdmin): # VersionAdmin kullanıldı
+    list_display = ('baslik', 'yazar', 'yayin_tarihi', 'okunma_sayisi', 'aktif_mi', 'delete_link')
     list_filter = ('yazar', 'aktif_mi')
     search_fields = ('baslik',)
     save_on_top = True
-    fieldsets = (
-        ('Temel Bilgiler (Gerekli)', {
-            'fields': ('baslik', 'yazar', 'icerik'),
-            'description': 'Başlık ve içerik alanlarını doldurun. Metindeki görsellere kaynak vermek için img etiketine data-kaynak="AA" yazabilirsiniz.'
-        }),
-        ('Medya', {
-            'fields': ('manset_resmi', 'foto_kaynak', 'video_link'),
-        }),
-        ('Yayın Ayarları', {
-            'fields': ('aktif_mi', 'yayin_tarihi', 'manset_mi'),
-            'description': 'Sadece gerekli kutuları işaretleyin. Geri almak için sağ üstteki “Geçmiş” bağlantısını kullanabilirsiniz.'
-        }),
+    fields = (
+        'baslik',
+        'yazar',
+        'manset_resmi',
+        'foto_kaynak',
+        'icerik',
+        'editor_guide',
+        'aktif_mi',
+        'yayin_tarihi',
+        'manset_mi',
+    )
+    readonly_fields = ('editor_guide',)
+    editor_guide_text = (
+        '<ul style="margin:0 0 0 18px;">'
+        '<li>Manset resmi ve foto kaynagi yukleyin.</li>'
+        '<li>Video eklemek icin YouTube yukleme sayfasina gidin: '
+        '<a href="https://www.youtube.com/upload" target="_blank" rel="noopener">YouTube Video Yukle</a>.</li>'
+        '<li>Yukledikten sonra video linkini kopyalayin ve icerige su sekilde ekleyin:</li>'
+        '<li><strong>(video: https://www.youtube.com/watch?v=...)</strong></li>'
+        '<li>Icerikteki butonlar: B=kalin, I=italik, zincir=link, resim=icerige gorsel ekler.</li>'
+        '<li>Tam ekran icin editor ustundeki "Buyut" ikonunu kullanin.</li>'
+        '<li>Yayinlamak icin "Yayinda mi" acik olsun.</li>'
+        '</ul>'
     )
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
@@ -162,8 +219,8 @@ class KoseYazisiAdmin(VersionAdmin): # VersionAdmin kullanıldı
 
 # --- YORUM YÖNETİMİ (GERİ ALMA EKLENDİ) ---
 @admin.register(Yorum)
-class YorumAdmin(VersionAdmin): # VersionAdmin kullanıldı
-    list_display = ('isim', 'govde_kisalt', 'icerik_kaynagi', 'olusturulma_tarihi', 'durum_ikonu')
+class YorumAdmin(DeleteLinkMixin, VersionAdmin): # VersionAdmin kullanıldı
+    list_display = ('isim', 'govde_kisalt', 'icerik_kaynagi', 'olusturulma_tarihi', 'durum_ikonu', 'delete_link')
     list_filter = ('aktif', 'olusturulma_tarihi')
     search_fields = ('isim', 'email', 'govde')
     actions = ['yorumlari_onayla']
@@ -187,17 +244,30 @@ class YorumAdmin(VersionAdmin): # VersionAdmin kullanıldı
 
 # --- DESTEKÇİLER (GERİ ALMA EKLENDİ) ---
 @admin.register(Destekci)
-class DestekciAdmin(VersionAdmin): # VersionAdmin kullanıldı
-    list_display = ('isim', 'paket', 'bitis_tarihi', 'aktif_mi')
+class DestekciAdmin(DeleteLinkMixin, VersionAdmin): # VersionAdmin kullanıldı
+    list_display = ('isim', 'paket', 'bitis_tarihi', 'aktif_mi', 'delete_link')
     list_filter = ('paket', 'aktif_mi')
     search_fields = ('isim', 'email')
 
 # --- ŞİİR KÖŞESİ (GERİ ALMA EKLENDİ) ---
 @admin.register(Siir)
-class SiirAdmin(VersionAdmin): # VersionAdmin kullanıldı
-    list_display = ('baslik', 'sair', 'yayin_tarihi', 'aktif_mi')
-    search_fields = ('baslik', 'sair')
+class SiirAdmin(DeleteLinkMixin, VersionAdmin): # VersionAdmin kullanıldı
+    list_display = ('baslik', 'yazar_adi', 'yayin_tarihi', 'okunma_sayisi', 'aktif_mi', 'delete_link')
+    search_fields = ('baslik', 'sair', 'yazar__ad_soyad')
     list_filter = ('aktif_mi',)
+    fields = (
+        'baslik',
+        'yazar',
+        'siir_metni',
+        'resim',
+        'gunun_siiri_mi',
+        'aktif_mi',
+        'yayin_tarihi',
+    )
+
+    def yazar_adi(self, obj):
+        return obj.yazar.ad_soyad if obj.yazar else obj.sair
+    yazar_adi.short_description = "Yazar"
 
 # --- ECZANE LİNKLERİ (GERİ ALMA EKLENDİ) ---
 # --- ÖZEL GÜN VE INSTAGRAM İNDİRME BUTONU (GERİ ALMA EKLENDİ) ---
@@ -220,27 +290,27 @@ class TebrikMesajiInline(admin.TabularInline):
     instagram_indir.short_description = "Sosyal Medya"
 
 @admin.register(OzelGun)
-class OzelGunAdmin(VersionAdmin): # VersionAdmin kullanıldı
-    list_display = ('baslik', 'aktif_mi', 'anasayfada_goster')
+class OzelGunAdmin(DeleteLinkMixin, VersionAdmin): # VersionAdmin kullanıldı
+    list_display = ('baslik', 'aktif_mi', 'anasayfada_goster', 'delete_link')
     list_editable = ('aktif_mi', 'anasayfada_goster')
     prepopulated_fields = {'slug': ('baslik',)} 
     inlines = [TebrikMesajiInline]
 
 @admin.register(TebrikMesaji)
-class TebrikMesajiAdmin(VersionAdmin):
-    list_display = ('ad_soyad', 'ozel_gun', 'sira')
+class TebrikMesajiAdmin(DeleteLinkMixin, VersionAdmin):
+    list_display = ('ad_soyad', 'ozel_gun', 'sira', 'delete_link')
     list_filter = ('ozel_gun',)
     search_fields = ('ad_soyad', 'ozel_gun__baslik')
 
 # --- BASİT KAYITLAR (GERİ ALMA ÖZELLİĞİ İÇİN SINIF HALİNE GETİRİLDİ) ---
 
 @admin.register(TarihiYer)
-class TarihiYerAdmin(VersionAdmin):
-    list_display = ('baslik',)
+class TarihiYerAdmin(DeleteLinkMixin, VersionAdmin):
+    list_display = ('baslik', 'delete_link')
 
 @admin.register(Kategori)
-class KategoriAdmin(VersionAdmin):
-    list_display = ('isim', 'slug')
+class KategoriAdmin(DeleteLinkMixin, VersionAdmin):
+    list_display = ('isim', 'slug', 'delete_link')
     prepopulated_fields = {'slug': ('isim',)}
 
 # İstenmeyen bölümleri panelden kaldır (örn. Nöbetçi Eczane)
@@ -251,5 +321,17 @@ for model in (EczaneLinki,):
         pass
 
 @admin.register(Ilce)
-class IlceAdmin(VersionAdmin):
-    list_display = ('isim',)
+class IlceAdmin(DeleteLinkMixin, VersionAdmin):
+    list_display = ('isim', 'delete_link')
+
+
+User = get_user_model()
+try:
+    admin.site.unregister(User)
+except admin.sites.NotRegistered:
+    pass
+
+
+@admin.register(User)
+class UserAdmin(DeleteLinkMixin, DjangoUserAdmin):
+    list_display = DjangoUserAdmin.list_display + ('delete_link',)

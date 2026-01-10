@@ -25,7 +25,10 @@
                     <div class="row g-0">
                         <div class="col-md-4 bg-light border-end d-flex flex-column align-items-center justify-content-center p-4">
                             <div class="mb-3 position-relative">
-                                {% if gunun_siiri.resim %}
+                                {% if gunun_siiri.yazar and gunun_siiri.yazar.resim %}
+                                    <img src="{{ gunun_siiri.yazar.resim.url }}" class="shadow border border-3 border-white" alt="{{ gunun_siiri.yazar.ad_soyad }}"
+                                         style="width: 140px !important; height: 140px !important; object-fit: cover !important; border-radius: 50% !important; aspect-ratio: 1/1 !important; display: block;">
+                                {% elif gunun_siiri.resim %}
                                     <img src="{{ gunun_siiri.resim.url }}" class="shadow border border-3 border-white" alt="{{ gunun_siiri.sair }}"
                                          style="width: 140px !important; height: 140px !important; object-fit: cover !important; border-radius: 50% !important; aspect-ratio: 1/1 !important; display: block;">
                                 {% else %}
@@ -38,7 +41,9 @@
                                 <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 24px; height: 24px;">
                                     <i class="fas fa-pen-nib" style="font-size: 12px;"></i>
                                 </div>
-                                <h6 class="fw-bold m-0 text-dark text-nowrap" style="font-size: 1rem;">{{ gunun_siiri.sair }}</h6>
+                                <h6 class="fw-bold m-0 text-dark text-nowrap" style="font-size: 1rem;">
+                                    {% if gunun_siiri.yazar %}{{ gunun_siiri.yazar.ad_soyad }}{% else %}{{ gunun_siiri.sair }}{% endif %}
+                                </h6>
                             </div>
                         </div>
                         
@@ -85,7 +90,9 @@
                                 <div class="rounded-circle bg-light border text-secondary d-flex align-items-center justify-content-center" style="width: 20px; height: 20px;">
                                     <i class="fas fa-pen-fancy" style="font-size: 10px;"></i>
                                 </div>
-                                <small class="text-muted fw-bold">{{ siir.sair }}</small>
+                                <small class="text-muted fw-bold">
+                                    {% if siir.yazar %}{{ siir.yazar.ad_soyad }}{% else %}{{ siir.sair }}{% endif %}
+                                </small>
                             </div>
                             
                             <div class="text-secondary small fst-italic px-2 mb-3 w-100 siir-ozet-kutu" 

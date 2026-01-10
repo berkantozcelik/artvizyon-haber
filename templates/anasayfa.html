@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load video_tags %}
 
 {% block content %}
 
@@ -204,14 +205,15 @@
     .carousel-control-prev:hover, .carousel-control-next:hover { opacity: 1; background-color: #2E4A38; }
     .carousel-control-prev { left: 15px; } .carousel-control-next { right: 15px; }
     .carousel-indicators {
-        position: absolute; bottom: 8px !important; right: 15px !important; left: auto !important;
-        margin: 0 !important; z-index: 15; padding: 0; display: flex; gap: 4px;
+        position: absolute; bottom: 10px !important; left: 0 !important; right: 0 !important;
+        margin: 0 !important; z-index: 15; padding: 0 16px;
+        display: flex; gap: 6px; justify-content: space-between;
     }
     .carousel-indicators button {
-        width: 26px !important; height: 26px !important;
-        text-indent: 0 !important; border-radius: 3px !important;
-        background-color: rgba(255, 255, 255, 0.15) !important; color: #fff !important;
-        border: 1px solid rgba(255,255,255,0.3) !important; font-weight: bold; font-size: 12px;
+        flex: 1; height: 30px !important;
+        text-indent: 0 !important; border-radius: 4px !important;
+        background-color: rgba(255, 255, 255, 0.12) !important; color: #fff !important;
+        border: 1px solid rgba(255,255,255,0.35) !important; font-weight: bold; font-size: 12px;
         margin: 0 !important; opacity: 1 !important; transition: all 0.2s;
     }
     .carousel-indicators button.active {
@@ -263,7 +265,7 @@
     }
 </style>
 
-<div class="row justify-content-center mb-5 align-items-start gx-4 mt-4">
+<div class="row justify-content-center mb-5 align-items-start gx-4 gy-4 mt-4">
     
     <div class="col-lg-3 order-2 order-lg-1">
         <div class="yazarlar-sutun shadow-sm">
@@ -502,7 +504,7 @@
 <div class="row">
     
     <div class="col-lg-8">
-        
+
         <div class="card mb-4 border-0 shadow-sm">
             <div class="card-header text-white fw-bold d-flex align-items-center" style="background-color: #2E4A38;">
                 <i class="fas fa-coins me-2"></i> PİYASALAR <span class="ms-auto badge bg-white text-success small">Canlı</span>
@@ -521,7 +523,7 @@
         </div>
 
         {% if gunun_siiri and not secilen_kategori and not haberler.has_previous %}
-        <div class="card border-0 shadow-sm mb-5 position-relative overflow-hidden" style="background-color: #fffaf0; border-left: 6px solid #2E4A38 !important;">
+        <div class="card border-0 shadow-sm mb-5 position-relative overflow-hidden" style="background-color: #fffaf0; border-left: 6px solid #6D4C41 !important;">
             <i class="fas fa-feather-alt position-absolute end-0 bottom-0 text-secondary opacity-10" style="font-size: 10rem; margin-right: -30px; margin-bottom: -30px;"></i>
             <div class="card-body p-4 position-relative">
                 <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom" style="border-color: rgba(0,0,0,0.1) !important;">
@@ -530,14 +532,26 @@
                 </div>
                 <div class="row align-items-center">
                     <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
-                        <h3 class="card-title fw-bold mb-1" style="font-family: 'Playfair Display', serif; color: #3E2723;">{{ gunun_siiri.baslik }}</h3>
-                        <p class="fst-italic text-muted mb-3 small">- {{ gunun_siiri.sair }} -</p>
+                        <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-3 mb-2">
+                            {% if gunun_siiri.yazar and gunun_siiri.yazar.resim %}
+                                <img src="{{ gunun_siiri.yazar.resim.url }}" alt="{{ gunun_siiri.yazar.ad_soyad }}" style="width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid #6D4C41;">
+                            {% elif gunun_siiri.resim %}
+                                <img src="{{ gunun_siiri.resim.url }}" alt="{% if gunun_siiri.yazar %}{{ gunun_siiri.yazar.ad_soyad }}{% else %}{{ gunun_siiri.sair }}{% endif %}" style="width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid #6D4C41;">
+                            {% else %}
+                                <div class="d-flex align-items-center justify-content-center" style="width: 72px; height: 72px; border-radius: 50%; border: 2px solid #6D4C41; color: #6D4C41;">
+                                    <i class="fas fa-pen-nib"></i>
+                                </div>
+                            {% endif %}
+                            <div class="text-start">
+                                <h3 class="card-title fw-bold mb-1" style="font-family: 'Playfair Display', serif; color: #3E2723;">{{ gunun_siiri.baslik }}</h3>
+                                <p class="fst-italic text-muted mb-0 small">- {% if gunun_siiri.yazar %}{{ gunun_siiri.yazar.ad_soyad }}{% else %}{{ gunun_siiri.sair }}{% endif %} -</p>
+                            </div>
+                        </div>
                         <a href="{% url 'siir_detay' gunun_siiri.pk %}" class="btn btn-outline-dark btn-sm rounded-pill fw-bold w-100 stretched-link">Tamamını Oku</a>
                     </div>
                     <div class="col-md-8 border-start border-success border-opacity-50 ps-md-4 position-relative">
-                        <div class="lh-lg text-dark" style="font-family: 'Georgia', serif; font-size: 1.05rem; max-height: 150px; overflow: hidden; position: relative;">
-                            {{ gunun_siiri.siir_metni|safe }}
-                            <div class="position-absolute bottom-0 start-0 w-100" style="height: 50px; background: linear-gradient(to bottom, transparent, #fffaf0);"></div>
+                        <div class="lh-lg text-dark" style="font-family: 'Georgia', serif; font-size: 1.05rem; position: relative;">
+                            {{ gunun_siiri.siir_metni|first_stanza|safe }}
                         </div>
                     </div>
                 </div>
