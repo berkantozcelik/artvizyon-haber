@@ -14,3 +14,6 @@ if [ ! -f "$DB_PATH" ]; then
 fi
 
 cp "$DB_PATH" "$backup_path"
+
+# Keep last 30 days of backups.
+find "$BACKUP_DIR" -type f -name "db_*.sqlite3" -mtime +30 -delete
