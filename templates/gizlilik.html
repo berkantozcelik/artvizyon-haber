@@ -3,9 +3,33 @@
 {% block content %}
 <div class="container my-5">
     <h1>Gizlilik Politikası</h1>
-    <p class="lead">Artvizyon Haber olarak kullanıcılarımızın gizliliğine önem veriyoruz.</p>
-    <p>Sitemize sosyal medya hesapları (Google, Facebook) ile giriş yaptığınızda, yalnızca adınız, e-posta adresiniz ve profil fotoğrafınız gibi temel bilgilerinizi kaydederiz. Bu bilgiler, sadece size özel bir kullanıcı deneyimi sunmak, yorumlarınızı ve etkileşimlerinizi doğrulamak amacıyla kullanılır. Üçüncü şahıslarla paylaşılmaz.</p>
-    <p>Detaylı metin en kısa zamanda eklenecektir. Sorularınız için lütfen İletişim sayfamızdan bize ulaşın.</p>
+    <p class="lead">Artvizyon Haber olarak kişisel verilerinizi korumaya özen gösteriyoruz.</p>
+
+    <h5 class="mt-4">Topladığımız Bilgiler</h5>
+    <ul>
+        <li>Hesap bilgileri: Sosyal giriş (Google/Facebook) kullanırsanız ad, e-posta ve profil fotoğrafı.</li>
+        <li>Yorumlar: Yorumlarda paylaştığınız metin ve ad bilgileri.</li>
+        <li>Teknik veriler: IP adresi, tarayıcı bilgisi, tarih/saat gibi sunucu kayıtları.</li>
+        <li>Çerezler: Oturum ve güvenlik amaçlı temel çerezler (örn. giriş/CSRF).</li>
+    </ul>
+
+    <h5 class="mt-4">Verileri Neden Kullanıyoruz?</h5>
+    <ul>
+        <li>Hesap oluşturma ve giriş işlemlerini yönetmek.</li>
+        <li>Yorumları doğrulamak ve moderasyon yapmak.</li>
+        <li>Site güvenliği ve kötüye kullanımı önlemek.</li>
+        <li>Teknik iyileştirmeler ve hata tespiti.</li>
+    </ul>
+
+    <h5 class="mt-4">Üçüncü Taraf Hizmetler</h5>
+    <p>Sosyal giriş sağlayıcıları (Google/Facebook) yalnızca giriş doğrulaması için kullanılır. Ayrıca bazı sayfalarda YouTube gibi üçüncü taraf içerikler yer alabilir; bu içerikler kendi çerezlerini kullanabilir.</p>
+
+    <h5 class="mt-4">Saklama Süresi ve Haklarınız</h5>
+    <p>Hesabınız aktif olduğu sürece verileriniz saklanır. Silinmesini veya düzeltilmesini isterseniz İletişim sayfamız üzerinden bize ulaşabilirsiniz.</p>
+
+    <h5 class="mt-4">İletişim</h5>
+    <p>Gizlilikle ilgili her türlü soru için <a href="{% url 'iletisim' %}">İletişim</a> sayfamızdan bize ulaşabilirsiniz.</p>
+
     <p class="text-muted small">Son Güncelleme: {% now "d F Y" %}</p>
 </div>
 {% endblock %}

@@ -4,10 +4,16 @@
 <div class="container my-5">
     <h1>Hizmet Şartları ve Kullanım Koşulları</h1>
     <p class="lead">Sitemizi kullanarak aşağıdaki şartları kabul etmiş sayılırsınız.</p>
-    <p>1. **İçerik Kullanımı:** Sitemizdeki tüm içerikler (haberler, makaleler, fotoğraflar) Artvizyon Haber'e aittir. İzinsiz kopyalama ve yayınlama yasaktır.</p>
-    <p>2. **Yorumlar:** Yorumlarda siyasi, ayrımcı, hakaret içeren veya yasalara aykırı ifadeler kullanmak yasaktır. Yönetim, bu tür yorumları silme hakkını saklı tutar.</p>
-    <p>3. **Hesap Güvenliği:** Hesap şifrenizin ve güvenliğinizin sorumluluğu tamamen size aittir.</p>
-    <p>Detaylı metin en kısa zamanda eklenecektir. Sorularınız için lütfen İletişim sayfamızdan bize ulaşın.</p>
+
+    <ol>
+        <li><strong>İçerik Kullanımı:</strong> Sitemizdeki tüm içerikler (haberler, yazılar, fotoğraflar) Artvizyon Haber'e aittir. İzinsiz kopyalama, çoğaltma ve yayınlama yasaktır.</li>
+        <li><strong>Yorumlar ve Kullanıcı İçeriği:</strong> Ayrımcı, hakaret içeren, yasa dışı veya topluluk kurallarına aykırı içerikler yayınlanamaz. Yönetim, uygun olmayan içerikleri kaldırma hakkını saklı tutar.</li>
+        <li><strong>Hesap Güvenliği:</strong> Hesabınızın güvenliği ve giriş bilgilerinin gizliliği sizin sorumluluğunuzdadır.</li>
+        <li><strong>Harici Bağlantılar:</strong> Sitemizde üçüncü taraf sitelere bağlantılar bulunabilir. Bu sitelerin içerik ve gizlilik uygulamalarından Artvizyon Haber sorumlu değildir.</li>
+        <li><strong>Değişiklikler:</strong> Hizmet şartları güncellenebilir. Güncel metin her zaman bu sayfada yayımlanır.</li>
+    </ol>
+
+    <p>Sorularınız için lütfen <a href="{% url 'iletisim' %}">İletişim</a> sayfamızdan bize ulaşın.</p>
     <p class="text-muted small">Son Güncelleme: {% now "d F Y" %}</p>
 </div>
 {% endblock %}
