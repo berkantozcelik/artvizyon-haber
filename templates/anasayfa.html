@@ -698,7 +698,7 @@
             <div class="card-body p-3 text-center">
                 <img src="{% static 'img/ads/luks-artvin-logo.png' %}" alt="Lüks Artvin" class="lux-ad-logo mb-2">
                 <div class="lux-ad-wrap">
-                    <video class="lux-ad-video" autoplay muted loop playsinline preload="metadata">
+                    <video class="lux-ad-video" autoplay muted loop playsinline webkit-playsinline preload="auto">
                         <source src="{% static 'video/luks-artvin-otobus.mp4' %}" type="video/mp4">
                         Tarayıcınız video etiketini desteklemiyor.
                     </video>
@@ -776,6 +776,16 @@
         if (direction === 'up') container.scrollBy({ top: -scrollAmount, behavior: 'smooth' });
         else container.scrollBy({ top: scrollAmount, behavior: 'smooth' });
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const adVideo = document.querySelector('.lux-ad-video');
+        if (adVideo) {
+            const attempt = adVideo.play();
+            if (attempt && attempt.catch) {
+                attempt.catch(() => {});
+            }
+        }
+    });
 </script>
 
 {% endblock %}
