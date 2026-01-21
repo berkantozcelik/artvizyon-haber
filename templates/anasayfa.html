@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load video_tags %}
+{% load static video_tags %}
 
 {% block content %}
 
@@ -694,6 +694,21 @@
             </div>
         </div>
 
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-body p-3 text-center">
+                <img src="{% static 'img/ads/luks-artvin-logo.png' %}" alt="Lüks Artvin" class="lux-ad-logo mb-2">
+                <div class="lux-ad-wrap">
+                    <video class="lux-ad-video" autoplay muted loop playsinline preload="metadata">
+                        <source src="{% static 'video/luks-artvin-otobus.mp4' %}" type="video/mp4">
+                        Tarayıcınız video etiketini desteklemiyor.
+                    </video>
+                    <a href="https://www.luksartvin.com.tr" target="_blank" rel="noopener" class="lux-ad-link" aria-label="Lüks Artvin reklamına git"></a>
+                    <span class="lux-ad-badge">Reklam</span>
+                </div>
+                <p class="lux-ad-text mt-2 mb-0 text-center">Lüks Artvin ile kış mevsiminde de <span class="lux-ad-hashtag">#RüyaGibiYolculuklar</span> sizleri bekliyor.</p>
+            </div>
+        </div>
+
         {% with rehber_ogeleri|first as rehber_one %}
         {% if rehber_one %}
         <div class="card mb-4 border-0 shadow-sm">
@@ -741,6 +756,13 @@
     .news-pagination .page-link:hover { background-color: #f3e8d9; }
     .cta-side { position: relative; height: 180px; background-size: cover; background-position: center; }
     .cta-overlay { position: absolute; inset: 0; padding: 14px; background: linear-gradient(135deg, rgba(62,39,35,0.75), rgba(46,74,56,0.65)); color: #f7f3ec; display: flex; flex-direction: column; justify-content: flex-end; }
+    .lux-ad-wrap { position: relative; border-radius: 12px; overflow: hidden; background: #000; }
+    .lux-ad-video { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; display: block; max-height: 520px; }
+    .lux-ad-link { position: absolute; inset: 0; }
+    .lux-ad-badge { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.7); color: #fff; font-size: 11px; padding: 4px 8px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .lux-ad-text { font-size: 0.95rem; color: #3E2723; font-weight: 700; }
+    .lux-ad-hashtag { color: var(--artvin-yesil); }
+    .lux-ad-logo { max-width: 200px; width: 100%; height: auto; }
     @media (max-width: 767px) {
         .haber-card img { height: 180px !important; }
         .news-pagination { gap: 6px; }

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Abonelik - Artvizyon Haber{% endblock %}
 
@@ -58,6 +59,8 @@
     
     /* ALT BİLGİ */
     .banka-kutusu { background-color: #fffaf0; border: 1px dashed #D4AF37; padding: 30px; border-radius: 8px; margin-top: 50px; }
+    .odeme-logos img { height: 30px; width: auto; }
+    .odeme-logos .logo-box { background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 6px 10px; }
 </style>
 
 <div class="hero-section mb-5">
@@ -128,12 +131,21 @@
 
     </div>
 
+    <div class="d-flex flex-wrap justify-content-center align-items-center gap-3 mt-4 odeme-logos">
+        <div class="logo-box">
+            <img src="{% static 'img/payment/iyzico-ile-ode.png' %}" alt="iyzico ile Öde">
+        </div>
+        <div class="logo-box">
+            <img src="{% static 'img/payment/card-logos.png' %}" alt="Visa, Mastercard, American Express, Troy">
+        </div>
+    </div>
+
     <div class="row mt-5 justify-content-center" id="odemeAlani" style="display: none;">
         <div class="col-lg-8">
             <div class="card border-0 shadow-lg">
                 <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
                     <h5 class="m-0 fw-bold text-dark"><i class="fas fa-lock me-2 text-success"></i> Güvenli Ödeme</h5>
-                    <img src="https://iyzico.com/assets/images/content/logo.svg" alt="iyzico" style="height: 25px;">
+                    <img src="{% static 'img/payment/iyzico-ile-ode.png' %}" alt="iyzico ile Öde" style="height: 24px;">
                 </div>
                 <div class="card-body p-5">
                     
@@ -142,6 +154,15 @@
                         <div>
                             <strong>Seçilen Paket:</strong> <span id="secilenPaketAd"></span><br>
                             <strong>Tutar:</strong> <span id="secilenPaketFiyat"></span> TL
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap justify-content-center align-items-center gap-3 mb-4 odeme-logos">
+                        <div class="logo-box">
+                            <img src="{% static 'img/payment/iyzico-ile-ode.png' %}" alt="iyzico ile Öde">
+                        </div>
+                        <div class="logo-box">
+                            <img src="{% static 'img/payment/card-logos.png' %}" alt="Visa, Mastercard, American Express, Troy">
                         </div>
                     </div>
 
@@ -174,8 +195,7 @@
                                         </div>
                                     </div>
                                     <div class="mt-2 text-end">
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" height="20" class="me-2">
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" height="20">
+                                        <img src="{% static 'img/payment/card-logos.png' %}" alt="Visa, Mastercard, American Express, Troy" style="height: 20px; width: auto;">
                                     </div>
                                 </div>
                             </div>
@@ -184,6 +204,11 @@
                         <div class="d-grid gap-2 mt-4">
                             <button type="submit" class="btn btn-artvin py-3 fw-bold fs-5">
                                 GÜVENLİ ÖDE VE ABONE OL
+                            </button>
+                        </div>
+                        <div class="d-flex justify-content-center mt-2">
+                            <button type="submit" class="btn btn-sm fw-bold px-4 text-white" style="background-color: #2E4A38; border-color: #2E4A38;">
+                                ÖDE
                             </button>
                         </div>
                         <p class="text-center text-muted small mt-3">
