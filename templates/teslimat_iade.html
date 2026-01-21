@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Teslimat ve İade Şartları - Artvizyon Haber{% endblock %}
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h1 class="fw-bold mb-3">Teslimat ve İade Şartları</h1>
+            <p class="lead text-muted">Abonelik hizmetimiz dijitaldir ve ödeme sonrası anında erişim sağlanır.</p>
+
+            <h5 class="mt-4">Teslimat</h5>
+            <p>
+                Abonelik satın alındığında, hizmet dijital olarak ve otomatik şekilde aktif edilir.
+                Erişim, ödeme onaylandığı anda başlar.
+            </p>
+
+            <h5 class="mt-4">İade ve Cayma</h5>
+            <p>
+                Dijital içerik/hizmetlerde ifaya başlandıktan sonra cayma hakkı bulunmamaktadır.
+                Ödeme sırasında hizmetin anında başlamasını onaylayan kullanıcı, cayma hakkından
+                feragat etmiş sayılır.
+            </p>
+
+            <h5 class="mt-4">Sorular</h5>
+            <p>
+                Ödeme veya erişimle ilgili bir sorun yaşarsanız lütfen
+                <a href="{% url 'iletisim' %}">İletişim</a> sayfamızdan bize ulaşın.
+            </p>
+
+            <p class="text-muted small">Son Güncelleme: {% now "d F Y" %}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -73,8 +73,11 @@ urlpatterns = [
     
     # Haberler uygulaması için ek URL'ler
     path('', include('haberler.urls')),
+    path('hakkimizda/', TemplateView.as_view(template_name='hakkimizda.html'), name='hakkimizda'),
     path('gizlilik-politikasi/', TemplateView.as_view(template_name='gizlilik.html'), name='gizlilik_politikasi'),
     path('hizmet-sartlari/', TemplateView.as_view(template_name='hizmet_sartlari.html'), name='hizmet_sartlari'),
+    path('teslimat-iade/', TemplateView.as_view(template_name='teslimat_iade.html'), name='teslimat_iade'),
+    path('mesafeli-satis-sozlesmesi/', TemplateView.as_view(template_name='mesafeli_satis.html'), name='mesafeli_satis'),
 ]
     
 if settings.DEBUG:
