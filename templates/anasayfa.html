@@ -700,10 +700,7 @@
                     <img src="{% static 'img/ads/luks-artvin-logo.png' %}" alt="Lüks Artvin" class="lux-ad-logo mb-2">
                 </a>
                 <div class="lux-ad-wrap">
-                    <video class="lux-ad-video" autoplay muted loop playsinline webkit-playsinline preload="auto" muted>
-                        <source src="{% static 'video/luks-artvin-otobus.mp4' %}" type="video/mp4">
-                        Tarayıcınız video etiketini desteklemiyor.
-                    </video>
+                    <img src="{% static 'img/ads/luks-artvin-otobus.webp' %}" alt="Lüks Artvin reklam videosu" class="lux-ad-image" loading="lazy" decoding="async">
                     <span class="lux-ad-badge">Reklam</span>
                 </div>
                 <a href="https://www.luksartvin.com.tr" target="_blank" rel="noopener" class="lux-ad-click lux-ad-text mt-2 mb-0 text-center">
@@ -728,6 +725,7 @@
                 </div>
             </a>
         </div>
+
         {% endif %}
         {% endwith %}
 
@@ -760,7 +758,9 @@
     .cta-side { position: relative; height: 180px; background-size: cover; background-position: center; }
     .cta-overlay { position: absolute; inset: 0; padding: 14px; background: linear-gradient(135deg, rgba(62,39,35,0.75), rgba(46,74,56,0.65)); color: #f7f3ec; display: flex; flex-direction: column; justify-content: flex-end; }
     .lux-ad-wrap { position: relative; border-radius: 12px; overflow: hidden; background: #000; pointer-events: none; }
-    .lux-ad-video { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; display: block; max-height: 520px; }
+    .lux-ad-image { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; display: block; max-height: 520px; }
+    .lux-banner-wrap { position: relative; border-radius: 10px; overflow: hidden; background: #000; }
+    .lux-banner-img { width: 100%; display: block; height: auto; }
     .lux-ad-badge { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.7); color: #fff; font-size: 11px; padding: 4px 8px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.5px; }
     .lux-ad-text { font-size: 0.95rem; color: #3E2723; font-weight: 700; }
     .lux-ad-hashtag { color: var(--artvin-yesil); }
@@ -780,35 +780,6 @@
         else container.scrollBy({ top: scrollAmount, behavior: 'smooth' });
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const adVideo = document.querySelector('.lux-ad-video');
-        if (!adVideo) return;
-
-        const tryPlay = () => {
-            adVideo.muted = true;
-            adVideo.defaultMuted = true;
-            adVideo.playsInline = true;
-            const attempt = adVideo.play();
-            if (attempt && attempt.catch) {
-                attempt.catch(() => {});
-            }
-        };
-
-        tryPlay();
-        adVideo.addEventListener('loadeddata', tryPlay);
-        adVideo.addEventListener('canplay', tryPlay);
-
-        if ('IntersectionObserver' in window) {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        tryPlay();
-                    }
-                });
-            }, { threshold: 0.25 });
-            observer.observe(adVideo);
-        }
-    });
 </script>
 
 {% endblock %}
