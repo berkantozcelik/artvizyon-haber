@@ -698,7 +698,7 @@
             <div class="card-body p-3 text-center">
                 <img src="{% static 'img/ads/luks-artvin-logo.png' %}" alt="Lüks Artvin" class="lux-ad-logo mb-2">
                 <div class="lux-ad-wrap">
-                    <video class="lux-ad-video" autoplay muted loop playsinline webkit-playsinline preload="auto">
+                    <video class="lux-ad-video" autoplay muted loop playsinline webkit-playsinline preload="auto" muted>
                         <source src="{% static 'video/luks-artvin-otobus.mp4' %}" type="video/mp4">
                         Tarayıcınız video etiketini desteklemiyor.
                     </video>
@@ -779,11 +779,31 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         const adVideo = document.querySelector('.lux-ad-video');
-        if (adVideo) {
+        if (!adVideo) return;
+
+        const tryPlay = () => {
+            adVideo.muted = true;
+            adVideo.defaultMuted = true;
+            adVideo.playsInline = true;
             const attempt = adVideo.play();
             if (attempt && attempt.catch) {
                 attempt.catch(() => {});
             }
+        };
+
+        tryPlay();
+        adVideo.addEventListener('loadeddata', tryPlay);
+        adVideo.addEventListener('canplay', tryPlay);
+
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        tryPlay();
+                    }
+                });
+            }, { threshold: 0.25 });
+            observer.observe(adVideo);
         }
     });
 </script>
