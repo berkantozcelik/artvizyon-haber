@@ -61,6 +61,9 @@
     .banka-kutusu { background-color: #fffaf0; border: 1px dashed #D4AF37; padding: 30px; border-radius: 8px; margin-top: 50px; }
     .odeme-logos img { height: 30px; width: auto; }
     .odeme-logos .logo-box { background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 6px 10px; }
+    .abonelik-bilgi { background: #fffaf0; border: 1px dashed #D4AF37; padding: 24px; border-radius: 12px; }
+    .abonelik-bilgi h6 { color: #2E4A38; font-weight: 800; }
+    .abonelik-bilgi ul { padding-left: 18px; margin-bottom: 0; }
 </style>
 
 <div class="hero-section mb-5">
@@ -133,10 +136,28 @@
 
     <div class="d-flex flex-wrap justify-content-center align-items-center gap-3 mt-4 odeme-logos">
         <div class="logo-box">
-            <img src="{% static 'img/payment/iyzico-ile-ode.png' %}" alt="iyzico ile Öde">
-        </div>
-        <div class="logo-box">
             <img src="{% static 'img/payment/card-logos.png' %}" alt="Visa, Mastercard, American Express, Troy">
+        </div>
+    </div>
+
+    <div class="row mt-4 justify-content-center">
+        <div class="col-lg-10">
+            <div class="abonelik-bilgi">
+                <h6 class="mb-2">Abonelik Bilgilendirme</h6>
+                <ul class="small text-muted">
+                    <li>Abonelik dijitaldir, ödeme sonrası anında erişim sağlanır.</li>
+                    <li>Aboneliğinizi dilediğiniz zaman iptal edebilirsiniz; mevcut dönem sonunda sona erer.</li>
+                    <li>Dijital hizmetlerde ifaya başlandıktan sonra ücret iadesi yapılmaz.</li>
+                    <li>Kart bilgileriniz sitemizde tutulmaz; güvenli ödeme altyapısı üzerinden işlem yapılır.</li>
+                </ul>
+                <div class="small mt-2">
+                    <a href="{% url 'hakkimizda' %}" class="text-decoration-none me-2">Hakkımızda</a>
+                    <a href="{% url 'gizlilik_politikasi' %}" class="text-decoration-none me-2">Gizlilik</a>
+                    <a href="{% url 'hizmet_sartlari' %}" class="text-decoration-none me-2">Hizmet Şartları</a>
+                    <a href="{% url 'teslimat_iade' %}" class="text-decoration-none me-2">Teslimat ve İade</a>
+                    <a href="{% url 'mesafeli_satis' %}" class="text-decoration-none">Mesafeli Satış</a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -145,7 +166,7 @@
             <div class="card border-0 shadow-lg">
                 <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
                     <h5 class="m-0 fw-bold text-dark"><i class="fas fa-lock me-2 text-success"></i> Güvenli Ödeme</h5>
-                    <img src="{% static 'img/payment/iyzico-ile-ode.png' %}" alt="iyzico ile Öde" style="height: 24px;">
+                    <img src="{% static 'img/payment/card-logos.png' %}" alt="Visa, Mastercard, American Express, Troy" style="height: 20px;">
                 </div>
                 <div class="card-body p-5">
                     
@@ -158,9 +179,6 @@
                     </div>
 
                     <div class="d-flex flex-wrap justify-content-center align-items-center gap-3 mb-4 odeme-logos">
-                        <div class="logo-box">
-                            <img src="{% static 'img/payment/iyzico-ile-ode.png' %}" alt="iyzico ile Öde">
-                        </div>
                         <div class="logo-box">
                             <img src="{% static 'img/payment/card-logos.png' %}" alt="Visa, Mastercard, American Express, Troy">
                         </div>
