@@ -74,6 +74,9 @@ def global_context(request):
                 available_social_providers.add(provider)
                 break
 
+    if not available_social_providers:
+        available_social_providers = {'google'}
+
     return {
         'global_kategoriler': Kategori.objects.all(),
         'global_ilceler': Ilce.objects.all(),
