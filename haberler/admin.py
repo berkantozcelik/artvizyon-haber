@@ -145,6 +145,8 @@ class HaberAdmin(DeleteLinkMixin, EditorGuideMixin, VersionAdmin): # VersionAdmi
         '<ul style="margin:0 0 0 18px;">'
         '<li>Haber resmini "Haber Resmi" alanindan yukleyin.</li>'
         '<li>Foto kaynagi: AA, IHA gibi kisa kaynak yazin.</li>'
+        '<li>Hedef icerik uzunlugu: 300-800 kelime (ozgun metin).</li>'
+        '<li>Ozet: 2-3 cumle ile haberin ozunu anlatin.</li>'
         '<li>Video eklemek icin YouTube yukleme sayfasina gidin: '
         '<a href="https://www.youtube.com/upload" target="_blank" rel="noopener">YouTube Video Yukle</a>.</li>'
         '<li>Yukledikten sonra video linkini kopyalayin ve icerige su sekilde ekleyin:</li>'
@@ -201,6 +203,8 @@ class KoseYazisiAdmin(DeleteLinkMixin, EditorGuideMixin, VersionAdmin): # Versio
     editor_guide_text = (
         '<ul style="margin:0 0 0 18px;">'
         '<li>Manset resmi ve foto kaynagi yukleyin.</li>'
+        '<li>Hedef icerik uzunlugu: 300-800 kelime (ozgun metin).</li>'
+        '<li>Baslik kisa ve net olsun; ilk paragraf ozeti versin.</li>'
         '<li>Video eklemek icin YouTube yukleme sayfasina gidin: '
         '<a href="https://www.youtube.com/upload" target="_blank" rel="noopener">YouTube Video Yukle</a>.</li>'
         '<li>Yukledikten sonra video linkini kopyalayin ve icerige su sekilde ekleyin:</li>'

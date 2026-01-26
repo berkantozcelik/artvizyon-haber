@@ -82,6 +82,10 @@ def global_context(request):
         'global_ilceler': Ilce.objects.all(),
         'son_dakika': Haber.objects.filter(aktif_mi=True, son_dakika=True, yayin_tarihi__gte=timezone.now()-timedelta(hours=24)).order_by('-yayin_tarihi'),
         'available_social_providers': available_social_providers,
+        'has_roportaj': Haber.objects.filter(aktif_mi=True, roportaj_mi=True).exists(),
+        'has_galeri': Galeri.objects.exists(),
+        'has_siir': Siir.objects.filter(aktif_mi=True).exists(),
+        'has_tarihi_yer': TarihiYer.objects.exists(),
     }
 
 # =========================================================

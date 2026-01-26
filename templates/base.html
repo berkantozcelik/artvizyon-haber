@@ -388,9 +388,9 @@
                                     {% endfor %}
                                 </ul>
                             </li>
-                            <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'roportaj_listesi' %}">Röportaj</a></li>
-                            <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'galeri_listesi' %}">Foto Galeri</a></li>
-                            <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'tarihi_yerler_listesi' %}">Artvin Rehberi</a></li>
+                            {% if has_roportaj %}<li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'roportaj_listesi' %}">Röportaj</a></li>{% endif %}
+                            {% if has_galeri %}<li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'galeri_listesi' %}">Foto Galeri</a></li>{% endif %}
+                            {% if has_tarihi_yer %}<li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'tarihi_yerler_listesi' %}">Artvin Rehberi</a></li>{% endif %}
                             <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'kimdir' %}">Editörden</a></li>
                             <li class="nav-item"><a class="nav-link nav-link-custom" href="{% url 'iletisim' %}">İletişim</a></li>
                         </ul>
@@ -422,10 +422,10 @@
                 <a href="{% url 'ilce_haberleri' ilce.pk %}" class="sidebar-link"><i class="fas fa-map-marker-alt me-2 text-white-50 small"></i> {{ ilce.isim }}</a>
             {% endfor %}
             <div class="sidebar-section-title">MEDYA & KÜLTÜR</div>
-            <a href="{% url 'roportaj_listesi' %}" class="sidebar-link"><i class="fas fa-microphone me-2"></i> Röportajlar</a>
-            <a href="{% url 'galeri_listesi' %}" class="sidebar-link"><i class="fas fa-camera me-2"></i> Foto Galeri</a>
-            <a href="{% url 'siir_listesi' %}" class="sidebar-link"><i class="fas fa-feather-alt me-2"></i> Şiir Köşesi</a>
-            <a href="{% url 'tarihi_yerler_listesi' %}" class="sidebar-link"><i class="fas fa-landmark me-2"></i> Artvin Rehberi</a>
+            {% if has_roportaj %}<a href="{% url 'roportaj_listesi' %}" class="sidebar-link"><i class="fas fa-microphone me-2"></i> Röportajlar</a>{% endif %}
+            {% if has_galeri %}<a href="{% url 'galeri_listesi' %}" class="sidebar-link"><i class="fas fa-camera me-2"></i> Foto Galeri</a>{% endif %}
+            {% if has_siir %}<a href="{% url 'siir_listesi' %}" class="sidebar-link"><i class="fas fa-feather-alt me-2"></i> Şiir Köşesi</a>{% endif %}
+            {% if has_tarihi_yer %}<a href="{% url 'tarihi_yerler_listesi' %}" class="sidebar-link"><i class="fas fa-landmark me-2"></i> Artvin Rehberi</a>{% endif %}
             <div class="sidebar-section-title">KURUMSAL</div>
             <a href="{% url 'hakkimizda' %}" class="sidebar-link">Hakkımızda / Künye</a>
             <a href="{% url 'kimdir' %}" class="sidebar-link">Editörden</a>
