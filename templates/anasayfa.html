@@ -223,7 +223,7 @@
 
     /* SOL SÜTUN */
     .yazarlar-sutun {
-        background-color: #fff; border: 1px solid #e0e0e0; height: 720px; 
+        background-color: #fff; border: 1px solid #e0e0e0; height: 100%; min-height: 720px;
         display: flex; flex-direction: column; position: relative;
     }
     .yazar-listesi-wrapper { flex-grow: 1; overflow-y: hidden; position: relative; scroll-behavior: smooth; }
@@ -265,10 +265,10 @@
     }
 </style>
 
-<div class="row justify-content-center mb-5 align-items-start gx-4 gy-4 mt-4">
+<div class="row justify-content-center mb-5 align-items-stretch gx-4 gy-4 mt-4">
     
-    <div class="col-lg-3 order-2 order-lg-1">
-        <div class="yazarlar-sutun shadow-sm">
+    <div class="col-lg-3 order-2 order-lg-1 d-flex">
+        <div class="yazarlar-sutun shadow-sm w-100">
             <div class="text-white text-center py-2 fw-bold" style="background-color: #6D4C41 !important; font-family: 'Playfair Display', serif; letter-spacing: 1px; border-bottom: 1px solid #fff;">
                 <i class="fas fa-pen-nib me-2"></i> BAŞYAZAR
             </div>
@@ -371,6 +371,17 @@
             <button class="carousel-control-next" type="button" data-bs-target="#mansetSlider" data-bs-slide="next"><i class="fas fa-chevron-right text-white fs-4"></i></button>
         </div>
         {% endif %}
+
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-body p-2 text-center">
+                <a href="#" class="text-decoration-none d-block">
+                    <div class="position-relative overflow-hidden rounded-3 bg-dark">
+                        <img src="{% static 'img/ads/artpro-subelikler.webp' %}" alt="Art Pro+ Şubelikler Reklamı" class="w-100 d-block" loading="lazy" decoding="async">
+                        <span class="lux-ad-badge">Reklam</span>
+                    </div>
+                </a>
+            </div>
+        </div>
 
     </div>
 </div>
