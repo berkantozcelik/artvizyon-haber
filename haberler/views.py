@@ -103,7 +103,8 @@ def anasayfa(request):
     aktif_ozel_gun = OzelGun.objects.filter(aktif_mi=True, anasayfada_goster=True).first()
     haftanin_fotosu = GaleriResim.objects.filter(haftanin_fotografi_mi=True).select_related('galeri').first()
     eczaneler = EczaneLinki.objects.all().order_by('sira')
-    yazarlar = KoseYazari.objects.filter(aktif_mi=True).order_by('-basyazar_mi', 'id')
+    yazarlar_qs = KoseYazari.objects.filter(aktif_mi=True).order_by('-basyazar_mi', 'id')
+    yazarlar = [yazar for yazar in yazarlar_qs if yazar.son_yazisi]
     
     gunun_siiri = Siir.objects.filter(aktif_mi=True, gunun_siiri_mi=True).first() or Siir.objects.filter(aktif_mi=True).last()
     rehber_ogeleri = TarihiYer.objects.filter(aktif_mi=True).order_by('sira')[:6]

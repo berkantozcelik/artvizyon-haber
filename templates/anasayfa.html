@@ -274,7 +274,7 @@
             </div>
             <div style="flex-shrink: 0; background-color: #fcfcfc;">
                 {% for yazar in yazarlar %}
-                    {% if yazar.basyazar_mi or "Sami" in yazar.ad_soyad %}
+                    {% if yazar.son_yazisi and yazar.basyazar_mi or yazar.son_yazisi and "Sami" in yazar.ad_soyad %}
                     <div class="text-center p-3">
                         <a href="{% url 'yazi_detay' yazar.son_yazisi.pk %}" class="text-decoration-none">
                             <div class="position-relative d-inline-block mb-2">
@@ -295,7 +295,7 @@
             <button class="yazar-scroll-btn" onclick="scrollYazar('up')"><i class="fas fa-chevron-up"></i></button>
             <div id="yazarListesiContainer" class="yazar-listesi-wrapper">
                 {% for yazar in yazarlar %}
-                    {% if not yazar.basyazar_mi and "Sami" not in yazar.ad_soyad %}
+                    {% if yazar.son_yazisi and not yazar.basyazar_mi and "Sami" not in yazar.ad_soyad %}
                     <a href="{% url 'yazi_detay' yazar.son_yazisi.pk %}" class="text-decoration-none text-dark">
                         <div class="yazar-item">
                             <img src="{{ yazar.resim.url }}" class="yazar-img-small shadow-sm">
