@@ -17,8 +17,20 @@ def ads_txt(request):
             return FileResponse(open(path, 'rb'), content_type='text/plain')
     raise Http404
 
+def robots_txt(request):
+    candidates = [
+        os.path.join(settings.STATIC_ROOT, 'robots.txt'),
+        os.path.join(settings.BASE_DIR, 'static', 'robots.txt'),
+        os.path.join(settings.BASE_DIR, 'robots.txt'),
+    ]
+    for path in candidates:
+        if path and os.path.exists(path):
+            return FileResponse(open(path, 'rb'), content_type='text/plain')
+    raise Http404
+
 urlpatterns = [
     path('ads.txt', ads_txt, name='ads_txt'),
+    path('robots.txt', robots_txt, name='robots_txt'),
     # --- GÜVENLİK: ÖZEL ADMİN YOLU ---
     path('artvizyon-sami/', admin.site.urls),
     
