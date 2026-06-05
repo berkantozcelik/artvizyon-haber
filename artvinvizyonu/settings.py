@@ -11,11 +11,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
-SECRET_KEY = 'django-insecure-s^$-b*^=_bn2#npf-#=mlby5x2u@p0mp7fpnk&==wxntuq(e#8'
-DEBUG = True 
+# TODO: Set DJANGO_SECRET_KEY in environment for production deployments.
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-s^$-b*^=_bn2#npf-#=mlby5x2u@p0mp7fpnk&==wxntuq(e#8')
+DEBUG = os.getenv('DJANGO_DEBUG', 'False').lower() in ('1', 'true', 'yes')
 
 # PythonAnywhere için izin verilen adresler
-ALLOWED_HOSTS = ['*'] 
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '*').split(',')
 
 
 # Application definition
