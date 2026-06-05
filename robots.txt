@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Allow: /static/
+Allow: /media/
+
+User-agent: Googlebot
+Allow: /
+Allow: /static/
+Allow: /media/
+Crawl-delay: 0
+
+Sitemap: https://www.artvinvizyonu.com/sitemap.xml
